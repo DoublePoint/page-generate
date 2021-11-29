@@ -149,7 +149,21 @@ export const constantRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen'}
       }
     ]
+  },
+  {
+    path: '/cg',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'single-table',
+        component: (resolve) => require(['@/views/cg/singleTable'], resolve),
+        name: 'Single Table',
+        meta: { title: '元数据配置', activeMenu: '/cg/singleTable'}
+      }
+    ]
   }
+  
 ]
 
 export default new Router({
