@@ -3,11 +3,13 @@
     <el-row :gutter="20">
       <!--用户数据-->
       <el-col :span="20" :xs="24">
-        <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="150px">
-          <el-form-item v-for="item in formItems" :key="item.id" :label="item.remark" :prop="item.propName">
+        <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+          <el-form-item v-for="item in formItems" :key="item.key" :label="item.label" :prop="item.prop">
               <el-input
-                v-model="queryParams[item.propName]"
-                :placeholder="item.remark"
+                v-model="queryParams[item.fieldName]"
+                :placeholder="item.placeholder"
+                :clearable="item.clearable"
+                :size="item.size"
               @keyup.enter.native="handleQuery"/>
           </el-form-item>
           <el-form-item>
@@ -15,17 +17,57 @@
             <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
           </el-form-item>
         </el-form>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col>
+
+        <el-row :gutter="10" class="mb8">
+          <el-col :span="1.5">
+            <el-button
+              type="primary"
+              plain
+              icon="el-icon-plus"
+              size="mini"
+              @click="handleAdd"
+              v-hasPermi="['system:user:add']"
+            >新增</el-button>
+          </el-col>
+          <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
+        </el-row>
+
         <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column label="字段名称1" align="center" prop="propName" width="160">
+          <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[6].visible" width="160">
+            <template slot-scope="scope">
+              <span>{{ parseTime(scope.row.createTime) }}</span>
+            </template>
           </el-table-column>
-          <el-table-column label="字段名称2" align="center" prop="propName1" width="160">
+          <el-table-column
+            label="操作"
+            align="center"
+            width="160"
+            class-name="small-padding fixed-width"
+          >
+            <template slot-scope="scope" v-if="scope.row.userId !== 1">
+              <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)" v-hasPermi="['system:user:resetPwd', 'system:user:edit']">
+                <span class="el-dropdown-link">
+                  <i class="el-icon-d-arrow-right el-icon--right"></i>更多
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="handleResetPwd" icon="el-icon-key"
+                    v-hasPermi="['system:user:resetPwd']">重置密码</el-dropdown-item>
+                  <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check"
+                    v-hasPermi="['system:user:edit']">分配角色</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </template>
           </el-table-column>
         </el-table>
+
+        <pagination
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
+        />
       </el-col>
     </el-row>
   </div>
@@ -33,7 +75,7 @@
 
 <script>
 import { listUser, getUser, delUser, addUser, updateUser, exportUser, resetUserPwd, changeUserStatus, importTemplate } from "@/api/system/user";
-import { analize,getInput } from "@/api/cg/text";
+import { testGet } from "@/api/cg/text";
 import { getToken } from "@/utils/auth";
 import { treeselect } from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
@@ -149,28 +191,25 @@ export default {
         ]
       },
       formItems:[
-       
+        {
+          key:"1",
+          label:"label1",
+          prop:"props",
+          fieldName:"fieldName",
+          type:"input",
+          size:"small",
+          placeholder:"placeholder",
+        },
+        {
+          key:"2",
+          label:"label2",
+          prop:"props",
+          fieldName:"fieldName2",
+          type:"input",
+          size:"small",
+          placeholder:"placeholder2",
+        }
       ]
-      // formItems:[
-      //   {
-      //     key:"1",
-      //     label:"label1",
-      //     prop:"props",
-      //     fieldName:"fieldName",
-      //     type:"input",
-      //     size:"small",
-      //     placeholder:"placeholder",
-      //   },
-      //   {
-      //     key:"2",
-      //     label:"label2",
-      //     prop:"props",
-      //     fieldName:"fieldName2",
-      //     type:"input",
-      //     size:"small",
-      //     placeholder:"placeholder2",
-      //   }
-      // ]
     };
   },
   watch: {
@@ -180,13 +219,9 @@ export default {
     }
   },
   created() {
-    //this.getList();
-    analize(3).then(response=>{
+    this.getList();
+    testGet().then(response=>{
       console.log(response);
-      var metaCom = response.parameterMap.metaCom;
-      this.formItems = metaCom.comPropList;
-      this.userList = metaCom.comPropList;
-      this.loading = false;
     })
   },
   methods: {
