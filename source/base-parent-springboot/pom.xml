@@ -1,0 +1,145 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cn.doublepoint.base</groupId>
+	<artifactId>base-parent-springboot</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.2.RELEASE</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+
+
+	<properties>
+		<mybatis.version>3.2.6</mybatis.version>
+		<!-- <mysql.version>6.0.6</mysql.version> -->
+		<mysql.version>5.1.34</mysql.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- spring版本号 -->
+		<spring.version>4.3.7.RELEASE</spring.version>
+		<spring.data.jpa.version>1.11.1.RELEASE</spring.data.jpa.version>
+		<junit.version>4.12-beta-3</junit.version>
+		<jackson.core.version>2.9.2</jackson.core.version>
+		<hibernate.entitymanager.version>5.0.12.Final</hibernate.entitymanager.version>
+		<cn.doublepoint.base.version>0.0.1-SNAPSHOT</cn.doublepoint.base.version>
+		<commons.lang.version>2.3</commons.lang.version>
+		<common.net.version>3.6</common.net.version>
+	</properties>
+
+	<dependencies>
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+
+			<dependency>
+				<groupId>cn.doublepoint.base</groupId>
+				<artifactId>base-common-util</artifactId>
+				<version>${cn.doublepoint.base.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>cn.doublepoint.base</groupId>
+				<artifactId>base-common-web-workflow</artifactId>
+				<version>${cn.doublepoint.base.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cn.doublepoint.base</groupId>
+				<artifactId>base-common-web</artifactId>
+				<version>${cn.doublepoint.base.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>cn.doublepoint.base</groupId>
+				<artifactId>bootworkflow</artifactId>
+				<version>${cn.doublepoint.base.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>cn.doublepoint.base</groupId>
+				<artifactId>base-common-generate</artifactId>
+				<version>${cn.doublepoint.base.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-jpa</artifactId>
+				<version>${spring.data.jpa.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-entitymanager</artifactId>
+				<version>${hibernate.entitymanager.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>jsr250-api</artifactId>
+				<version>1.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+
+			<!-- 测试相关 ↓↓↓ -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-test</artifactId>
+				<version>${spring.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<!--MySQL Driver -->
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>${mysql.version}</version>
+				
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot</artifactId>
+				<version>1.5.2.RELEASE</version>
+			</dependency>
+			
+			<!--FtpClient所在的包-->
+			<dependency>
+			    <groupId>commons-net</groupId>
+			    <artifactId>commons-net</artifactId>
+			    <version>${common.net.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

@@ -33,6 +33,7 @@
         <poi.version>4.1.2</poi.version>
         <velocity.version>1.7</velocity.version>
         <jwt.version>0.9.1</jwt.version>
+
     </properties>
 	
     <!-- 依赖声明 -->
@@ -205,6 +206,7 @@
                 <version>${ruoyi.version}</version>
             </dependency>
 
+
         </dependencies>
     </dependencyManagement>
 
@@ -215,6 +217,7 @@
         <module>ruoyi-quartz</module>
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
+        <module>code-generate</module>
     </modules>
     <packaging>pom</packaging>
 

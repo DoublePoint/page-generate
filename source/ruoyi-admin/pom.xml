@@ -61,6 +61,13 @@
             <artifactId>ruoyi-generator</artifactId>
         </dependency>
 
+        <!-- 页面生成-->
+        <dependency>
+            <groupId>com.ll</groupId>
+            <artifactId>code-generate</artifactId>
+            <version>3.6.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2021/11/30 14:32:49                          */
+/* Created on:     2021/11/30 14:36:31                          */
 /*==============================================================*/
 
 
@@ -195,25 +195,4 @@ create table CG_OBJECT_PROP
 
 alter table CG_OBJECT_PROP comment 'CG OBJECT PROPERTY 
 对象属性，包含页面对象、字段对象、域对象等';
-
-alter table CG_DOMAIN add constraint FK_RELATIONSHIP_6 foreign key (ID)
-      references CG_META_COM (ID) on delete restrict on update restrict;
-
-alter table CG_META_COM_PROP_GROUP_REL add constraint FK_RELATIONSHIP_1 foreign key (ID)
-      references CG_META_COM_PROP_GROUP (ID) on delete restrict on update restrict;
-
-alter table CG_META_COM_PROP_GROUP_REL add constraint FK_RELATIONSHIP_2 foreign key ()
-      references CG_META_COM_PROP (ID) on delete restrict on update restrict;
-
-alter table CG_META_COM_PROP_REL add constraint FK_RELATIONSHIP_3 foreign key ()
-      references CG_META_COM_PROP (ID) on delete restrict on update restrict;
-
-alter table CG_META_COM_PROP_REL add constraint FK_RELATIONSHIP_4 foreign key ()
-      references CG_META_COM (ID) on delete restrict on update restrict;
-
-alter table CG_META_COM_REL add constraint FK_RELATIONSHIP_5 foreign key (CG__ID)
-      references CG_META_COM (ID) on delete restrict on update restrict;
-
-alter table CG_OBJECT_PROP add constraint FK_RELATIONSHIP_12 foreign key (ID)
-      references CG_DOMAIN (ID) on delete restrict on update restrict;
 

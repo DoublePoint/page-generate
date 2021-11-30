@@ -8,7 +8,7 @@
               <el-input
                 v-model="queryParams[item.fieldName]"
                 :placeholder="item.placeholder"
-                :clearable="item.placeholder"
+                :clearable="item.clearable"
                 :size="item.size"
               @keyup.enter.native="handleQuery"/>
           </el-form-item>
@@ -75,6 +75,7 @@
 
 <script>
 import { listUser, getUser, delUser, addUser, updateUser, exportUser, resetUserPwd, changeUserStatus, importTemplate } from "@/api/system/user";
+import { testGet } from "@/api/cg/text";
 import { getToken } from "@/utils/auth";
 import { treeselect } from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
@@ -219,16 +220,9 @@ export default {
   },
   created() {
     this.getList();
-    this.getTreeselect();
-    this.getDicts("sys_normal_disable").then(response => {
-      this.statusOptions = response.data;
-    });
-    this.getDicts("sys_user_sex").then(response => {
-      this.sexOptions = response.data;
-    });
-    this.getConfigKey("sys.user.initPassword").then(response => {
-      this.initPassword = response.msg;
-    });
+    testGet().then(response=>{
+      console.log(response);
+    })
   },
   methods: {
     /** 查询用户列表 */
