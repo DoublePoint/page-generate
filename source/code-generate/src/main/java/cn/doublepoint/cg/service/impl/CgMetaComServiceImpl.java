@@ -7,13 +7,14 @@ import cn.doublepoint.cg.service.CgMetaComPropRelService;
 import cn.doublepoint.cg.service.CgMetaComService;
 import cn.doublepoint.commonutil.domain.model.CommonBeanUtil;
 import cn.doublepoint.jpa.JPAUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class CgMetaComServiceImpl implements CgMetaComService {
-    @Service
+    @Autowired
     CgMetaComPropRelService relService;
 
     @Override
@@ -25,7 +26,9 @@ public class CgMetaComServiceImpl implements CgMetaComService {
         CommonBeanUtil.copyProperties(t,vo);
 
         List<CgMetaComPropVO> props = relService.getProps(comCode);
-        vo
+        vo.setComPropList(props);
+
+        return vo;
 
     }
 }

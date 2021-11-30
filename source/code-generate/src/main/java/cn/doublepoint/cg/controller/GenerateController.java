@@ -1,6 +1,8 @@
 package cn.doublepoint.cg.controller;
 
 import cn.doublepoint.cg.domain.model.CgDomainEntity;
+import cn.doublepoint.cg.domain.vo.CgMetaComVO;
+import cn.doublepoint.cg.service.CgMetaComService;
 import cn.doublepoint.commonutil.ajaxmodel.AjaxResponse;
 import cn.doublepoint.commonutil.persitence.jpa.JPAUtil;
 import cn.doublepoint.commonutil.port.adapter.controller.BaseController;
@@ -27,18 +29,21 @@ public class GenerateController  extends BaseController{
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	CgMetaComService metaComService;
 
 	@RequestMapping("/meta/queryform")
-	public AjaxResponse queryform(@RequestParam String sql){
+	public AjaxResponse queryform(@RequestParam String id){
 		AjaxResponse response = new AjaxResponse();
-		sql = "SELECT * FROM ("+sql+") LL_GENERATE WHERE 1=2";
-		List<Object> list = JPAUtil.executeNativeQuery(sql);
-		response.setAjaxParameter("data",list);
+
+		CgMetaComVO metaCom = metaComService.getMetaCom(id);
+		response.setAjaxParameter("metaCom",metaCom);
 		return response;
 	}
 
 
-	@RequestMapping("/analize/sql")
+	@RequestMapping("/analize")
 	public AjaxResponse analize(@RequestParam String sql){
 
 		AjaxResponse response = new AjaxResponse();
