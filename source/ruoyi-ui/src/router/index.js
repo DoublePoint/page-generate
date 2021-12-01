@@ -160,6 +160,12 @@ export const constantRoutes = [
         component: (resolve) => require(['@/views/cg/singleTable'], resolve),
         name: 'Single Table',
         meta: { title: '元数据配置', activeMenu: '/cg/singleTable'}
+      },
+      {
+        path: 'singleTableModifyV1',
+        component: (resolve) => require(['@/views/cg/singleTableModifyV1'], resolve),
+        name: 'Single Table V1.0',
+        meta: { title: '元数据配置', activeMenu: '/cg/singleTableModifyV1'}
       }
     ]
   }

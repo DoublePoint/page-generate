@@ -22,7 +22,6 @@ public class CgDomainVO{
     private Map<String,List<CgDomainVO>> relDomain;
     private List<CgObjectPropVO> relProp;
 
-
     public Map<String, List<CgDomainVO>> getRelDomain() {
         return relDomain;
     }

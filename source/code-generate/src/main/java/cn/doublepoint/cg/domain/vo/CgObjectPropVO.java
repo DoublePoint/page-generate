@@ -16,6 +16,8 @@ public class CgObjectPropVO {
     private String createUserId;
     private String updateUserId;
 
+    private CgMetaComPropVO metaProp;
+
     public String getId() {
         return id;
     }
@@ -26,6 +28,14 @@ public class CgObjectPropVO {
 
     public String getPropCode() {
         return propCode;
+    }
+
+    public CgMetaComPropVO getMetaProp() {
+        return metaProp;
+    }
+
+    public void setMetaProp(CgMetaComPropVO metaProp) {
+        this.metaProp = metaProp;
     }
 
     public void setPropCode(String propCode) {

@@ -1,7 +1,9 @@
 package cn.doublepoint.cg.controller;
 
 import cn.doublepoint.cg.domain.model.CgDomainEntity;
+import cn.doublepoint.cg.domain.vo.CgDomainVO;
 import cn.doublepoint.cg.domain.vo.CgMetaComVO;
+import cn.doublepoint.cg.service.CgDomainService;
 import cn.doublepoint.cg.service.CgMetaComService;
 import cn.doublepoint.commonutil.ajaxmodel.AjaxResponse;
 import cn.doublepoint.commonutil.persitence.jpa.JPAUtil;
@@ -33,6 +35,9 @@ public class GenerateController  extends BaseController{
 	@Autowired
 	CgMetaComService metaComService;
 
+	@Autowired
+	CgDomainService domainService;
+
 	@RequestMapping("/meta/queryform")
 	public AjaxResponse queryform(@RequestParam String id){
 		AjaxResponse response = new AjaxResponse();
@@ -54,6 +59,15 @@ public class GenerateController  extends BaseController{
 
 		response.setAjaxParameter("data",list);
 		response.setAjaxParameter("metaData",JSON.toJSONString(mapToMap(metaData)));
+		return response;
+	}
+
+	@RequestMapping("/field/base")
+	public AjaxResponse queryform(){
+		AjaxResponse response = new AjaxResponse();
+
+		CgDomainVO base = domainService.getDomain("BASE");
+		response.setAjaxParameter("data",base);
 		return response;
 	}
 
