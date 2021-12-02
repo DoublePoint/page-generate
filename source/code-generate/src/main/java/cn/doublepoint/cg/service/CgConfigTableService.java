@@ -9,8 +9,9 @@ public interface CgConfigTableService {
 
     void add(CgConfigTableEntity tableEntity);
 
-    void delete(CgConfigTableEntity tableEntity);
+    CgConfigTableEntity get(String id);
 
+    void delete(CgConfigTableEntity tableEntity);
 
     void delete(List<String> ids);
 

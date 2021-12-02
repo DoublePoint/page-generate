@@ -12,4 +12,6 @@ import java.util.Map;
  */
 public interface CgObjectPropService {
     Map<String,CgObjectPropVO> getProps(String code);
+
+    Map<String,CgObjectPropVO> getTableConfigProps(String code);
 }

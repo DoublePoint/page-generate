@@ -1,8 +1,6 @@
 package cn.doublepoint.cg.service.impl;
 
-import ch.qos.logback.core.util.ContextUtil;
 import cn.doublepoint.cg.domain.model.CgConfigTableEntity;
-import cn.doublepoint.cg.domain.model.CgConfigTableFieldEntity;
 import cn.doublepoint.cg.service.CgConfigTableService;
 import cn.doublepoint.commonutil.CommonUtil;
 import cn.doublepoint.commonutil.persitence.jpa.SnowflakeIdWorker;
@@ -30,6 +28,11 @@ public class CgConfigTableServiceImpl implements CgConfigTableService {
         tableEntity.setCreateTime(CommonUtil.getDateTime());
         tableEntity.setUpdateTime(CommonUtil.getDateTime());
         JPAUtil.create(tableEntity);
+    }
+
+    @Override
+    public CgConfigTableEntity get(String id) {
+        return JPAUtil.loadById(CgConfigTableEntity.class,id);
     }
 
     @Override

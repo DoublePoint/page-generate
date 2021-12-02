@@ -149,12 +149,12 @@
                 <el-form-item label="字段名称" prop="propName">
                     <el-input v-model="tableFieldForm.propName" />
                 </el-form-item>
-                <el-form-item label="下拉名称" prop="dropName">
+                <!-- <el-form-item label="下拉名称" prop="dropName">
                     <el-input v-model="tableFieldForm.dropName" />
                 </el-form-item>
                 <el-form-item label="排序" prop="sort">
                     <el-input v-model="tableFieldForm.sort" />
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item>
                     <el-button type="primary" icon="el-icon-search" size="mini" @click="submitFieldForm">确 定</el-button>
                     <el-button icon="el-icon-refresh" size="mini" @click="cancelField">取 消</el-button>
@@ -327,7 +327,7 @@ export default {
         getTableField({
             tableId:this.currentTableId
         }).then(response=>{
-            this.tableList = response.parameterMap.data;
+            this.fieldList = response.parameterMap.data;
         })
     }
   },

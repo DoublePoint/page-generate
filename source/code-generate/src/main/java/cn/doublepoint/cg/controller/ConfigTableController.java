@@ -27,6 +27,13 @@ public class ConfigTableController {
         return response;
     }
 
+    @GetMapping("/{tableId}")
+    public AjaxResponse getTableConfig(@PathVariable String tableId){
+        AjaxResponse response = new AjaxResponse();
+        response.setAjaxParameter("data",configTableService.get(tableId));
+        return response;
+    }
+
 
     @PostMapping("/")
     public AjaxResponse addTable(@RequestBody CgConfigTableEntity tableEntity){

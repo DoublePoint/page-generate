@@ -42,9 +42,14 @@ public class GenerateController  extends BaseController{
 	@RequestMapping("/meta/queryform")
 	public AjaxResponse queryform(@RequestParam String id){
 		AjaxResponse response = new AjaxResponse();
-
-		CgMetaComVO metaCom = metaComService.getMetaCom(id);
-		response.setAjaxParameter("metaCom",metaCom);
+		try{
+			CgMetaComVO metaCom = metaComService.getMetaCom(id);
+			response.setAjaxParameter("metaCom",metaCom);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			Log4jUtil.error(e);
+		}
 		return response;
 	}
 

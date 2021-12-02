@@ -1,7 +1,7 @@
 <template>
   <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick" >
         <el-tab-pane label="字段属性" name="first">
-            <el-form :model="tableFieldForm" ref="tableFieldForm" :inline="false" label-width="150px">
+            <!-- <el-form :model="tableFieldForm" ref="tableFieldForm" :inline="false" label-width="150px">
                 <el-form-item label="字段编码" prop="propName">
                     <el-input v-model="tableFieldForm.propName" />
                 </el-form-item>
@@ -17,6 +17,11 @@
                         :value="item.value">
                         </el-option>
                     </el-select>
+                </el-form-item>
+            </el-form> -->
+            <el-form :model="tableFieldForm" ref="tableFieldForm" :inline="false" label-width="150px">
+                <el-form-item v-for="selProp in formMetaData.comPropList" :key="selProp.id" :label="selProp.propName" :prop="selProp.propName">
+                    <el-input v-model="tableFieldForm[selProp.propName]" />
                 </el-form-item>
             </el-form>
         </el-tab-pane>
@@ -34,7 +39,7 @@
 
 <script>
 
-import {getBaseProp} from "@/api/cg/baseprop"
+import {getInput} from "@/api/cg/inputform"
 
 export default {
   name: "cgprop",
@@ -64,14 +69,18 @@ export default {
             dropName:"",
             sort:0,
         },
+        formMetaData:{
+
+        }
     };
   },
   watch: {
    
   },
   created() {
-      getBaseProp().then(res=>{
+      getInput(4).then(res=>{
         console.log(res);
+        this.formMetaData = res.parameterMap.metaCom;
           // const data = res.data;
           // console.log(data);
       })

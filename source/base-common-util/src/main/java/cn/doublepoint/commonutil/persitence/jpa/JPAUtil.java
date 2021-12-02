@@ -9,7 +9,9 @@
 */
 package cn.doublepoint.commonutil.persitence.jpa;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -433,16 +435,29 @@ public class JPAUtil extends DataBaseUtil {
 	}
 
 	private static <T extends BaseModel> Object getPrimary(T model) {
-		Field[] fields = model.getClass().getDeclaredFields();
-		Field res = Stream.of(fields).filter(field -> {
-			field.setAccessible(true);
-			return (field.getAnnotation(Id.class) != null);
-		}).findAny().get();
 		try {
+			Field[] fields = model.getClass().getDeclaredFields();
+			Field res = Stream.of(fields).filter(field -> {
+				field.setAccessible(true);
+				return (field.getAnnotation(Id.class) != null);
+			}).findAny().get();
 			return res.get(model);
-		} catch (Exception e) {
-			Log4jUtil.error(e);
 		}
+		catch (Exception e){
+			Log4jUtil.error(e);
+			try {
+				Method[] methods = model.getClass().getDeclaredMethods();
+				Method met = Stream.of(methods).filter(method -> {
+					return (method.getAnnotation(Id.class) != null);
+				}).findAny().get();
+				return met.invoke(model);
+			}
+			catch (Exception e2){
+				Log4jUtil.error(e2);
+				throw e2;
+			}
+		}
+
 		return null;
 	}
 

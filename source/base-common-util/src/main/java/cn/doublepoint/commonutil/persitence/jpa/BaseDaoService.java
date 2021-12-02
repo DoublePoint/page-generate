@@ -10,11 +10,13 @@
 package cn.doublepoint.commonutil.persitence.jpa;
 
 import java.util.List;
+import java.util.Map;
 
 import cn.doublepoint.dto.domain.model.entity.BaseModel;
 import cn.doublepoint.dto.domain.model.vo.query.PageInfo;
 import cn.doublepoint.dto.domain.model.vo.query.QueryParamList;
 import cn.doublepoint.dto.domain.model.vo.query.SortParamList;
+import org.hibernate.persister.entity.EntityPersister;
 
 public interface BaseDaoService {
 
@@ -156,4 +158,6 @@ public interface BaseDaoService {
 	 * @param t
 	 */
 	public <T extends BaseModel> void update(List<T> t);
+
+	Map.Entry<String, EntityPersister> getEntityClass(String tableCode);
 }
