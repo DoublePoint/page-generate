@@ -19,8 +19,9 @@ public class CgDomainVO{
     private Timestamp updateTime;
     private String createUserId;
     private String updateUserId;
+
     private Map<String,List<CgDomainVO>> relDomain;
-    private List<CgObjectPropVO> relProp;
+    private Map<String,CgObjectPropVO> relProp;
 
     public Map<String, List<CgDomainVO>> getRelDomain() {
         return relDomain;
@@ -30,11 +31,11 @@ public class CgDomainVO{
         this.relDomain = relDomain;
     }
 
-    public List<CgObjectPropVO> getRelProp() {
+    public Map<String, CgObjectPropVO> getRelProp() {
         return relProp;
     }
 
-    public void setRelProp(List<CgObjectPropVO> relProp) {
+    public void setRelProp(Map<String, CgObjectPropVO> relProp) {
         this.relProp = relProp;
     }
 

@@ -34,7 +34,7 @@ server:
 logging:
   level:
     com.ruoyi: debug
-    org.springframework: debug
+    org.springframework: warn
 
 # Spring配置
 spring:

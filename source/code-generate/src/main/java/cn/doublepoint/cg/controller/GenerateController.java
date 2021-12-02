@@ -6,6 +6,7 @@ import cn.doublepoint.cg.domain.vo.CgMetaComVO;
 import cn.doublepoint.cg.service.CgDomainService;
 import cn.doublepoint.cg.service.CgMetaComService;
 import cn.doublepoint.commonutil.ajaxmodel.AjaxResponse;
+import cn.doublepoint.commonutil.log.Log4jUtil;
 import cn.doublepoint.commonutil.persitence.jpa.JPAUtil;
 import cn.doublepoint.commonutil.port.adapter.controller.BaseController;
 import com.alibaba.fastjson.JSON;
@@ -65,9 +66,15 @@ public class GenerateController  extends BaseController{
 	@RequestMapping("/field/base")
 	public AjaxResponse queryform(){
 		AjaxResponse response = new AjaxResponse();
+		try {
+			CgDomainVO base = domainService.getDomain("BASE");
+			response.setAjaxParameter("data",base);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			Log4jUtil.error(e);
+		}
 
-		CgDomainVO base = domainService.getDomain("BASE");
-		response.setAjaxParameter("data",base);
 		return response;
 	}
 

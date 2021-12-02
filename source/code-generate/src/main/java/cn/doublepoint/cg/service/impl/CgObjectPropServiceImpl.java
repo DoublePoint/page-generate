@@ -1,15 +1,16 @@
 package cn.doublepoint.cg.service.impl;
 
+import cn.doublepoint.cg.domain.model.CgMetaComPropEntity;
+import cn.doublepoint.cg.domain.model.CgObjectPropEntity;
 import cn.doublepoint.cg.domain.vo.CgMetaComPropVO;
 import cn.doublepoint.cg.domain.vo.CgObjectPropVO;
 import cn.doublepoint.cg.service.CgObjectPropService;
+import cn.doublepoint.commonutil.domain.model.CommonBeanUtil;
 import cn.doublepoint.dto.domain.model.vo.query.QueryParamList;
 import cn.doublepoint.jpa.JPAUtil;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created on 2021/12/1.
@@ -20,27 +21,33 @@ import java.util.List;
 public class CgObjectPropServiceImpl implements CgObjectPropService {
 
     @Override
-    public List<CgObjectPropVO> getProps(String code){
+    public Map<String,CgObjectPropVO> getProps(String code){
+        Map<String,CgObjectPropVO> map = new HashMap<>();
         StringBuffer sb = new StringBuffer("");
 
-        sb.append("SELECT c,p FROM CgDomainEntity c,CgObjectPropEntity r,CgMetaComPropEntity p WHERE " );
-        sb.append(" c.domainCode = r.objectCode and r.objectType = '01' and r.propCode = p.propCode  ");
-        sb.append(" AND c.domainCode=:domainCode");
+        sb.append("SELECT r,p FROM CgObjectPropEntity r,CgMetaComPropEntity p WHERE " );
+        sb.append(" r.objectType = '01' and r.propCode = p.propCode  ");
+        sb.append(" AND r.objectCode=:domainCode");
 
         QueryParamList paramList = new QueryParamList();
         paramList.addParam("domainCode", code);
 
-        List<CgObjectPropVO> resultList = new ArrayList<>();
+//        List<CgObjectPropVO> resultList = new ArrayList<>();
         List<Object> list = JPAUtil.executeQuery(sb.toString(), paramList);
         list.stream().forEach(item->{
             Object[] arr = (Object[]) item;
-            CgObjectPropVO vo = (CgObjectPropVO) arr[0];
-            CgMetaComPropVO metaProp = (CgMetaComPropVO)arr[1];
+            CgObjectPropEntity propEntity = (CgObjectPropEntity)arr[0];
+            CgMetaComPropEntity metaPropEntity = (CgMetaComPropEntity)arr[1];
+
+            CgObjectPropVO vo = new CgObjectPropVO();
+            CommonBeanUtil.copyProperties(propEntity, vo);
+            CgMetaComPropVO metaProp = new CgMetaComPropVO();
+            CommonBeanUtil.copyProperties(metaPropEntity, metaProp);
             vo.setMetaProp(metaProp);
 
-            resultList.add(vo);
+            map.put(metaProp.getPropName(),vo);
+//            resultList.add(vo);
         });
-
-        return resultList;
+        return map;
     }
 }

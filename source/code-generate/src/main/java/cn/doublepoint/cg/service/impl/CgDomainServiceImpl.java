@@ -9,6 +9,7 @@ import cn.doublepoint.cg.domain.vo.CgObjectPropVO;
 import cn.doublepoint.cg.service.CgDomainService;
 import cn.doublepoint.cg.service.CgObjectPropService;
 import cn.doublepoint.commonutil.domain.model.CommonBeanUtil;
+import cn.doublepoint.commonutil.log.Log4jUtil;
 import cn.doublepoint.dto.domain.model.vo.query.QueryParamList;
 import cn.doublepoint.jpa.JPAUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,16 +43,17 @@ public class CgDomainServiceImpl implements CgDomainService {
             t = list.get(0);
         }
         if(t==null){
+            Log4jUtil.error(new Exception("CgDomain Canot be null"));
             return null;
         }
         CgDomainVO vo = new CgDomainVO();
         if(t==null){
-            System.out.println("//CgDomain Canot be null");
+            Log4jUtil.error(new Exception("CgDomain Canot be null"));
             return null;
         }
         CommonBeanUtil.copyProperties(t,vo);
 
-        List<CgObjectPropVO> props = propService.getProps(t.getDomainCode());
+        Map<String, CgObjectPropVO> props = propService.getProps(t.getDomainCode());
         vo.setRelProp(props);
 
         getSubDomain(vo);
@@ -63,18 +65,24 @@ public class CgDomainServiceImpl implements CgDomainService {
         paramList.addParam("parentDomainCode", domain.getDomainCode());
         List<CgDomainEntity> subDomainList = JPAUtil.load(CgDomainEntity.class,paramList);
 
-        List<CgDomainVO> resultList = new ArrayList<>();
         if(CollectionUtils.isEmpty(subDomainList)){
             return;
         }
+
+        Map<String, List<CgDomainVO>> relDomain = domain.getRelDomain();
+        relDomain = relDomain==null?new HashMap<>():relDomain;
+
         for(int i=0;i<subDomainList.size();i++){
             CgDomainEntity item = subDomainList.get(i);
             CgDomainVO dom = getDomain(item.getDomainCode());
-            resultList.add(dom);
-            Map<String, List<CgDomainVO>> relDomain = domain.getRelDomain();
-            relDomain = relDomain==null?new HashMap<>():relDomain;
 
-            relDomain.put(item.getDomainCode(),resultList);
+            List<CgDomainVO> cgDomainVOS = relDomain.get(item.getDomainType());
+            if(CollectionUtils.isEmpty(cgDomainVOS)){
+                cgDomainVOS = new ArrayList<>();
+                relDomain.put(item.getDomainType(),cgDomainVOS);
+            }
+            cgDomainVOS.add(dom);
         }
+        domain.setRelDomain(relDomain);
     }
 }
