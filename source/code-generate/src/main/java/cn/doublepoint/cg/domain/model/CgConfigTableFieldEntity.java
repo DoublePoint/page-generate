@@ -14,7 +14,7 @@ public class CgConfigTableFieldEntity extends BaseEntity {
     private String fieldCode;
     private String propCode;
     private String propName;
-    private String domCode;
+    private String comCode;
     private String dropName;
     private Integer sort;
     private Timestamp createTime;
@@ -85,14 +85,12 @@ public class CgConfigTableFieldEntity extends BaseEntity {
         this.propName = propName;
     }
 
-    @Basic
-    @Column(name = "DOM_CODE")
-    public String getDomCode() {
-        return domCode;
+    public String getComCode() {
+        return comCode;
     }
 
-    public void setDomCode(String domCode) {
-        this.domCode = domCode;
+    public void setComCode(String comCode) {
+        this.comCode = comCode;
     }
 
     @Basic

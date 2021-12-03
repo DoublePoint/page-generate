@@ -22,6 +22,15 @@ public class CgDomainVO{
 
     private Map<String,List<CgDomainVO>> relDomain;
     private Map<String,CgObjectPropVO> relProp;
+    private CgMetaComVO relCom;
+
+    public CgMetaComVO getRelCom() {
+        return relCom;
+    }
+
+    public void setRelCom(CgMetaComVO relCom) {
+        this.relCom = relCom;
+    }
 
     public Map<String, List<CgDomainVO>> getRelDomain() {
         return relDomain;

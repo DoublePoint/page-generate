@@ -9,4 +9,6 @@ import cn.doublepoint.cg.domain.vo.CgDomainVO;
  */
 public interface CgDomainService {
     CgDomainVO getDomain(String code);
+
+    CgDomainVO getDomainById(String id);
 }

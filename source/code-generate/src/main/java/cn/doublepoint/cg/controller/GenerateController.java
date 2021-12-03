@@ -1,27 +1,20 @@
 package cn.doublepoint.cg.controller;
 
-import cn.doublepoint.cg.domain.model.CgDomainEntity;
 import cn.doublepoint.cg.domain.vo.CgDomainVO;
 import cn.doublepoint.cg.domain.vo.CgMetaComVO;
 import cn.doublepoint.cg.service.CgDomainService;
 import cn.doublepoint.cg.service.CgMetaComService;
+import cn.doublepoint.commonutil.StringUtil;
 import cn.doublepoint.commonutil.ajaxmodel.AjaxResponse;
 import cn.doublepoint.commonutil.log.Log4jUtil;
 import cn.doublepoint.commonutil.persitence.jpa.JPAUtil;
 import cn.doublepoint.commonutil.port.adapter.controller.BaseController;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSetMetaData;
-import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,11 +32,22 @@ public class GenerateController  extends BaseController{
 	@Autowired
 	CgDomainService domainService;
 
-	@RequestMapping("/meta/queryform")
-	public AjaxResponse queryform(@RequestParam String id){
+
+	@GetMapping("/meta/com/prop")
+	public AjaxResponse queryMetaById(@RequestParam(required = false) String id,@RequestParam(required = false) String code){
 		AjaxResponse response = new AjaxResponse();
 		try{
-			CgMetaComVO metaCom = metaComService.getMetaCom(id);
+			CgMetaComVO metaCom = null;
+			if(!StringUtil.isEmpty(id)){
+				metaCom = metaComService.getMetaComById(id);
+			}
+			else if(!StringUtil.isEmpty(code)){
+				metaCom = metaComService.getMetaComByCode(code);
+			}
+			else{
+				response.setErrorMessage("Parameter id and code cannot be all null.");
+				return response;
+			}
 			response.setAjaxParameter("metaCom",metaCom);
 		}
 		catch (Exception e){

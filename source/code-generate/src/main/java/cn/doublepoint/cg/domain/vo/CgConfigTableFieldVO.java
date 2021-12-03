@@ -14,7 +14,7 @@ public class CgConfigTableFieldVO {
     private String propCode;
     private String propName;
     private String dropName;
-    private String domCode;
+    private String comCode;
     private String fieldCode;
     private Integer sort;
     private Timestamp createTime;
@@ -22,12 +22,12 @@ public class CgConfigTableFieldVO {
     private String createUserId;
     private String updateUserId;
 
-    public String getDomCode() {
-        return domCode;
+    public String getComCode() {
+        return comCode;
     }
 
-    public void setDomCode(String domCode) {
-        this.domCode = domCode;
+    public void setComCode(String comCode) {
+        this.comCode = comCode;
     }
 
     public String getFieldCode() {

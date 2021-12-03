@@ -1,5 +1,7 @@
 package cn.doublepoint.cg.domain.vo;
 
+import cn.doublepoint.cg.domain.model.CgMetaComPropGroupEntity;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -19,6 +21,15 @@ public class CgMetaComPropVO {
     private Timestamp updateTime;
     private String createUserId;
     private String updateUserId;
+    private CgMetaComPropGroupVO relGroup;
+
+    public CgMetaComPropGroupVO getRelGroup() {
+        return relGroup;
+    }
+
+    public void setRelGroup(CgMetaComPropGroupVO relGroup) {
+        this.relGroup = relGroup;
+    }
 
     public String getId() {
         return id;

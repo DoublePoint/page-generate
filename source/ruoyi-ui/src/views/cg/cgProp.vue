@@ -19,38 +19,50 @@
                     </el-select>
                 </el-form-item>
             </el-form> -->
-            <el-form :model="formData" ref="form" :inline="false" label-width="150px">
-                <el-form-item v-for="selProp in formMetaData.comPropList" :key="selProp.id" :label="selProp.propName" :prop="selProp.propCode">
-                    <el-input v-model="formData[selProp.propCode]" />
-                </el-form-item>
-            </el-form>
+            <el-row :gutter="10">
+                Com Code:{{comCode}}
+            </el-row>
+            <el-row :gutter="10">
+              <el-form :model="formData" ref="form" :inline="false" label-width="150px">
+                  <!-- <el-form-item :label="selProp.propName" :prop="selProp.propCode">
+                      <el-select v-model="domType" placeholder="请选择">
+                          <el-option
+                          v-for="item in domTypeList"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value">
+                          </el-option>
+                      </el-select>
+                  </el-form-item> -->
+                  
+                  <el-form-item v-for="selProp in formMetaData['base']" :key="selProp.id" :label="selProp.propName" :prop="selProp.propCode">
+                      <el-input v-model="formData[selProp.propCode]" />
+                  </el-form-item>
+              </el-form>
+            </el-row>
         </el-tab-pane>
-        <el-tab-pane label="基础属性" name="second">
-
-        </el-tab-pane>
-        <el-tab-pane label="逻辑属性" name="third">
-
-        </el-tab-pane>
-        <el-tab-pane label="其它属性" name="fourth">
-
+        <el-tab-pane v-for="group in tabMetaData" :key="group.groupCode" :label="group.groupName" :name="group.groupCode">
+          {{group}}
         </el-tab-pane>
     </el-tabs>
 </template>
 
 <script>
 
-import {getInput} from "@/api/cg/inputform"
+import {getInput,getComMetaByComCode} from "@/api/cg/com"
 
 export default {
   name: "cgprop",
-  props: ['value'],
+  props: ['value','comCode'],
   data() {
     return {
         activeName:"first",
         formData:this.value,
         formMetaData:{
             
-        }
+        },
+        domType:"",
+        tabMetaData:[]
     };
   },
   watch: {
@@ -58,15 +70,35 @@ export default {
       this.$emit("input",newVal);
     }
   },
+  watch:{
+    comCode(newVal){
+      this.initAllCom();
+    }
+  },
   created() {
-      getInput(4).then(res=>{
-        console.log(res);
-        this.formMetaData = res.parameterMap.metaCom;
-      })
+      if(this.comCode==null){
+        return;
+      }
+      
   },
   methods: {
    handleClick(){
 
+   },
+   clearMeta(){
+     this.formMetaData = null;
+     this.tabMetaData = null;
+   },
+   initAllCom(){
+     if(this.comCode==null){
+       return;
+     }
+     getComMetaByComCode(this.comCode).then(res=>{
+        console.log(res);
+        const data = res.parameterMap.metaCom;
+        this.formMetaData = data.relProp;
+        this.tabMetaData = data.relPropGroup;
+      })
    }
   }
 };

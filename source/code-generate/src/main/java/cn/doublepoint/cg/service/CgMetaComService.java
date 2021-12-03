@@ -4,5 +4,6 @@ import cn.doublepoint.cg.domain.model.CgMetaComEntity;
 import cn.doublepoint.cg.domain.vo.CgMetaComVO;
 
 public interface CgMetaComService {
-    CgMetaComVO getMetaCom(String id);
+    CgMetaComVO getMetaComById(String id);
+    CgMetaComVO getMetaComByCode(String code);
 }

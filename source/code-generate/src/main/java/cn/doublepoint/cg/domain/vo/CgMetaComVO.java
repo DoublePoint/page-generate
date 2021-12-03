@@ -21,16 +21,27 @@ public class CgMetaComVO {
     private String updateUserId;
 
     private Map<String,CgMetaComVO> relCom;
+    private Map<String,List<CgMetaComPropVO>> relProp;
+    private List<CgMetaComPropGroupVO> relPropGroup;
 
-    public List<CgMetaComPropVO> getComPropList() {
-        return comPropList;
+
+    public Map<String, List<CgMetaComPropVO>> getRelProp() {
+        return relProp;
     }
 
-    public void setComPropList(List<CgMetaComPropVO> comPropList) {
-        this.comPropList = comPropList;
+    public void setRelProp(Map<String, List<CgMetaComPropVO>> relProp) {
+        this.relProp = relProp;
     }
 
-    private List<CgMetaComPropVO> comPropList;
+    public List<CgMetaComPropGroupVO> getRelPropGroup() {
+        return relPropGroup;
+    }
+
+    public void setRelPropGroup(List<CgMetaComPropGroupVO> relPropGroup) {
+        this.relPropGroup = relPropGroup;
+    }
+
+
 
     public Map<String, CgMetaComVO> getRelCom() {
         return relCom;

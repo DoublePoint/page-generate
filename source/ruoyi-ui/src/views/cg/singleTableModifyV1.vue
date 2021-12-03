@@ -78,21 +78,28 @@
                 <el-row :gutter="20" class="mb8">
                     <el-col>
                         <el-table v-loading="loading" :data="fieldList" @selection-change="handleSelectionChange">
-                        <el-table-column type="selection" width="50" align="center" />
-                        <el-table-column label="字段编码" align="center" prop="propCode" width="160">
-                        </el-table-column>
-                        <el-table-column label="字段名称" align="center" prop="propName" width="160">
-                        </el-table-column>
-                        <el-table-column label="下拉名称" align="center" prop="dropname" width="160">
-                        </el-table-column>
-                        <el-table-column label="排序" align="center" prop="sort" width="160">
+                            <el-table-column type="selection" width="50" align="center" />
+                            <el-table-column label="字段编码" align="center" prop="propCode" width="160">
+                            </el-table-column>
+                            <el-table-column label="字段名称" align="center" prop="propName" width="160">
+                            </el-table-column>
+                            <el-table-column label="下拉名称" align="center" prop="dropname" width="160">
+                            </el-table-column>
+                            <el-table-column label="排序" align="center" prop="sort" width="160">
+                            </el-table-column>
+                            <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+                            <template slot-scope="scope">
+                                <el-button size="mini" type="text" icon="el-icon-detail"
+                                    @click="handleFieldDetail(scope.row)" 
+                                >字段详情</el-button>
+                            </template>
                         </el-table-column>
                         </el-table>
                     </el-col>
                 </el-row>
             </el-col>
             <el-col :span="8">
-                <cg-prop v-model="fieldProp"/>
+                <cg-prop v-model="fieldProp" :com-code="comCode"/>
             </el-col>
         </el-tab-pane>
     </el-tabs>
@@ -211,7 +218,8 @@ export default {
       },
       currentTableId:null,
       tabFiledDisabled:true,
-      fieldProp:{}
+      fieldProp:{},
+      comCode:""
     };
   },
   watch: {
@@ -321,6 +329,9 @@ export default {
         getTableField(query).then(response=>{
             this.fieldList = response.parameterMap.data;
         })
+    },
+    handleFieldDetail(row){
+        this.comCode = row.comCode;
     },
     getTable(){
         getTable().then(response=>{
