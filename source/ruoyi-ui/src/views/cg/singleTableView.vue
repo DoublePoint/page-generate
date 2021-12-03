@@ -4,9 +4,9 @@
       <el-select v-model="tableId" placeholder="请选择">
         <el-option
           v-for="item in tableSelectList"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
+          :key="item.id"
+          :label="item.tableCode"
+          :value="item.id">
         </el-option>
       </el-select>
     </el-row>
@@ -147,8 +147,8 @@ export default {
       showAddDrawer:false,
       addForm:{},
       tableSelectList:[
-        {label:"sys_notice",value:"915558641136828416"},
-        {label:"cg_meta_com",value:"915924412115451904"},
+        // {label:"sys_notice",value:"915558641136828416"},
+        // {label:"cg_meta_com",value:"915924412115451904"},
       ]
     };
   },
@@ -199,6 +199,9 @@ export default {
     //       placeholder:"placeholder2",
     //     }
     //   ]},5000);
+    getTableDataAll("cg_config_table").then(response=>{
+       this.tableSelectList = response.parameterMap.data;
+    })
   },
   methods: {
     // 取消按钮

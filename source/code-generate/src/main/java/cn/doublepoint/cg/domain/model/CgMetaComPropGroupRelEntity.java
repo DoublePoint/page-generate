@@ -1,12 +1,14 @@
 package cn.doublepoint.cg.domain.model;
 
+import cn.doublepoint.dto.domain.model.entity.BaseEntity;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
 @Table(name = "cg_meta_com_prop_group_rel", schema = "base", catalog = "")
-public class CgMetaComPropGroupRelEntity {
+public class CgMetaComPropGroupRelEntity extends BaseEntity {
     private String id;
     private String propCode;
     private String groupCode;

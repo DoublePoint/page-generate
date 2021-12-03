@@ -30,7 +30,7 @@ public class JPAUtil extends DataBaseUtil {
 	 * 获取实体信息
 	 * 
 	 * @param clazz
-	 * @param queryParamList
+	 * @param id
 	 * @return
 	 */
 	public static <T extends BaseModel> T loadById(Class<T> clazz, Object id) {
@@ -55,7 +55,7 @@ public class JPAUtil extends DataBaseUtil {
 	 * 获取实体信息
 	 * 
 	 * @param clazz
-	 * @param queryParamList
+	 * @param pageInfo
 	 * @return
 	 */
 	public static <T extends BaseModel> List<T> load(Class<T> clazz, PageInfo pageInfo) {
@@ -67,7 +67,7 @@ public class JPAUtil extends DataBaseUtil {
 	 * 获取实体信息
 	 * 
 	 * @param clazz
-	 * @param queryParamList
+	 * @param sortParamList
 	 * @return
 	 */
 	public static <T extends BaseModel> List<T> load(Class<T> clazz, SortParamList sortParamList) {
@@ -104,7 +104,7 @@ public class JPAUtil extends DataBaseUtil {
 	 * 获取实体信息
 	 * 
 	 * @param clazz
-	 * @param queryParamList
+	 * @param pageInfo
 	 * @return
 	 */
 	public static <T extends BaseModel> List<T> load(Class<T> clazz, PageInfo pageInfo, SortParamList sortParamList) {
@@ -136,15 +136,16 @@ public class JPAUtil extends DataBaseUtil {
 	 * @param list
 	 */
 	public static <T extends BaseModel> void remove(List<T> list) {
-		if (list == null || list.size() == 0)
+		if (list == null || list.size() == 0) {
 			return;
+		}
 		list.stream().forEach(JPAUtil::remove);
 	}
 
 	/**
 	 * 保存
 	 * 
-	 * @param list
+	 * @param t
 	 */
 	public static <T extends BaseModel> void saveOrUpdate(T t) {
 		BaseDaoService daoService = getDaoService();
@@ -175,8 +176,7 @@ public class JPAUtil extends DataBaseUtil {
 	/**
 	 * 根据id删除
 	 * 
-	 * @param clazz
-	 * @param id
+	 * @param model
 	 */
 	public static <T extends BaseModel> void remove(T model) {
 		BaseDaoService daoService = getDaoService();
@@ -191,8 +191,7 @@ public class JPAUtil extends DataBaseUtil {
 	/**
 	 * 查询总数
 	 * 
-	 * @param jpql
-	 * @param queryParamList
+	 * @param clazz
 	 * @return
 	 */
 	public static <T extends BaseModel> long count(Class<T> clazz) {
@@ -203,7 +202,7 @@ public class JPAUtil extends DataBaseUtil {
 	/**
 	 * 查询总数
 	 * 
-	 * @param jpql
+	 * @param clazz
 	 * @param queryParamList
 	 * @return
 	 */
@@ -216,7 +215,6 @@ public class JPAUtil extends DataBaseUtil {
 	 * 查询总数
 	 * 
 	 * @param jpql
-	 * @param queryParamList
 	 * @return
 	 */
 	public static <T extends BaseModel> long count(String jpql) {
@@ -260,7 +258,6 @@ public class JPAUtil extends DataBaseUtil {
 	 * 执行更新或删除语句
 	 * 
 	 * @param jpql
-	 * @param queryParamList
 	 * @return
 	 */
 	public static int executeUpdate(String jpql) {
@@ -284,7 +281,6 @@ public class JPAUtil extends DataBaseUtil {
 	 * JPQL方式执行更新或删除语句
 	 * 
 	 * @param jpql
-	 * @param queryParamList
 	 * @return
 	 */
 	public static List<Object> executeQuery(String jpql) {
@@ -306,7 +302,7 @@ public class JPAUtil extends DataBaseUtil {
 	 * JPQL方式执行查询
 	 * 
 	 * @param jpql
-	 * @param queryParamList
+	 * @param pageInfo
 	 * @return
 	 */
 	public static List<Object> executeQuery(String jpql, PageInfo pageInfo) {
@@ -329,7 +325,7 @@ public class JPAUtil extends DataBaseUtil {
 	 * JPQL方式执行更新或删除语句
 	 * 
 	 * @param jpql
-	 * @param queryParamList
+	 * @param clazz
 	 * @return
 	 */
 	public static <T> List<T> executeQueryModel(String jpql, Class<T> clazz) {
@@ -351,7 +347,7 @@ public class JPAUtil extends DataBaseUtil {
 	 * JPQL方式执行查询
 	 * 
 	 * @param jpql
-	 * @param queryParamList
+	 * @param pageInfo
 	 * @return
 	 */
 	public static <T> List<T> executeQueryModel(String jpql, PageInfo pageInfo, Class<T> clazz) {
@@ -369,16 +365,16 @@ public class JPAUtil extends DataBaseUtil {
 			Class<T> clazz) {
 		BaseDaoService daoService = getDaoService();
 		List<Object> objects = daoService.executeQuery(jpql, queryParamList, pageInfo);
-		if(objects.size()==0)
+		if(objects.size()==0) {
 			return new ArrayList<T>();
+		}
 		return CommonBeanUtil.copyTo(objects, clazz);
 	}
 
 	/**
 	 * 执行更新或删除语句
 	 * 
-	 * @param SQL
-	 * @param queryParamList
+	 * @param sql
 	 * @return
 	 */
 	public static int executeNativeUpdate(String sql) {
@@ -389,7 +385,7 @@ public class JPAUtil extends DataBaseUtil {
 	/**
 	 * 执行更新或删除语句
 	 * 
-	 * @param SQL
+	 * @param sql
 	 * @param queryParamList
 	 * @return
 	 */
@@ -401,8 +397,7 @@ public class JPAUtil extends DataBaseUtil {
 	/**
 	 * SQL方式执行更新或删除语句
 	 * 
-	 * @param SQL
-	 * @param queryParamList
+	 * @param sql
 	 * @return
 	 */
 	public static List<Object> executeNativeQuery(String sql) {
@@ -413,7 +408,7 @@ public class JPAUtil extends DataBaseUtil {
 	/**
 	 * SQL方式执行查询
 	 * 
-	 * @param jpql
+	 * @param sql
 	 * @param queryParamList
 	 * @return
 	 */
@@ -425,7 +420,7 @@ public class JPAUtil extends DataBaseUtil {
 	/**
 	 * SQL方式执行查询
 	 * 
-	 * @param jpql
+	 * @param sql
 	 * @param queryParamList
 	 * @return
 	 */
@@ -453,8 +448,8 @@ public class JPAUtil extends DataBaseUtil {
 				return met.invoke(model);
 			}
 			catch (Exception e2){
+				e2.printStackTrace();
 				Log4jUtil.error(e2);
-				throw e2;
 			}
 		}
 

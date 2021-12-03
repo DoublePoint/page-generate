@@ -1,12 +1,14 @@
 package cn.doublepoint.cg.domain.model;
 
+import cn.doublepoint.dto.domain.model.entity.BaseEntity;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
 @Table(name = "cg_object_prop", schema = "base", catalog = "")
-public class CgObjectPropEntity {
+public class CgObjectPropEntity extends BaseEntity {
     private String id;
     private String propCode;
     private String propValue;

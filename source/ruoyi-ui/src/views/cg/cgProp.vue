@@ -1,15 +1,15 @@
 <template>
   <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick" >
         <el-tab-pane label="字段属性" name="first">
-            <!-- <el-form :model="tableFieldForm" ref="tableFieldForm" :inline="false" label-width="150px">
+            <!-- <el-form :model="formData" ref="formData" :inline="false" label-width="150px">
                 <el-form-item label="字段编码" prop="propName">
-                    <el-input v-model="tableFieldForm.propName" />
+                    <el-input v-model="formData.propName" />
                 </el-form-item>
                 <el-form-item label="排序" prop="sort">
-                    <el-input v-model="tableFieldForm.sort" />
+                    <el-input v-model="formData.sort" />
                 </el-form-item>
                 <el-form-item label="下拉名称" prop="dropName">
-                    <el-select v-model="tableFieldForm.dropName" placeholder="请选择">
+                    <el-select v-model="formData.dropName" placeholder="请选择">
                         <el-option
                         v-for="item in options"
                         :key="item.value"
@@ -19,9 +19,9 @@
                     </el-select>
                 </el-form-item>
             </el-form> -->
-            <el-form :model="tableFieldForm" ref="tableFieldForm" :inline="false" label-width="150px">
-                <el-form-item v-for="selProp in formMetaData.comPropList" :key="selProp.id" :label="selProp.propName" :prop="selProp.propName">
-                    <el-input v-model="tableFieldForm[selProp.propName]" />
+            <el-form :model="formData" ref="form" :inline="false" label-width="150px">
+                <el-form-item v-for="selProp in formMetaData.comPropList" :key="selProp.id" :label="selProp.propName" :prop="selProp.propCode">
+                    <el-input v-model="formData[selProp.propCode]" />
                 </el-form-item>
             </el-form>
         </el-tab-pane>
@@ -43,46 +43,25 @@ import {getInput} from "@/api/cg/inputform"
 
 export default {
   name: "cgprop",
+  props: ['value'],
   data() {
     return {
         activeName:"first",
-        options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        tableFieldForm:{
-            tableCode:"",
-            propCode:"",
-            propName:"",
-            dropName:"",
-            sort:0,
-        },
+        formData:this.value,
         formMetaData:{
-
+            
         }
     };
   },
   watch: {
-   
+    formData(newVal){
+      this.$emit("input",newVal);
+    }
   },
   created() {
       getInput(4).then(res=>{
         console.log(res);
         this.formMetaData = res.parameterMap.metaCom;
-          // const data = res.data;
-          // console.log(data);
       })
   },
   methods: {

@@ -92,7 +92,7 @@
                 </el-row>
             </el-col>
             <el-col :span="8">
-                <cg-prop />
+                <cg-prop v-model="fieldProp"/>
             </el-col>
         </el-tab-pane>
     </el-tabs>
@@ -143,7 +143,10 @@
                 <el-form-item label="关联表格" prop="configTableId">
                     <el-input v-model="tableFieldForm.configTableId" disabled/>
                 </el-form-item>
-                <el-form-item label="字段编码" prop="propCode">
+                <el-form-item label="字段编码" prop="fieldCode">
+                    <el-input v-model="tableFieldForm.fieldCode" />
+                </el-form-item>
+                <el-form-item label="属性编码" prop="propCode">
                     <el-input v-model="tableFieldForm.propCode" />
                 </el-form-item>
                 <el-form-item label="字段名称" prop="propName">
@@ -175,7 +178,7 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import CgProp from './cgProp.vue';
 
 export default {
-  name: "User",
+  name: "SingleTableModify",
   components: { CgProp },
   data() {
     return {
@@ -207,7 +210,8 @@ export default {
           sort:0,
       },
       currentTableId:null,
-      tabFiledDisabled:true
+      tabFiledDisabled:true,
+      fieldProp:{}
     };
   },
   watch: {
