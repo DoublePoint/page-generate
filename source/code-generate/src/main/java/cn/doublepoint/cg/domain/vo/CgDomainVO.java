@@ -1,6 +1,8 @@
 package cn.doublepoint.cg.domain.vo;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,32 +22,63 @@ public class CgDomainVO{
     private String createUserId;
     private String updateUserId;
 
-    private Map<String,List<CgDomainVO>> relDomain;
-    private Map<String,CgObjectPropVO> relProp;
-    private CgMetaComVO relCom;
+    private Map<String,List<CgDomainVO>> relDomainMap;
+    private Map<String,CgDomainVO> relDomainMapByComType;
+    private List<CgDomainVO> relDomainList;
+    private Map<String,CgObjectPropVO> relObjectProp;
+    private CgMetaComVO relMetaCom;
 
-    public CgMetaComVO getRelCom() {
-        return relCom;
+    public CgMetaComVO getRelMetaCom() {
+        return relMetaCom;
     }
 
-    public void setRelCom(CgMetaComVO relCom) {
-        this.relCom = relCom;
+    public void setRelMetaCom(CgMetaComVO relMetaCom) {
+        this.relMetaCom = relMetaCom;
     }
 
-    public Map<String, List<CgDomainVO>> getRelDomain() {
-        return relDomain;
+    public List<CgDomainVO> getRelDomainList() {
+        return relDomainList;
     }
 
-    public void setRelDomain(Map<String, List<CgDomainVO>> relDomain) {
-        this.relDomain = relDomain;
+    public void setRelDomainList(List<CgDomainVO> relDomainList) {
+        this.relDomainList = relDomainList;
     }
 
-    public Map<String, CgObjectPropVO> getRelProp() {
-        return relProp;
+    public Map<String, List<CgDomainVO>> getRelDomainMap() {
+        return relDomainMap;
     }
 
-    public void setRelProp(Map<String, CgObjectPropVO> relProp) {
-        this.relProp = relProp;
+    public void setRelDomainMap(Map<String, List<CgDomainVO>> relDomainMap) {
+        this.relDomainMap = relDomainMap;
+        if(this.relDomainMap == null){
+            return;
+        }
+        ArrayList<List<CgDomainVO>> lists = new ArrayList<>(relDomainMap.values());
+        this.relDomainList = new ArrayList<>();
+        lists.stream().forEach(item->{
+            this.relDomainList.addAll(item);
+        });
+
+        this.relDomainMapByComType = new HashMap<>();
+        this.relDomainList.stream().forEach(item->{
+            this.relDomainMapByComType.put(item.getRelMetaCom().getComCode(),item);
+        });
+    }
+
+    public Map<String, CgDomainVO> getRelDomainMapByComType() {
+        return relDomainMapByComType;
+    }
+
+    public void setRelDomainMapByComType(Map<String, CgDomainVO> relDomainMapByComType) {
+        this.relDomainMapByComType = relDomainMapByComType;
+    }
+
+    public Map<String, CgObjectPropVO> getRelObjectProp() {
+        return relObjectProp;
+    }
+
+    public void setRelObjectProp(Map<String, CgObjectPropVO> relObjectProp) {
+        this.relObjectProp = relObjectProp;
     }
 
     public String getId() {

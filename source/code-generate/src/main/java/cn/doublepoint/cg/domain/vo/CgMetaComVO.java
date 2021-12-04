@@ -1,8 +1,5 @@
 package cn.doublepoint.cg.domain.vo;
 
-import cn.doublepoint.dto.domain.model.entity.BaseEntity;
-
-import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +18,7 @@ public class CgMetaComVO {
     private String updateUserId;
 
     private Map<String,CgMetaComVO> relCom;
-    private Map<String,List<CgMetaComPropVO>> relProp;
+    private Map<String,List<CgMetaComPropVO>> relPropMap;
     private List<CgMetaComPropVO> relPropList;
     private List<CgMetaComPropGroupVO> relPropGroup;
 
@@ -33,12 +30,12 @@ public class CgMetaComVO {
         this.relPropList = relPropList;
     }
 
-    public Map<String, List<CgMetaComPropVO>> getRelProp() {
-        return relProp;
+    public Map<String, List<CgMetaComPropVO>> getRelPropMap() {
+        return relPropMap;
     }
 
-    public void setRelProp(Map<String, List<CgMetaComPropVO>> relProp) {
-        this.relProp = relProp;
+    public void setRelPropMap(Map<String, List<CgMetaComPropVO>> relPropMap) {
+        this.relPropMap = relPropMap;
     }
 
     public List<CgMetaComPropGroupVO> getRelPropGroup() {
@@ -148,14 +145,14 @@ public class CgMetaComVO {
                 Objects.equals(createUserId, that.createUserId) &&
                 Objects.equals(updateUserId, that.updateUserId) &&
                 Objects.equals(relCom, that.relCom) &&
-                Objects.equals(relProp, that.relProp) &&
+                Objects.equals(relPropMap, that.relPropMap) &&
                 Objects.equals(relPropList, that.relPropList) &&
                 Objects.equals(relPropGroup, that.relPropGroup);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, comCode, comName, domType, enable, remark, createTime, updateTime, createUserId, updateUserId, relCom, relProp, relPropList, relPropGroup);
+        return Objects.hash(id, comCode, comName, domType, enable, remark, createTime, updateTime, createUserId, updateUserId, relCom, relPropMap, relPropList, relPropGroup);
     }
 
     public String getDomType() {

@@ -2,8 +2,10 @@ package cn.doublepoint.cg.service.impl;
 
 import cn.doublepoint.cg.domain.model.CgConfigTableFieldEntity;
 import cn.doublepoint.cg.domain.vo.CgConfigTableFieldVO;
+import cn.doublepoint.cg.domain.vo.CgDomainVO;
 import cn.doublepoint.cg.domain.vo.CgObjectPropVO;
 import cn.doublepoint.cg.service.CgConfigTableFieldService;
+import cn.doublepoint.cg.service.CgDomainService;
 import cn.doublepoint.cg.service.CgObjectPropService;
 import cn.doublepoint.commonutil.CommonUtil;
 import cn.doublepoint.commonutil.domain.model.CommonBeanUtil;
@@ -28,10 +30,11 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
     @Autowired
     CgObjectPropService propService;
 
-
+    @Autowired
+    CgDomainService domainService;
 
     @Override
-    public List<CgConfigTableFieldVO> getTableField(String tableId){
+    public List<CgConfigTableFieldVO> getTableFieldTreeByTableId(String tableId){
         QueryParamList paramList = new QueryParamList();
         paramList.addParam("configTableId",tableId);
         List<CgConfigTableFieldEntity> fieldEntityList = JPAUtil.load(CgConfigTableFieldEntity.class, paramList);
@@ -48,6 +51,9 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
             CommonBeanUtil.copyProperties(entity,vo);
             Map<String, CgObjectPropVO> props = propService.getTableConfigProps(entity.getId());
             vo.setRelProp(props);
+
+            CgDomainVO domainTree = domainService.getDomainTreeByCode(entity.getDomainCode());
+            vo.setRelDomain(domainTree);
             resultList.add(vo);
         }
         return resultList;

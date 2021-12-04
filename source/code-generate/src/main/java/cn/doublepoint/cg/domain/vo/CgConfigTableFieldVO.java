@@ -15,12 +15,32 @@ public class CgConfigTableFieldVO {
     private String propName;
     private String dropName;
     private String comCode;
+    private String domainCode;
     private String fieldCode;
     private Integer sort;
     private Timestamp createTime;
     private Timestamp updateTime;
     private String createUserId;
     private String updateUserId;
+
+    private Map<String,CgObjectPropVO> relProp;
+    private CgDomainVO relDomain;
+
+    public CgDomainVO getRelDomain() {
+        return relDomain;
+    }
+
+    public void setRelDomain(CgDomainVO relDomain) {
+        this.relDomain = relDomain;
+    }
+
+    public String getDomainCode() {
+        return domainCode;
+    }
+
+    public void setDomainCode(String domainCode) {
+        this.domainCode = domainCode;
+    }
 
     public String getComCode() {
         return comCode;
@@ -38,7 +58,6 @@ public class CgConfigTableFieldVO {
         this.fieldCode = fieldCode;
     }
 
-    private Map<String,CgObjectPropVO> relProp;
 
     public String getId() {
         return id;

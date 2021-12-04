@@ -8,7 +8,7 @@ import cn.doublepoint.cg.domain.vo.CgDomainVO;
  * @author DoublePoint
  */
 public interface CgDomainService {
-    CgDomainVO getDomain(String code);
+    CgDomainVO getDomainTreeByCode(String code);
 
-    CgDomainVO getDomainById(String id);
+    CgDomainVO getDomainTreeById(String id);
 }

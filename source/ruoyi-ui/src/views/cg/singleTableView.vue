@@ -29,8 +29,32 @@
       <el-col>
         <el-table :data="tableDataList" >
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column v-for="item in fieldMetaData" :label="item.propName" :key="item.id"  align="center" :prop="item.propCode" width="160">
-          </el-table-column>
+          <template v-for="item in fieldMetaData" >
+              <template v-if="item.relDomain!=null&&item.relDomain.relMetaCom!=null" >
+                <template  v-if="item.relDomain.relMetaCom.domType=='03'" style="display:none;" >
+                  {{getSelectData(item.relDomain.relDomainMapByComType['SELECT'].relObjectProp.dropname.propValue)}} 
+                </template>
+                <el-table-column :label="item.propName" :key="item.id"  align="center" :prop="item.propCode" width="160">
+                  <template slot-scope="scope" >
+                      <el-select  v-if="item.relDomain.relMetaCom.domType=='03'"  placeholder="请选择" >
+                          <el-option
+                          v-for="item in dropdownMap[item.relDomain.relDomainMapByComType['SELECT'].relObjectProp.dropname.propValue]"
+                          :key="item.dictValue"
+                          :label="item.dictLabel"
+                          :value="item.dictValue">
+                          </el-option>
+                      </el-select>
+                    <span v-else>  
+                      {{scope.row[item.propCode]}}
+                    </span>
+                  </template>
+                </el-table-column>
+              </template>
+              <template v-else >
+                <el-table-column :label="item.propName" :key="item.id"  align="center" :prop="item.propCode" width="160">
+                </el-table-column>
+              </template>
+          </template>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template slot-scope="scope">
                 <el-button
@@ -149,7 +173,10 @@ export default {
       tableSelectList:[
         // {label:"sys_notice",value:"915558641136828416"},
         // {label:"cg_meta_com",value:"915924412115451904"},
-      ]
+      ],
+      dropdownMap:{
+
+      }
     };
   },
   watch: {
@@ -262,7 +289,13 @@ export default {
       deleteData(data).then(response=>{
         this.getTableDataAll();
       })
-    }
+    },
+    getSelectData(dictname){
+      this.getDicts(dictname).then(response => {
+      this.$set(this.dropdownMap, dictname, response.data)
+      console.log(this.dropdownMap)
+    });
+   }
   }
 };
 </script>

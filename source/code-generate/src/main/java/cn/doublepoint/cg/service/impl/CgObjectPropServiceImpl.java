@@ -1,5 +1,7 @@
 package cn.doublepoint.cg.service.impl;
 
+import cn.doublepoint.cg.dao.CgObjectPropDao;
+import cn.doublepoint.cg.dao.ICgObjectPropDao;
 import cn.doublepoint.cg.domain.model.CgMetaComPropEntity;
 import cn.doublepoint.cg.domain.model.CgObjectPropEntity;
 import cn.doublepoint.cg.domain.vo.CgMetaComPropVO;
@@ -9,6 +11,7 @@ import cn.doublepoint.cg.util.CgConstant;
 import cn.doublepoint.commonutil.domain.model.CommonBeanUtil;
 import cn.doublepoint.dto.domain.model.vo.query.QueryParamList;
 import cn.doublepoint.jpa.JPAUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -20,6 +23,13 @@ import java.util.*;
  */
 @Service
 public class CgObjectPropServiceImpl implements CgObjectPropService {
+    @Autowired
+    ICgObjectPropDao objectPropDao;
+
+    @Override
+    public void save(List<CgObjectPropEntity> list) {
+        objectPropDao.save(list);
+    }
 
     @Override
     public Map<String,CgObjectPropVO> getProps(String code){

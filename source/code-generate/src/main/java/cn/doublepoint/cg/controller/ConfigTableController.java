@@ -70,7 +70,7 @@ public class ConfigTableController {
     @GetMapping("/field")
     public AjaxResponse getAllTableFieldConfig(@RequestParam String tableId){
         AjaxResponse response = new AjaxResponse();
-        response.setAjaxParameter("data",fieldService.getTableField(tableId));
+        response.setAjaxParameter("data",fieldService.getTableFieldTreeByTableId(tableId));
         return response;
     }
 

@@ -33,7 +33,7 @@ public class CgMetaComServiceImpl implements CgMetaComService {
         CommonBeanUtil.copyProperties(t,vo);
 
         Map<String, List<CgMetaComPropVO>> props = relService.getPropsMap(comCode);
-        vo.setRelProp(props);
+        vo.setRelPropMap(props);
         vo.setRelPropGroup(groupService.getPropGroup(props));
         return vo;
     }

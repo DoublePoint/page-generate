@@ -35,7 +35,7 @@ public class CgDomainServiceImpl implements CgDomainService {
     CgMetaComService comService;
 
     @Override
-    public CgDomainVO getDomainById(String id){
+    public CgDomainVO getDomainTreeById(String id){
         CgDomainEntity t = JPAUtil.loadById(CgDomainEntity.class, id);
         CgDomainVO vo = new CgDomainVO();
         if(t==null){
@@ -45,11 +45,11 @@ public class CgDomainServiceImpl implements CgDomainService {
         CommonBeanUtil.copyProperties(t,vo);
 
         Map<String, CgObjectPropVO> props = propService.getProps(t.getDomainCode());
-        vo.setRelProp(props);
+        vo.setRelObjectProp(props);
 
         if(!StringUtils.isEmpty(t.getComCode())){
             CgMetaComVO metaCom = comService.getMetaComByCode(t.getComCode());
-            vo.setRelCom(metaCom);
+            vo.setRelMetaCom(metaCom);
         }
         else{
             Log4jUtil.error(new Exception("Cannot find the rel comCode,the domainId is "+id));
@@ -60,7 +60,10 @@ public class CgDomainServiceImpl implements CgDomainService {
 
 
     @Override
-    public CgDomainVO getDomain(String code){
+    public CgDomainVO getDomainTreeByCode(String code){
+        if(StringUtils.isEmpty(code)){
+            return null;
+        }
         QueryParamList qy = new QueryParamList();
         qy.addParam("domainCode",code);
         List<CgDomainEntity> list = JPAUtil.load(CgDomainEntity.class, qy);
@@ -68,8 +71,11 @@ public class CgDomainServiceImpl implements CgDomainService {
         if(!CollectionUtils.isEmpty(list)){
             t = list.get(0);
         }
+        if(t==null){
+            return null;
+        }
         String id = t.getId();
-        return getDomainById(id);
+        return getDomainTreeById(id);
     }
 
     public void getSubDomain(CgDomainVO domain){
@@ -81,12 +87,12 @@ public class CgDomainServiceImpl implements CgDomainService {
             return;
         }
 
-        Map<String, List<CgDomainVO>> relDomain = domain.getRelDomain();
+        Map<String, List<CgDomainVO>> relDomain = domain.getRelDomainMap();
         relDomain = relDomain==null?new HashMap<>():relDomain;
 
         for(int i=0;i<subDomainList.size();i++){
             CgDomainEntity item = subDomainList.get(i);
-            CgDomainVO dom = getDomain(item.getDomainCode());
+            CgDomainVO dom = getDomainTreeByCode(item.getDomainCode());
 
             List<CgDomainVO> cgDomainVOS = relDomain.get(item.getDomainType());
             if(CollectionUtils.isEmpty(cgDomainVOS)){
@@ -95,6 +101,6 @@ public class CgDomainServiceImpl implements CgDomainService {
             }
             cgDomainVOS.add(dom);
         }
-        domain.setRelDomain(relDomain);
+        domain.setRelDomainMap(relDomain);
     }
 }

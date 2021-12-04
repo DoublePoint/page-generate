@@ -76,7 +76,7 @@ public class GenerateController  extends BaseController{
 	public AjaxResponse queryform(){
 		AjaxResponse response = new AjaxResponse();
 		try {
-			CgDomainVO base = domainService.getDomain("BASE");
+			CgDomainVO base = domainService.getDomainTreeByCode("BASE");
 			response.setAjaxParameter("data",base);
 		}
 		catch (Exception e){
