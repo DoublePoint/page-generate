@@ -12,7 +12,7 @@ public class CgMetaComEntity extends BaseEntity {
     private String id;
     private String comCode;
     private String comName;
-    private String comType;
+    private String domType;
     private String enable;
     private String remark;
     private Timestamp createTime;
@@ -50,14 +50,12 @@ public class CgMetaComEntity extends BaseEntity {
         this.comName = comName;
     }
 
-    @Basic
-    @Column(name = "COM_TYPE")
-    public String getComType() {
-        return comType;
+    public String getDomType() {
+        return domType;
     }
 
-    public void setComType(String comType) {
-        this.comType = comType;
+    public void setDomType(String domType) {
+        this.domType = domType;
     }
 
     @Basic
@@ -125,11 +123,20 @@ public class CgMetaComEntity extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CgMetaComEntity that = (CgMetaComEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(comCode, that.comCode) && Objects.equals(comName, that.comName) && Objects.equals(comType, that.comType) && Objects.equals(enable, that.enable) && Objects.equals(remark, that.remark) && Objects.equals(createTime, that.createTime) && Objects.equals(updateTime, that.updateTime) && Objects.equals(createUserId, that.createUserId) && Objects.equals(updateUserId, that.updateUserId);
+        return Objects.equals(id, that.id) &&
+                Objects.equals(comCode, that.comCode) &&
+                Objects.equals(comName, that.comName) &&
+                Objects.equals(domType, that.domType) &&
+                Objects.equals(enable, that.enable) &&
+                Objects.equals(remark, that.remark) &&
+                Objects.equals(createTime, that.createTime) &&
+                Objects.equals(updateTime, that.updateTime) &&
+                Objects.equals(createUserId, that.createUserId) &&
+                Objects.equals(updateUserId, that.updateUserId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, comCode, comName, comType, enable, remark, createTime, updateTime, createUserId, updateUserId);
+        return Objects.hash(id, comCode, comName, domType, enable, remark, createTime, updateTime, createUserId, updateUserId);
     }
 }

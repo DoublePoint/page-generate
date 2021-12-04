@@ -35,8 +35,19 @@
                       </el-select>
                   </el-form-item> -->
                   
-                  <el-form-item v-for="selProp in formMetaData['base']" :key="selProp.id" :label="selProp.propName" :prop="selProp.propCode">
+                  <!-- <el-form-item v-for="selProp in formMetaData['base']" :key="selProp.id" :label="selProp.propName" :prop="selProp.propCode">
                       <el-input v-model="formData[selProp.propCode]" />
+                  </el-form-item> -->
+                  <el-form-item v-for="selProp in baseProp.relDomain['base']" :key="selProp.id" :label="selProp.domainName" :prop="selProp.domainCode">
+                    <el-select  v-if="selProp.relCom.domType=='03'"  v-model="formData[selProp.domainName]" placeholder="请选择">
+                        <el-option
+                        v-for="item in options"
+                        :key="item.dictValue"
+                        :label="item.dictLabel"
+                        :value="item.dictValue">
+                        </el-option>
+                    </el-select>
+                    <el-input v-else v-model="formData[selProp.domainName]" />
                   </el-form-item>
               </el-form>
             </el-row>
@@ -50,6 +61,7 @@
 <script>
 
 import {getInput,getComMetaByComCode} from "@/api/cg/com"
+import {getBaseProp} from "@/api/cg/baseprop.js"
 
 export default {
   name: "cgprop",
@@ -62,7 +74,13 @@ export default {
             
         },
         domType:"",
-        tabMetaData:[]
+        tabMetaData:[],
+        baseProp:{
+          relDomain:{
+            base:[]
+          }
+        },
+        options:[]
     };
   },
   watch: {
@@ -76,9 +94,14 @@ export default {
     }
   },
   created() {
-      if(this.comCode==null){
-        return;
-      }
+    this.getBaseDomain();
+    this.getDicts("sys_yes_no").then(response => {
+      this.options = response.data;
+    });
+    if(this.comCode==null){
+      return;
+    }
+
       
   },
   methods: {
@@ -94,11 +117,17 @@ export default {
        return;
      }
      getComMetaByComCode(this.comCode).then(res=>{
-        console.log(res);
+        // console.log(res);
         const data = res.parameterMap.metaCom;
         this.formMetaData = data.relProp;
         this.tabMetaData = data.relPropGroup;
       })
+   },
+   getBaseDomain(){
+     getBaseProp().then(response=>{
+       this.baseProp = response.parameterMap.data;
+       console.log(this.baseProp);
+     })
    }
   }
 };

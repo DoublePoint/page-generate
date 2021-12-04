@@ -1,5 +1,6 @@
 package cn.doublepoint.cg.service.impl;
 
+import cn.doublepoint.cg.dao.ICgMetaComDao;
 import cn.doublepoint.cg.domain.model.CgMetaComEntity;
 import cn.doublepoint.cg.domain.vo.CgMetaComPropVO;
 import cn.doublepoint.cg.domain.vo.CgMetaComVO;
@@ -7,11 +8,9 @@ import cn.doublepoint.cg.service.CgMetaComPropGroupService;
 import cn.doublepoint.cg.service.CgMetaComPropService;
 import cn.doublepoint.cg.service.CgMetaComService;
 import cn.doublepoint.commonutil.domain.model.CommonBeanUtil;
-import cn.doublepoint.dto.domain.model.vo.query.QueryParamList;
 import cn.doublepoint.jpa.JPAUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,8 @@ public class CgMetaComServiceImpl implements CgMetaComService {
     CgMetaComPropService relService;
     @Autowired
     CgMetaComPropGroupService groupService;
+    @Autowired
+    ICgMetaComDao comDao;
 
     @Override
     public CgMetaComVO getMetaComById(String id){
@@ -31,7 +32,7 @@ public class CgMetaComServiceImpl implements CgMetaComService {
         CgMetaComVO vo = new CgMetaComVO();
         CommonBeanUtil.copyProperties(t,vo);
 
-        Map<String, List<CgMetaComPropVO>> props = relService.getProps(comCode);
+        Map<String, List<CgMetaComPropVO>> props = relService.getPropsMap(comCode);
         vo.setRelProp(props);
         vo.setRelPropGroup(groupService.getPropGroup(props));
         return vo;
@@ -39,12 +40,8 @@ public class CgMetaComServiceImpl implements CgMetaComService {
 
     @Override
     public CgMetaComVO getMetaComByCode(String code) {
-        QueryParamList qy = new QueryParamList();
-        qy.addParam("comCode",code);
-        List<CgMetaComEntity> list = JPAUtil.load(CgMetaComEntity.class, qy);
-        CgMetaComEntity t = null;
-        if(!CollectionUtils.isEmpty(list)){
-            t = list.get(0);
+        CgMetaComEntity t = comDao.getByCode(code);
+        if(t!=null){
             String id = t.getId();
             return getMetaComById(id);
         }
@@ -53,5 +50,23 @@ public class CgMetaComServiceImpl implements CgMetaComService {
         }
     }
 
+    @Override
+    public CgMetaComVO getMetaComPropCom(String code){
+        CgMetaComEntity t = comDao.getByCode(code);
+        if(t!=null){
+            String id = t.getId();
+            String comCode = t.getComCode();
+
+            CgMetaComVO vo = new CgMetaComVO();
+            CommonBeanUtil.copyProperties(t,vo);
+
+            List<CgMetaComPropVO> props = relService.getProps(comCode);
+            vo.setRelPropList(props);
+            return vo;
+        }
+        else{
+            return null;
+        }
+    }
 
 }

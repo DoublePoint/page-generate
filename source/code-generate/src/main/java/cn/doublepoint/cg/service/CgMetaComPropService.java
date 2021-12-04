@@ -7,5 +7,7 @@ import java.util.Map;
 
 public interface CgMetaComPropService {
 
-    Map<String,List<CgMetaComPropVO>> getProps(String comCode);
+    Map<String,List<CgMetaComPropVO>> getPropsMap(String comCode);
+
+    List<CgMetaComPropVO> getProps(String comCode);
 }

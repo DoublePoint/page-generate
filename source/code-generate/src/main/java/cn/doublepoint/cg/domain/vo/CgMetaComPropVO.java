@@ -22,6 +22,15 @@ public class CgMetaComPropVO {
     private String createUserId;
     private String updateUserId;
     private CgMetaComPropGroupVO relGroup;
+    private CgMetaComVO relCom;
+
+    public CgMetaComVO getRelCom() {
+        return relCom;
+    }
+
+    public void setRelCom(CgMetaComVO relCom) {
+        this.relCom = relCom;
+    }
 
     public CgMetaComPropGroupVO getRelGroup() {
         return relGroup;

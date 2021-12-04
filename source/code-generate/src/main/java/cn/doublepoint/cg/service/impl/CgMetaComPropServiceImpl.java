@@ -4,6 +4,7 @@ import cn.doublepoint.cg.domain.vo.CgMetaComPropGroupVO;
 import cn.doublepoint.cg.domain.vo.CgMetaComPropVO;
 import cn.doublepoint.cg.service.CgMetaComPropGroupService;
 import cn.doublepoint.cg.service.CgMetaComPropService;
+import cn.doublepoint.cg.service.CgMetaComService;
 import cn.doublepoint.cg.util.CgConstant;
 import cn.doublepoint.dto.domain.model.vo.query.QueryParamList;
 import cn.doublepoint.jpa.JPAUtil;
@@ -18,9 +19,11 @@ public class CgMetaComPropServiceImpl implements CgMetaComPropService {
 
     @Autowired
     CgMetaComPropGroupService groupService;
+    @Autowired
+    CgMetaComService comService;
 
     @Override
-    public Map<String,List<CgMetaComPropVO>> getProps(String comCode){
+    public Map<String,List<CgMetaComPropVO>> getPropsMap(String comCode){
         StringBuffer sb = new StringBuffer("");
 
         sb.append("SELECT p FROM CgMetaComEntity c,CgMetaComPropRelEntity r,CgMetaComPropEntity p WHERE c.comCode = r.comCode and r.propCode = p.propCode  ");
@@ -55,5 +58,9 @@ public class CgMetaComPropServiceImpl implements CgMetaComPropService {
         return returnMap;
     }
 
+    @Override
+    public List<CgMetaComPropVO> getProps(String comCode) {
+        return null;
+    }
 
 }

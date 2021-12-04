@@ -6,4 +6,6 @@ import cn.doublepoint.cg.domain.vo.CgMetaComVO;
 public interface CgMetaComService {
     CgMetaComVO getMetaComById(String id);
     CgMetaComVO getMetaComByCode(String code);
+
+    CgMetaComVO getMetaComPropCom(String code);
 }

@@ -12,7 +12,7 @@ public class CgMetaComVO {
     private String id;
     private String comCode;
     private String comName;
-    private String comType;
+    private String domType;
     private String enable;
     private String remark;
     private Timestamp createTime;
@@ -22,8 +22,16 @@ public class CgMetaComVO {
 
     private Map<String,CgMetaComVO> relCom;
     private Map<String,List<CgMetaComPropVO>> relProp;
+    private List<CgMetaComPropVO> relPropList;
     private List<CgMetaComPropGroupVO> relPropGroup;
 
+    public List<CgMetaComPropVO> getRelPropList() {
+        return relPropList;
+    }
+
+    public void setRelPropList(List<CgMetaComPropVO> relPropList) {
+        this.relPropList = relPropList;
+    }
 
     public Map<String, List<CgMetaComPropVO>> getRelProp() {
         return relProp;
@@ -63,9 +71,6 @@ public class CgMetaComVO {
         return comName;
     }
 
-    public String getComType() {
-        return comType;
-    }
 
     public String getEnable() {
         return enable;
@@ -99,10 +104,6 @@ public class CgMetaComVO {
         this.comName = comName;
     }
 
-    public void setComType(String comType) {
-        this.comType = comType;
-    }
-
     public void setEnable(String enable) {
         this.enable = enable;
     }
@@ -129,5 +130,39 @@ public class CgMetaComVO {
 
     public void setUpdateUserId(String updateUserId) {
         this.updateUserId = updateUserId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CgMetaComVO that = (CgMetaComVO) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(comCode, that.comCode) &&
+                Objects.equals(comName, that.comName) &&
+                Objects.equals(domType, that.domType) &&
+                Objects.equals(enable, that.enable) &&
+                Objects.equals(remark, that.remark) &&
+                Objects.equals(createTime, that.createTime) &&
+                Objects.equals(updateTime, that.updateTime) &&
+                Objects.equals(createUserId, that.createUserId) &&
+                Objects.equals(updateUserId, that.updateUserId) &&
+                Objects.equals(relCom, that.relCom) &&
+                Objects.equals(relProp, that.relProp) &&
+                Objects.equals(relPropList, that.relPropList) &&
+                Objects.equals(relPropGroup, that.relPropGroup);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, comCode, comName, domType, enable, remark, createTime, updateTime, createUserId, updateUserId, relCom, relProp, relPropList, relPropGroup);
+    }
+
+    public String getDomType() {
+        return domType;
+    }
+
+    public void setDomType(String domType) {
+        this.domType = domType;
     }
 }

@@ -48,7 +48,7 @@ public class CgDomainServiceImpl implements CgDomainService {
         vo.setRelProp(props);
 
         if(!StringUtils.isEmpty(t.getComCode())){
-            CgMetaComVO metaCom = comService.getMetaComById(t.getComCode());
+            CgMetaComVO metaCom = comService.getMetaComByCode(t.getComCode());
             vo.setRelCom(metaCom);
         }
         else{
