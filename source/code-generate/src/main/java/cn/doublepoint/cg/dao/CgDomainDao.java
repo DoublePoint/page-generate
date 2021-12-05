@@ -1,26 +1,27 @@
 package cn.doublepoint.cg.dao;
 
 import cn.doublepoint.cg.domain.model.CgDomainEntity;
-import cn.doublepoint.cg.domain.model.CgObjectPropEntity;
+import cn.doublepoint.cg.domain.model.CgMetaComEntity;
 import cn.doublepoint.commonutil.CommonUtil;
 import cn.doublepoint.commonutil.log.Log4jUtil;
-import cn.doublepoint.commonutil.persitence.jpa.JPAUtil;
-import cn.doublepoint.commonutil.persitence.jpa.SnowflakeIdWorker;
-import org.apache.commons.lang.StringUtils;
+import cn.doublepoint.dto.domain.model.vo.query.QueryParamList;
+import cn.doublepoint.jpa.JPAUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
+/**
+ * Created on 2021/12/3.
+ *
+ * @author DoublePoint
+ */
 @Repository
-public class CgObjectPropDao implements ICgObjectPropDao{
-
-    @Autowired
-    SnowflakeIdWorker idWorker;
+public class CgDomainDao implements ICgDomainDao{
 
     @Override
-    public void create(CgObjectPropEntity ety){
+    public void create(CgDomainEntity ety){
         if(ety.getCreateTime()!=null){
             ety.setCreateTime(CommonUtil.getDateTime());
         }
@@ -31,9 +32,9 @@ public class CgObjectPropDao implements ICgObjectPropDao{
 
 
     @Override
-    public void create(List<CgObjectPropEntity> etyList){
+    public void create(List<CgDomainEntity> etyList){
         if(CollectionUtils.isEmpty(etyList)){
-            Log4jUtil.debug("Object list is empty");
+            Log4jUtil.warn("Doamin list is empty");
             return;
         }
         etyList.stream().forEach(ety->{
@@ -48,18 +49,15 @@ public class CgObjectPropDao implements ICgObjectPropDao{
     }
 
     @Override
-    public void save(List<CgObjectPropEntity> list){
-        if(CollectionUtils.isEmpty(list)){
-            return;
+    public CgDomainEntity getByCode(String code){
+        QueryParamList qy = new QueryParamList();
+        qy.addParam("domainCode",code);
+        List<CgDomainEntity> list = JPAUtil.load(CgDomainEntity.class, qy);
+        CgDomainEntity t = null;
+        if(!CollectionUtils.isEmpty(list)) {
+            t = list.get(0);
         }
-
-        list.stream().forEach(item->{
-
-            if(StringUtils.isEmpty(item.getId())){
-                item.setId(idWorker.nextId());
-            }
-        });
-
-        JPAUtil.saveOrUpdate(list);
+        Log4jUtil.debug("Cannot find the CgMetaCom by code of "+code);
+        return t;
     }
 }

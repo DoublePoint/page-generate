@@ -29,6 +29,11 @@ public class Log4jUtil {
 		getLogger().warn(obj.getMessage(), null);
 	}
 
+	public static void warn(String obj){
+		getLogger().warn(obj, null);
+	}
+
+
 	/**
 	 * 获取最开始的调用者所在类
 	 * 
@@ -44,7 +49,7 @@ public class Log4jUtil {
 	/**
 	 * 根据类名获得logger对象
 	 * 
-	 * @param className
+	 * @param
 	 * @return
 	 */
 	private static Logger getLogger() {

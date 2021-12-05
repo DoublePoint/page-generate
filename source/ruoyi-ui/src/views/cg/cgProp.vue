@@ -26,23 +26,9 @@
                 </el-row> -->
                 <el-row :gutter="10">
                   <el-form :model="formData" ref="form" :inline="false" label-width="150px">
-                      <!-- <el-form-item :label="subDomain.propName" :prop="subDomain.propCode">
-                          <el-select v-model="domType" placeholder="请选择">
-                              <el-option
-                              v-for="item in domTypeList"
-                              :key="item.value"
-                              :label="item.label"
-                              :value="item.value">
-                              </el-option>
-                          </el-select>
-                      </el-form-item> -->
-                      
-                      <!-- <el-form-item v-for="subDomain in formMetaData['base']" :key="subDomain.id" :label="subDomain.propName" :prop="subDomain.propCode">
-                          <el-input v-model="formData[subDomain.propCode]" />
-                      </el-form-item> -->
                       <template v-if="domainProp!=null&&domainProp.relDomainMap!=null">
                         <el-form-item v-for="subDomain in domainProp.relDomainMap['base']" :key="subDomain.id" :label="subDomain.domainName" :prop="subDomain.domainCode">
-                          <el-select  v-if="subDomain.relMetaCom.domType=='03'"  v-model="formData.propMap[subDomain.domainCode]" placeholder="请选择">
+                          <el-select  v-if="subDomain.relMetaCom.domType=='03'"  v-model="formData[subDomain.domainCode]" placeholder="请选择">
                               <el-option
                               v-for="item in dropdownMap[subDomain.relObjectProp.dropname.propValue]"
                               :key="item.dictValue"
@@ -50,10 +36,10 @@
                               :value="item.dictValue">
                               </el-option>
                               <template>
-                                {{subDomain.relObjectProp.dropname.propValue}}{{getSelectData(subDomain.relObjectProp.dropname.propValue)}} 
+                                <!-- {{subDomain.relObjectProp.dropname.propValue}}{{getSelectData(subDomain.relObjectProp.dropname.propValue)}}  -->
                               </template>
                           </el-select>
-                          <el-input v-else v-model="formData.propMap[subDomain.domainCode]" />
+                          <el-input v-else v-model="formData[subDomain.domainCode]" />
                           
                         </el-form-item>
                       </template>
@@ -65,9 +51,6 @@
             </el-tab-pane>
         </el-tabs>
     </el-main>
-    <el-footer>
-       
-    </el-footer>
   </el-container>
 
 </template>

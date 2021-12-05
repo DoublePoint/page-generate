@@ -30,7 +30,7 @@
         <el-table :data="tableDataList" >
           <el-table-column type="selection" width="50" align="center" />
           <template v-for="item in fieldMetaData" >
-              <template v-if="item.relDomain!=null&&item.relDomain.relMetaCom!=null" >
+              <!-- <template v-if="item.relDomain!=null&&item.relDomain.relMetaCom!=null" >
                 <template  v-if="item.relDomain.relMetaCom.domType=='03'" style="display:none;" >
                   {{getSelectData(item.relDomain.relDomainMapByComType['SELECT'].relObjectProp.dropname.propValue)}} 
                 </template>
@@ -51,6 +51,10 @@
                 </el-table-column>
               </template>
               <template v-else >
+                <el-table-column :label="item.propName" :key="item.id"  align="center" :prop="item.propCode" width="160">
+                </el-table-column>
+              </template> -->
+              <template >
                 <el-table-column :label="item.propName" :key="item.id"  align="center" :prop="item.propCode" width="160">
                 </el-table-column>
               </template>
@@ -77,7 +81,36 @@
 
     <el-drawer title="标签属性配置" :visible.sync="showAddDrawer" direction="rtl">
         <el-row>
-            <el-form :model="addForm" ref="addForm" :inline="false" label-width="100px">
+          <!-- <cg-prop v-model="this.addForm"  :domain-prop="this.fieldMetaData.relDomain"/> -->
+          <el-form :model="addForm" ref="form" :inline="false" label-width="150px">
+                <template v-if="fieldMetaData!=null">
+                  <el-form-item v-for="fieldVo in fieldMetaData" :key="fieldVo.id" :label="getFieldLabel(fieldVo)" :prop="fieldVo.propCode">
+                    <el-select  v-if="getFieldType(fieldVo)=='03'"  v-model="addForm[fieldVo.propCode]" placeholder="请选择">
+                        <!-- <el-option
+                        v-for="item in dropdownMap[fieldVo.relObjectProp.dropname.propValue]"
+                        :key="item.dictValue"
+                        :label="item.dictLabel"
+                        :value="item.dictValue">
+                        </el-option> -->
+                        <el-option
+                        :key="1"
+                        :label="1"
+                        :value="1">
+                        </el-option>
+                        <template>
+                          <!-- {{fieldVo.relObjectProp.dropname.propValue}}{{getSelectData(fieldVo.relObjectProp.dropname.propValue)}}  -->
+                        </template>
+                    </el-select>
+                    <el-input v-else v-model="addForm[fieldVo.propCode]" />
+                    
+                  </el-form-item>
+                </template>
+                <el-form-item>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="submitForm">确 定</el-button>
+                    <el-button icon="el-icon-refresh" size="mini" @click="cancel">取 消</el-button>
+                </el-form-item>
+            </el-form>
+            <!-- <el-form :model="addForm" ref="addForm" :inline="false" label-width="100px">
               <el-form-item v-for="item in fieldMetaData" :key="item.id" :label="item.propName" :prop="item.propCode">
                   <el-input v-model="addForm[item.propCode]" :placeholder="item.label"/>
               </el-form-item>
@@ -85,7 +118,7 @@
                     <el-button type="primary" icon="el-icon-search" size="mini" @click="submitForm">确 定</el-button>
                     <el-button icon="el-icon-refresh" size="mini" @click="cancel">取 消</el-button>
                 </el-form-item>
-            </el-form>
+            </el-form> -->
         </el-row>
     </el-drawer>
   </div>
@@ -95,10 +128,10 @@
 import { getTableMeta,getFieldsMeta,saveData,deleteData } from "@/api/cg/singleTableView";
 import { getTableDataAll } from "@/api/database/databaseApi.js"
 import { getToken } from "@/utils/auth";
-
+import CgProp from "./cgProp.vue";
 export default {
   name: "SingleTableView",
-  components: {  },
+  components: { CgProp },
   data() {
     return {
       // 遮罩层
@@ -231,6 +264,40 @@ export default {
     })
   },
   methods: {
+    getFieldLabel(fieldVO){
+      if(fieldVO.relDomain==null){
+        console.log(`ID:${fieldVO.id}的reldomain 为空.`);
+        return '空'
+      }
+      return fieldVO.relDomain.domainName;
+    },
+    getFieldType(fieldVO){
+      if(fieldVO.relDomain==null){
+        console.log(`ID:${fieldVO.id}的reldomain 为空.`);
+        return '空'
+      }
+      
+      if(fieldVO.relDomain.relDomainMapByDomainCode==null){
+        console.log(`ID:${fieldVO.id}的reldomain.relDomainMapByDomainCode为空.`);
+        return '空'
+      }
+      
+      if(fieldVO.relDomain.relDomainMapByDomainCode["FIELD_TYPE"]==null){
+        console.log(`ID:${fieldVO.id}的reldomain.relDomainMapByDomainCode.FIELD_TYPE为空.`);
+        return '空'
+      }
+      
+      if(fieldVO.relDomain.relDomainMapByDomainCode["FIELD_TYPE"].relObjectProp==null){
+        console.log(`ID:${fieldVO.id}的reldomain.relDomainMapByDomainCode.FIELD_TYPE.relObjectProp为空.`);
+        return '空'
+      }
+      
+      if(fieldVO.relDomain.relDomainMapByDomainCode["FIELD_TYPE"].relObjectProp["domtype"]==null){
+        console.log(`ID:${fieldVO.id}的reldomain.relDomainMapByDomainCode.FIELD_TYPE.relObjectProp.domtype为空.`);
+        return '空'
+      }
+      return fieldVO.relDomain.relDomainMapByDomainCode["FIELD_TYPE"].relObjectProp["domtype"].propValue;
+    },
     // 取消按钮
     cancel() {
       this.open = false;

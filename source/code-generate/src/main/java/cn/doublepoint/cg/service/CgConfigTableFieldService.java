@@ -10,6 +10,8 @@ public interface CgConfigTableFieldService {
 
     void add(CgConfigTableFieldEntity tableEntity);
 
+    void changeDomainCode(String fieldId, String domainCode);
+
     void delete(CgConfigTableFieldEntity tableEntity);
 
     void delete(List<String> ids);

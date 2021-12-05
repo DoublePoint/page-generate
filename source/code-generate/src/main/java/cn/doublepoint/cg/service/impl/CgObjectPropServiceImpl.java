@@ -33,10 +33,10 @@ public class CgObjectPropServiceImpl implements CgObjectPropService {
 
     @Override
     public Map<String,CgObjectPropVO> getProps(String code){
-        return getProps(code, CgConstant.OBJECT_PROP_REL_TYPE_VUECOMPONENT);
+        return getDominPropsValue(code, CgConstant.OBJECT_PROP_REL_TYPE_VUECOMPONENT);
     }
 
-    private Map<String,CgObjectPropVO> getProps(String code,String objectType){
+    private Map<String,CgObjectPropVO> getDominPropsValue(String code,String objectType){
         Map<String,CgObjectPropVO> map = new HashMap<>();
         StringBuffer sb = new StringBuffer("");
 
@@ -65,8 +65,28 @@ public class CgObjectPropServiceImpl implements CgObjectPropService {
         return map;
     }
 
+    private Map<String,CgObjectPropVO> getFieldPropsValue(String code,String objectType){
+        Map<String,CgObjectPropVO> map = new HashMap<>();
+        StringBuffer sb = new StringBuffer("");
+
+        sb.append("SELECT r FROM CgObjectPropEntity r WHERE " );
+        sb.append(" r.objectType = :objectType  ");
+        sb.append(" AND r.objectCode=:domainCode");
+
+        QueryParamList paramList = new QueryParamList();
+        paramList.addParam("domainCode", code);
+        paramList.addParam("objectType",objectType);
+
+        List<CgObjectPropVO> list = JPAUtil.executeQueryModel(sb.toString(), paramList,CgObjectPropVO.class);
+        list.stream().forEach(item->{
+            map.put(item.getPropCode(),item);
+        });
+        return map;
+    }
+
+
     @Override
     public Map<String, CgObjectPropVO> getTableConfigProps(String code) {
-        return getProps(code, CgConstant.OBJECT_PROP_REL_TYPE_CONFIG_TABLE_FIELD);
+        return getFieldPropsValue(code, CgConstant.OBJECT_PROP_REL_TYPE_CONFIG_TABLE_FIELD);
     }
 }

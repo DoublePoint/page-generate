@@ -16,6 +16,7 @@ import cn.doublepoint.jpa.JPAUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,7 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
             return new ArrayList<>();
         }
 
-        List<CgConfigTableFieldVO> resultList = new ArrayList<>();
+        List<CgConfigTableFieldVO> fieldList = new ArrayList<>();
         for (int i=0;i<fieldEntityList.size();i++){
             CgConfigTableFieldVO vo = new CgConfigTableFieldVO();
             CgConfigTableFieldEntity entity = fieldEntityList.get(i);
@@ -54,9 +55,9 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
 
             CgDomainVO domainTree = domainService.getDomainTreeByCode(entity.getDomainCode());
             vo.setRelDomain(domainTree);
-            resultList.add(vo);
+            fieldList.add(vo);
         }
-        return resultList;
+        return fieldList;
     }
 
     @Override
@@ -65,6 +66,17 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
         entity.setCreateTime(CommonUtil.getDateTime());
         entity.setUpdateTime(CommonUtil.getDateTime());
         JPAUtil.create(entity);
+    }
+
+    @Override
+    public void changeDomainCode(String fieldId,String domainCode){
+        if(StringUtils.isEmpty(fieldId)||StringUtils.isEmpty(domainCode)){
+            Log4jUtil.warn("Field id and domain code cannot be null");
+            return;
+        }
+        CgConfigTableFieldEntity fieldEty = JPAUtil.loadById(CgConfigTableFieldEntity.class, fieldId);
+        fieldEty.setDomainCode(domainCode);
+        JPAUtil.update(fieldEty);
     }
 
     @Override

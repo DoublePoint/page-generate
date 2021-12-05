@@ -1,5 +1,6 @@
 package cn.doublepoint.cg.service;
 
+import cn.doublepoint.cg.domain.model.CgDomainEntity;
 import cn.doublepoint.cg.domain.vo.CgDomainVO;
 
 /**
@@ -11,4 +12,6 @@ public interface CgDomainService {
     CgDomainVO getDomainTreeByCode(String code);
 
     CgDomainVO getDomainTreeById(String id);
+
+    CgDomainEntity copy(String domainCode);
 }

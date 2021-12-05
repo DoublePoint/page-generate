@@ -237,14 +237,30 @@
           </el-row>
         </el-col>
         <el-col :span="8">
-          <el-select  v-model="selectedField.domainCode" placeholder="请选择">
-              <el-option
-              v-for="item in domainList"
-              :key="item.id"
-              :label="item.domainName"
-              :value="item.id">
-              </el-option>
-          </el-select>
+          <el-form :model="selectedField" ref="form" :inline="false" label-width="150px">
+              <el-form-item  label="域" prop="domainCode">
+                  <el-select  v-model="selectedField.domainCode" placeholder="请选择" @change="handleDefaultDomainChange">
+                      <el-option
+                      v-for="item in domainList"
+                      :key="item.id"
+                      :label="item.domainName"
+                      :value="item.domainCode">
+                      </el-option>
+                  </el-select>
+              </el-form-item>
+          </el-form>
+          <el-form :model="newDoamin" ref="form" :inline="false" label-width="150px">
+              <el-form-item label="类型" prop="domainCode">
+                  <el-select  v-model="newDoamin.domainCode" placeholder="请选择"  @change="handleNewDomainChange">
+                      <el-option
+                      v-for="item in domainList"
+                      :key="item.id"
+                      :label="item.domainName"
+                      :value="item.domainCode">
+                      </el-option>
+                  </el-select>
+              </el-form-item>
+          </el-form>
           <cg-prop v-model="fieldProp"  :domain-prop="fieldDomain"/>
           <el-button type="primary" size="mini" @click="handleSave"
             >保 存</el-button
@@ -368,7 +384,7 @@ import { getToken } from "@/utils/auth";
 import { treeselect } from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import { saveDomainObject } from "@/api/cg/domain.js";
+import { getDomain,saveDomainObject,createNewDomain } from "@/api/cg/domain.js";
 import { getTableDataAll } from "@/api/database/databaseApi.js"
 import CgProp from "./cgProp.vue";
 
@@ -408,22 +424,31 @@ export default {
       currentTableId: null,
       tabFiledDisabled: true,
       fieldProp: {
-        propMap: {},
       },
       fieldDomain:{
         propMap: {},
       },
-      selectedField:{},
-      domainList:[]
+      selectedField:{
+        domainCode:""
+      },
+      domainList:[],
+      newDoamin:{}
 
       // comCode: "",
     };
   },
   watch: {
     // 根据名称筛选部门树
-    deptName(val) {
-      this.$refs.tree.filter(val);
-    },
+    // 'selectedField.domainCode'(val) {
+    //   console.log('selected.domaincode change');
+    //   this.newDoamin = {};
+    //   getDomain(val).then(response=>{
+    //     this.fieldDomain = response.parameterMap.data;
+    //   })
+    // },
+    // 'newDoamin.domainCode'(val){
+      
+    // }
   },
   created() {
     this.getTable();
@@ -432,6 +457,18 @@ export default {
     })
   },
   methods: {
+    handleDefaultDomainChange(newVal){
+      console.log('handleDefaultDomainChange.domaincode change:'+newVal);
+      getDomain(newVal).then(response=>{
+        this.fieldDomain = response.parameterMap.data;
+      })
+    },
+    handleNewDomainChange(newVal){
+      console.log('newDoamin.domaincode change:'+newVal);
+      getDomain(newVal).then(response=>{
+        this.fieldDomain = response.parameterMap.data;
+      })
+    },
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.id);
@@ -537,11 +574,13 @@ export default {
       this.selectedField = row;
       let domain = row.relDomain;
       this.fieldDomain = domain;
-      // this.fieldProp = {
-      //   objectType: "cg_domain",
-      //   objectCode: row.domainCode,
-      //   propMap: {},
-      // };
+      let fieldProp = {
+        
+      };
+      Object.keys(row.relProp).forEach(key => {
+        fieldProp[key] = row.relProp[key].propValue;
+      });
+      this.fieldProp = fieldProp;
     },
     getTable() {
       getTable().then((response) => {
@@ -558,7 +597,22 @@ export default {
       });
     },
     handleSave() {
+      //create new domain
+      let arr = [];
+      if(this.newDoamin.domainCode!=undefined){
+        var createDomain = {
+          domainCode:this.newDoamin.domainCode,
+          fieldId:this.selectedField.id
+        }
+        createNewDomain(this.newDoamin.domainCode,this.selectedField.id).then(response=>{
+          let newDomain = response.parameterMap.data;
+          this.selectedField.domainCode = newDomain.domainCode;
+        })
+      }
+
+      //save object
       var data = this.mapToObjectProp();
+      console.log(data);
       saveDomainObject(data).then((response) => {
         this.getTableField();
         this.msgSuccess("保存成功.");
@@ -566,15 +620,20 @@ export default {
     },
     mapToObjectProp() {
       let arr = [];
-      const { objectType, objectCode } = this.fieldProp;
-
-      Object.keys(this.fieldProp.propMap).forEach((key, value) => {
-        arr.push({
-          objectType,
-          objectCode,
-          propCode: key,
-          propValue: value,
-        });
+      Object.keys(this.fieldProp).forEach(key => {
+        var obj = this.selectedField.relProp[key];
+        if(obj==null){
+          obj = {
+            objectType:'02',
+            objectCode:this.selectedField.id,
+            propCode: key,
+            propValue: this.fieldProp[key],
+          }
+        } 
+        else{
+          obj.propValue = this.fieldProp[key];
+         }
+        arr.push(obj);
       });
       return arr;
     },

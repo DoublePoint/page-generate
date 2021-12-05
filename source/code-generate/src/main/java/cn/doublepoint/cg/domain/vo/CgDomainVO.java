@@ -1,5 +1,7 @@
 package cn.doublepoint.cg.domain.vo;
 
+import cn.doublepoint.cg.domain.model.CgDomainEntity;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +26,7 @@ public class CgDomainVO{
 
     private Map<String,List<CgDomainVO>> relDomainMap;
     private Map<String,CgDomainVO> relDomainMapByComType;
+    private Map<String,CgDomainVO> relDomainMapByDomainCode;
     private List<CgDomainVO> relDomainList;
     private Map<String,CgObjectPropVO> relObjectProp;
     private CgMetaComVO relMetaCom;
@@ -60,9 +63,20 @@ public class CgDomainVO{
         });
 
         this.relDomainMapByComType = new HashMap<>();
-        this.relDomainList.stream().forEach(item->{
+        this.relDomainMapByDomainCode = new HashMap<>();
+                this.relDomainList.stream().forEach(item->{
             this.relDomainMapByComType.put(item.getRelMetaCom().getComCode(),item);
+            relDomainMapByDomainCode.put(item.getDomainCode(),item);
         });
+
+    }
+
+    public Map<String, CgDomainVO> getRelDomainMapByDomainCode() {
+        return relDomainMapByDomainCode;
+    }
+
+    public void setRelDomainMapByDomainCode(Map<String, CgDomainVO> relDomainMapByDomainCode) {
+        this.relDomainMapByDomainCode = relDomainMapByDomainCode;
     }
 
     public Map<String, CgDomainVO> getRelDomainMapByComType() {
@@ -192,4 +206,5 @@ public class CgDomainVO{
     public void setUpdateUserId(String updateUserId) {
         this.updateUserId = updateUserId;
     }
+
 }

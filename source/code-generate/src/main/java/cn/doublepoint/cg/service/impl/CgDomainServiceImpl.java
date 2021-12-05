@@ -1,14 +1,20 @@
 package cn.doublepoint.cg.service.impl;
 
+import cn.doublepoint.cg.dao.CgDomainDao;
+import cn.doublepoint.cg.dao.CgObjectPropDao;
+import cn.doublepoint.cg.dao.ICgDomainDao;
 import cn.doublepoint.cg.domain.model.CgDomainEntity;
+import cn.doublepoint.cg.domain.model.CgObjectPropEntity;
 import cn.doublepoint.cg.domain.vo.CgDomainVO;
 import cn.doublepoint.cg.domain.vo.CgMetaComVO;
 import cn.doublepoint.cg.domain.vo.CgObjectPropVO;
 import cn.doublepoint.cg.service.CgDomainService;
 import cn.doublepoint.cg.service.CgMetaComService;
 import cn.doublepoint.cg.service.CgObjectPropService;
+import cn.doublepoint.cg.util.CgConstant;
 import cn.doublepoint.commonutil.domain.model.CommonBeanUtil;
 import cn.doublepoint.commonutil.log.Log4jUtil;
+import cn.doublepoint.commonutil.persitence.jpa.SnowflakeIdWorker;
 import cn.doublepoint.dto.domain.model.vo.query.QueryParamList;
 import cn.doublepoint.jpa.JPAUtil;
 import org.apache.commons.lang.StringUtils;
@@ -16,10 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created on 2021/12/1.
@@ -33,6 +36,12 @@ public class CgDomainServiceImpl implements CgDomainService {
     CgObjectPropService propService;
     @Autowired
     CgMetaComService comService;
+    @Autowired
+    ICgDomainDao domainDao;
+    @Autowired
+    SnowflakeIdWorker idWorker;
+    @Autowired
+    CgObjectPropDao objectDao;
 
     @Override
     public CgDomainVO getDomainTreeById(String id){
@@ -64,18 +73,60 @@ public class CgDomainServiceImpl implements CgDomainService {
         if(StringUtils.isEmpty(code)){
             return null;
         }
-        QueryParamList qy = new QueryParamList();
-        qy.addParam("domainCode",code);
-        List<CgDomainEntity> list = JPAUtil.load(CgDomainEntity.class, qy);
-        CgDomainEntity t = null;
-        if(!CollectionUtils.isEmpty(list)){
-            t = list.get(0);
-        }
+        CgDomainEntity t = domainDao.getByCode(code);
         if(t==null){
             return null;
         }
         String id = t.getId();
         return getDomainTreeById(id);
+    }
+
+    @Override
+    public CgDomainEntity copy(String domainCode){
+//        String newDomainCode = "GE_"+idWorker.nextId();
+        return copy(domainCode,null);
+    }
+
+    private CgDomainEntity copy(String domainCode,String parentDomainCode){
+        String newDomainCode = "GE_"+idWorker.nextId();
+        CgDomainEntity newEty=null;
+        CgDomainVO domainVO = this.getDomainTreeByCode(domainCode);
+        if(!CollectionUtils.isEmpty(domainVO.getRelDomainList())){
+
+            //遍历子Domain 进行递归复制
+            domainVO.getRelDomainList().stream().forEach(item->{
+                copy(item.getDomainCode(), newDomainCode);
+            });
+        }
+        //Copy Domain Entity
+        CgDomainEntity resDomain = domainDao.getByCode(domainCode);
+        if(resDomain==null){
+            Log4jUtil.debug("Cannot find the domain name of "+domainCode);
+            return null;
+        }
+        newEty = new CgDomainEntity();
+        CommonBeanUtil.copyProperties(resDomain,newEty);
+        newEty.setId(idWorker.nextId());
+        newEty.setDomainCode(newDomainCode);
+        newEty.setParentDomainCode(parentDomainCode);
+
+        //Copy Domain Prop
+        Map<String, CgObjectPropVO> relObjectProp = domainVO.getRelObjectProp();
+        ArrayList<CgObjectPropEntity> newObjectList = new ArrayList<>();
+        if(relObjectProp!=null){
+            for(Map.Entry<String, CgObjectPropVO> entries : relObjectProp.entrySet()){
+                CgObjectPropVO prop = entries.getValue();
+                CgObjectPropEntity newPropEty = new CgObjectPropEntity();
+                CommonBeanUtil.copyProperties(prop, newPropEty);
+                newPropEty.setId(idWorker.nextId());
+                newPropEty.setObjectType(CgConstant.OBJECT_PROP_REL_TYPE_VUECOMPONENT);
+                newPropEty.setObjectCode(newDomainCode);
+                newObjectList.add(newPropEty);
+            }
+            objectDao.create(newObjectList);
+        }
+        domainDao.create(newEty);
+        return  newEty;
     }
 
     public void getSubDomain(CgDomainVO domain){
