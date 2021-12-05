@@ -55,7 +55,7 @@
                 </el-table-column>
               </template> -->
               <template >
-                <el-table-column :label="item.propName" :key="item.id"  align="center" :prop="item.propCode" width="160">
+                <el-table-column :label="item.propName" :key="item.id"  align="center" :width="getWidth(item)" :prop="item.propCode" >
                 </el-table-column>
               </template>
           </template>
@@ -86,12 +86,12 @@
                 <template v-if="fieldMetaData!=null">
                   <el-form-item v-for="fieldVo in fieldMetaData" :key="fieldVo.id" :label="getFieldLabel(fieldVo)" :prop="fieldVo.propCode">
                     <el-select  v-if="getFieldType(fieldVo)=='03'"  v-model="addForm[fieldVo.propCode]" placeholder="请选择">
-                        <!-- <el-option
-                        v-for="item in dropdownMap[fieldVo.relObjectProp.dropname.propValue]"
+                        <el-option
+                        v-for="item in dropdownMap[getDropName(fieldVo)]"
                         :key="item.dictValue"
                         :label="item.dictLabel"
                         :value="item.dictValue">
-                        </el-option> -->
+                        </el-option>
                         <el-option
                         :key="1"
                         :label="1"
@@ -264,39 +264,28 @@ export default {
     })
   },
   methods: {
+    getDropName(fieldVO){
+      return this.pGetFieldObjPro(fieldVO,'BASE_DROPNAME');
+    },
+    getWidth(fieldVO){
+      return this.pGetFieldObjPro(fieldVO,'BASE_WIDTH');
+    },
     getFieldLabel(fieldVO){
-      if(fieldVO.relDomain==null){
-        console.log(`ID:${fieldVO.id}的reldomain 为空.`);
-        return '空'
-      }
-      return fieldVO.relDomain.domainName;
+      return this.pGetFieldObjPro(fieldVO,'BASE_LABEL');
     },
     getFieldType(fieldVO){
-      if(fieldVO.relDomain==null){
-        console.log(`ID:${fieldVO.id}的reldomain 为空.`);
+      return this.pGetFieldObjPro(fieldVO,'FIELD_TYPE');
+    },
+    pGetFieldObjPro(fieldVO,propName){
+      if(fieldVO.relProp==null){
+        console.log(`ID:${fieldVO.id}的fieldVO.relProp为空.`);
         return '空'
       }
-      
-      if(fieldVO.relDomain.relDomainMapByDomainCode==null){
-        console.log(`ID:${fieldVO.id}的reldomain.relDomainMapByDomainCode为空.`);
+      if(fieldVO.relProp[propName]==null){
+        console.log(`ID:${fieldVO.id}的fieldVO.relProp.${propName}为空`);
         return '空'
       }
-      
-      if(fieldVO.relDomain.relDomainMapByDomainCode["FIELD_TYPE"]==null){
-        console.log(`ID:${fieldVO.id}的reldomain.relDomainMapByDomainCode.FIELD_TYPE为空.`);
-        return '空'
-      }
-      
-      if(fieldVO.relDomain.relDomainMapByDomainCode["FIELD_TYPE"].relObjectProp==null){
-        console.log(`ID:${fieldVO.id}的reldomain.relDomainMapByDomainCode.FIELD_TYPE.relObjectProp为空.`);
-        return '空'
-      }
-      
-      if(fieldVO.relDomain.relDomainMapByDomainCode["FIELD_TYPE"].relObjectProp["domtype"]==null){
-        console.log(`ID:${fieldVO.id}的reldomain.relDomainMapByDomainCode.FIELD_TYPE.relObjectProp.domtype为空.`);
-        return '空'
-      }
-      return fieldVO.relDomain.relDomainMapByDomainCode["FIELD_TYPE"].relObjectProp["domtype"].propValue;
+      return fieldVO.relProp[propName].propValue;
     },
     // 取消按钮
     cancel() {

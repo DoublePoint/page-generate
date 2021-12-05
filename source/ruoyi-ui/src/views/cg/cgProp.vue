@@ -30,14 +30,11 @@
                         <el-form-item v-for="subDomain in domainProp.relDomainMap['base']" :key="subDomain.id" :label="subDomain.domainName" :prop="subDomain.domainCode">
                           <el-select  v-if="subDomain.relMetaCom.domType=='03'"  v-model="formData[subDomain.domainCode]" placeholder="请选择">
                               <el-option
-                              v-for="item in dropdownMap[subDomain.relObjectProp.dropname.propValue]"
+                              v-for="item in dropdownMap[getDropName(subDomain)]"
                               :key="item.dictValue"
                               :label="item.dictLabel"
                               :value="item.dictValue">
                               </el-option>
-                              <template>
-                                <!-- {{subDomain.relObjectProp.dropname.propValue}}{{getSelectData(subDomain.relObjectProp.dropname.propValue)}}  -->
-                              </template>
                           </el-select>
                           <el-input v-else v-model="formData[subDomain.domainCode]" />
                           
@@ -58,11 +55,12 @@
 <script>
 
 import {getInput,getComMetaByComCode} from "@/api/cg/com"
+import { getDomain,saveDomainObject,createNewDomain } from "@/api/cg/domain.js";
 import {getBaseProp} from "@/api/cg/baseprop.js"
 
 export default {
   name: "cgprop",
-  props: ['value','comCode','domainProp'],
+  props: ['value'],
   data() {
     return {
         activeName:"first",
@@ -78,6 +76,9 @@ export default {
         //   }
         // },
         options:[],
+        domainProp:{
+
+        },
         dropdownMap:{
 
         }
@@ -94,22 +95,37 @@ export default {
     }
   },
   watch:{
-    comCode(newVal){
-      this.initAllCom();
-    }
+    
   },
   created() {
-    // this.getBaseDomain();
+    getDomain("BASE").then(response=>{
+      this.domainProp = response.parameterMap.data;
+    })
     this.getDicts("sys_yes_no").then(response => {
       this.options = response.data;
     });
-    if(this.comCode==null){
-      return;
-    }
-
-      
   },
   methods: {
+    getDropName(subDomain){
+      return this.pGetFieldObjPro(subDomain,'dropname');
+    },
+    getFieldLabel(fieldVO){
+      return this.pGetFieldObjPro(fieldVO,'BASE_LABEL');
+    },
+    getFieldType(fieldVO){
+      return this.pGetFieldObjPro(fieldVO,'FIELD_TYPE');
+    },
+    pGetFieldObjPro(subDomain,propName){
+      if(subDomain.relObjectProp==null){
+        console.log(`ID:${subDomain.id}的subDomain.relObjectProp为空.`);
+        return '空'
+      }
+      if(subDomain.relObjectProp[propName]==null){
+        console.log(`ID:${subDomain.id}的subDomain.relObjectProp.${propName}为空`);
+        return '空'
+      }
+      return subDomain.relObjectProp[propName].propValue;
+    },
    handleClick(){
 
    },
@@ -134,12 +150,6 @@ export default {
       console.log(this.dropdownMap)
     });
    }
-  //  getBaseDomain(){
-  //    getBaseProp().then(response=>{
-  //      this.baseProp = response.parameterMap.data;
-  //      console.log(this.baseProp);
-  //    })
-  //  }
   }
 };
 </script>

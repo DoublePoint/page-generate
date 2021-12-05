@@ -261,7 +261,7 @@
                   </el-select>
               </el-form-item>
           </el-form>
-          <cg-prop v-model="fieldProp"  :domain-prop="fieldDomain"/>
+          <cg-prop v-model="fieldProp" />
           <el-button type="primary" size="mini" @click="handleSave"
             >保 存</el-button
           >
