@@ -1,12 +1,7 @@
 package cn.doublepoint.cg.domain.vo;
 
-import cn.doublepoint.dto.domain.model.entity.BaseEntity;
-
-import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class CgConfigTableFieldVO {
     private String id;
@@ -23,7 +18,7 @@ public class CgConfigTableFieldVO {
     private String createUserId;
     private String updateUserId;
 
-    private Map<String,CgObjectPropVO> relProp;
+    private Map<String,CgObjectPropVO> relObjectProp;
     private CgDomainVO relDomain;
 
     public CgDomainVO getRelDomain() {
@@ -139,11 +134,11 @@ public class CgConfigTableFieldVO {
         this.updateUserId = updateUserId;
     }
 
-    public Map<String, CgObjectPropVO> getRelProp() {
-        return relProp;
+    public Map<String, CgObjectPropVO> getRelObjectProp() {
+        return relObjectProp;
     }
 
-    public void setRelProp(Map<String, CgObjectPropVO> relProp) {
-        this.relProp = relProp;
+    public void setRelObjectProp(Map<String, CgObjectPropVO> relObjectProp) {
+        this.relObjectProp = relObjectProp;
     }
 }

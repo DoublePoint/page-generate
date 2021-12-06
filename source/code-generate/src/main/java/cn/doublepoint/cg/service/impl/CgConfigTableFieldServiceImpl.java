@@ -48,13 +48,44 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
         for (int i=0;i<fieldEntityList.size();i++){
             CgConfigTableFieldVO vo = new CgConfigTableFieldVO();
             CgConfigTableFieldEntity entity = fieldEntityList.get(i);
-
             CommonBeanUtil.copyProperties(entity,vo);
-            Map<String, CgObjectPropVO> props = propService.getTableConfigProps(entity.getId());
-            vo.setRelProp(props);
+            if(StringUtils.isEmpty(entity.getDomainCode())){
+                Map<String, CgObjectPropVO> props = propService.getTableConfigProps(entity.getId());
+                vo.setRelObjectProp(props);
+            }
+            else{
+                CgDomainVO domainTree = domainService.getDomainTreeByCode(entity.getDomainCode());
+                vo.setRelDomain(domainTree);
+            }
+            fieldList.add(vo);
+        }
+        return fieldList;
+    }
 
-            CgDomainVO domainTree = domainService.getDomainTreeByCode(entity.getDomainCode());
-            vo.setRelDomain(domainTree);
+    @Override
+    public List<CgConfigTableFieldVO> getTableFieldTreeByTableIdV2(String tableId){
+        QueryParamList paramList = new QueryParamList();
+        paramList.addParam("configTableId",tableId);
+        List<CgConfigTableFieldEntity> fieldEntityList = JPAUtil.load(CgConfigTableFieldEntity.class, paramList);
+        if(CollectionUtils.isEmpty(fieldEntityList)){
+            Log4jUtil.debug("Get Table Field,The Count is 0.");
+            return new ArrayList<>();
+        }
+
+        List<CgConfigTableFieldVO> fieldList = new ArrayList<>();
+        for (int i=0;i<fieldEntityList.size();i++){
+            CgConfigTableFieldVO vo = new CgConfigTableFieldVO();
+            CgConfigTableFieldEntity entity = fieldEntityList.get(i);
+            CommonBeanUtil.copyProperties(entity,vo);
+            if(!StringUtils.isEmpty(entity.getDomainCode())){
+                CgDomainVO domainTree = domainService.getDomainTreeByCode(entity.getDomainCode());
+                vo.setRelDomain(domainTree);
+            }
+            else{
+                Map<String, CgObjectPropVO> props = propService.getTableConfigProps(entity.getId());
+                vo.setRelObjectProp(props);
+            }
+
             fieldList.add(vo);
         }
         return fieldList;
@@ -70,8 +101,8 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
 
     @Override
     public void changeDomainCode(String fieldId,String domainCode){
-        if(StringUtils.isEmpty(fieldId)||StringUtils.isEmpty(domainCode)){
-            Log4jUtil.warn("Field id and domain code cannot be null");
+        if(StringUtils.isEmpty(fieldId)){
+            Log4jUtil.warn("Field id cannot be null");
             return;
         }
         CgConfigTableFieldEntity fieldEty = JPAUtil.loadById(CgConfigTableFieldEntity.class, fieldId);
@@ -94,5 +125,13 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
     @Override
     public void update(CgConfigTableFieldEntity entity) {
         JPAUtil.update(entity);
+    }
+
+    @Override
+    public CgConfigTableFieldVO getById(String tableId) {
+        CgConfigTableFieldVO vo = new CgConfigTableFieldVO();
+        CgConfigTableFieldEntity ety = JPAUtil.loadById(CgConfigTableFieldEntity.class, tableId);
+        CommonBeanUtil.copyProperties(ety,vo);
+        return vo;
     }
 }

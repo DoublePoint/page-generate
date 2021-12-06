@@ -3,43 +3,19 @@
     <el-main>
       <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick" >
             <el-tab-pane label="字段属性" name="first">
-                <!-- <el-form :model="formData" ref="formData" :inline="false" label-width="150px">
-                    <el-form-item label="字段编码" prop="propName">
-                        <el-input v-model="formData.propName" />
-                    </el-form-item>
-                    <el-form-item label="排序" prop="sort">
-                        <el-input v-model="formData.sort" />
-                    </el-form-item>
-                    <el-form-item label="下拉名称" prop="dropName">
-                        <el-select v-model="formData.dropName" placeholder="请选择">
-                            <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-form> -->
-                <!-- <el-row :gutter="10">
-                    Com Code:{{comCode}}
-                </el-row> -->
                 <el-row :gutter="10">
                   <el-form :model="formData" ref="form" :inline="false" label-width="150px">
-                      <template v-if="domainProp!=null&&domainProp.relDomainMap!=null">
-                        <el-form-item v-for="subDomain in domainProp.relDomainMap['base']" :key="subDomain.id" :label="subDomain.domainName" :prop="subDomain.domainCode">
-                          <el-select  v-if="subDomain.relMetaCom.domType=='03'"  v-model="formData[subDomain.domainCode]" placeholder="请选择">
-                              <el-option
-                              v-for="item in dropdownMap[getDropName(subDomain)]"
-                              :key="item.dictValue"
-                              :label="item.dictLabel"
-                              :value="item.dictValue">
-                              </el-option>
-                          </el-select>
-                          <el-input v-else v-model="formData[subDomain.domainCode]" />
-                          
-                        </el-form-item>
-                      </template>
+                      <el-form-item v-for="prop in getPropList()" :key="prop.id" :label="prop.propName" :prop="prop.propName">
+                        <el-select  v-if="isSelect(prop)"  v-model="formData[prop.propName]" placeholder="请选择">
+                            <el-option
+                            v-for="item in dropdownMap[getDropName(prop)]"
+                            :key="item.dictValue"
+                            :label="item.dictLabel"
+                            :value="item.dictValue">
+                            </el-option>
+                        </el-select>
+                        <el-input v-else v-model="formData[prop.propName]" />
+                      </el-form-item>
                   </el-form>
                 </el-row>
             </el-tab-pane>
@@ -49,14 +25,12 @@
         </el-tabs>
     </el-main>
   </el-container>
-
 </template>
 
 <script>
 
-import {getInput,getComMetaByComCode} from "@/api/cg/com"
-import { getDomain,saveDomainObject,createNewDomain } from "@/api/cg/domain.js";
-import {getBaseProp} from "@/api/cg/baseprop.js"
+import {getAllExtendProp,getComMetaByComCode} from "@/api/cg/com"
+// import { getDomain,saveDomainObject,createNewDomain } from "@/api/cg/domain.js";
 
 export default {
   name: "cgprop",
@@ -70,13 +44,8 @@ export default {
         },
         domType:"",
         tabMetaData:[],
-        // domainProp:{
-        //   relDomainMap:{
-        //     base:[]
-        //   }
-        // },
         options:[],
-        domainProp:{
+        extendProp:{
 
         },
         dropdownMap:{
@@ -98,33 +67,60 @@ export default {
     
   },
   created() {
-    getDomain("BASE").then(response=>{
-      this.domainProp = response.parameterMap.data;
+    getAllExtendProp("4").then(response=>{
+      console.log(response);
+      this.extendProp = response.parameterMap.data;
+      this.getAllDrop();
     })
-    this.getDicts("sys_yes_no").then(response => {
-      this.options = response.data;
-    });
+    // getDomain("BASE").then(response=>{
+    //   this.extendProp = response.parameterMap.data;
+    // })
+    // this.getDicts("sys_yes_no").then(response => {
+    //   this.options = response.data;
+    // });
+    
   },
   methods: {
-    getDropName(subDomain){
-      return this.pGetFieldObjPro(subDomain,'dropname');
+    getAllDrop(){
+      this.extendProp.relPropList.forEach(item=>{
+        const dropName = this.getDropName(item);
+        console.log(dropName);
+        if(dropName!=""){
+          this.getDicts(dropName).then(response=>{
+            this.dropdownMap[dropName] = response.data;
+          })
+        }
+      })
     },
-    getFieldLabel(fieldVO){
-      return this.pGetFieldObjPro(fieldVO,'BASE_LABEL');
+    getPropList(){
+      return this.extendProp.relPropList;
     },
-    getFieldType(fieldVO){
-      return this.pGetFieldObjPro(fieldVO,'FIELD_TYPE');
+    getDropName(prop){
+      return this.pGetFieldObjPro(prop,'dropname');
     },
-    pGetFieldObjPro(subDomain,propName){
-      if(subDomain.relObjectProp==null){
-        console.log(`ID:${subDomain.id}的subDomain.relObjectProp为空.`);
-        return '空'
+    getFieldLabel(prop){
+      return this.pGetFieldObjPro(prop,'label');
+    },
+    getDomType(prop){
+      return this.pGetFieldObjPro(prop,'domtype');
+    },
+    pGetFieldObjPro(prop,propName){
+      if(prop.relDomain==null){
+        console.log(`ID:${prop.id}的prop.relDomain为空.`);
+        return ''
       }
-      if(subDomain.relObjectProp[propName]==null){
-        console.log(`ID:${subDomain.id}的subDomain.relObjectProp.${propName}为空`);
-        return '空'
+      if(prop.relDomain.relObjectProp==null){
+        console.log(`ID:${prop.id}的prop.relDomain.relObjectProp为空`);
+        return ''
       }
-      return subDomain.relObjectProp[propName].propValue;
+      if(prop.relDomain.relObjectProp[propName]==null){
+        console.log(`ID:${prop.id}的prop.relDomain.relObjectProp.${propName}为空`);
+        return ''
+      }
+      return prop.relDomain.relObjectProp[propName].propValue;
+    },
+    isSelect(prop){
+      return this.getDomType(prop,"domtype")=="03";
     },
    handleClick(){
 
@@ -133,17 +129,17 @@ export default {
      this.formMetaData = null;
      this.tabMetaData = null;
    },
-   initAllCom(){
-     if(this.comCode==null){
-       return;
-     }
-     getComMetaByComCode(this.comCode).then(res=>{
-        // console.log(res);
-        const data = res.parameterMap.metaCom;
-        this.formMetaData = data.relProp;
-        this.tabMetaData = data.relPropGroup;
-      })
-   },
+  //  initAllCom(){
+  //    if(this.comCode==null){
+  //      return;
+  //    }
+  //    getComMetaByComCode(this.comCode).then(res=>{
+  //       // console.log(res);
+  //       const data = res.parameterMap.data;
+  //       this.formMetaData = data.relProp;
+  //       this.tabMetaData = data.relPropGroup;
+  //     })
+  //  },
    getSelectData(dictname){
      this.getDicts(dictname).then(response => {
       this.$set(this.dropdownMap, dictname, response.data)

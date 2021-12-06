@@ -9,5 +9,6 @@ public interface CgMetaComPropService {
 
     Map<String,List<CgMetaComPropVO>> getPropsMap(String comCode);
 
-    List<CgMetaComPropVO> getProps(String comCode);
+    void getRelDomain(CgMetaComPropVO item);
+
 }

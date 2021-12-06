@@ -9,7 +9,7 @@ export function analize() {
 }
 
 // 查询缓存详细
-export function getInput(id) {
+export function getAllExtendProp(id) {
   return request({
     url: '/cg/meta/queryform?id='+id,
     method: 'post'

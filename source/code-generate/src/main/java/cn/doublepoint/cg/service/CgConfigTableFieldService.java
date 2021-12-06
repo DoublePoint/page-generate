@@ -8,6 +8,8 @@ import java.util.List;
 public interface CgConfigTableFieldService {
     List<CgConfigTableFieldVO> getTableFieldTreeByTableId(String tableId);
 
+    List<CgConfigTableFieldVO> getTableFieldTreeByTableIdV2(String tableId);
+
     void add(CgConfigTableFieldEntity tableEntity);
 
     void changeDomainCode(String fieldId, String domainCode);
@@ -17,4 +19,6 @@ public interface CgConfigTableFieldService {
     void delete(List<String> ids);
 
     void update(CgConfigTableFieldEntity tableEntity);
+
+    CgConfigTableFieldVO getById(String tableId);
 }

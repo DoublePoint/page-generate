@@ -15,10 +15,3 @@ export function getDomain(domainCode){
         method: 'get',
     })
 }
-
-export function createNewDomain(domainCode,fieldId){
-    return request({
-        url: `cg/domain/${domainCode}/to/field/${fieldId}`,
-        method: 'post',
-    })
-}

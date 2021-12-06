@@ -57,7 +57,7 @@ public class DomainController {
 
     @PostMapping("/{domainCode}/to/field/" +
             "{fieldId}")
-    public AjaxResponse createDomain(@PathVariable(required = true) String fieldId, @PathVariable(required = true) String domainCode){
+    public AjaxResponse createDomain(@PathVariable(required = true) String fieldId, @PathVariable(required = false) String domainCode){
         AjaxResponse response = new AjaxResponse();
         try {
 //            CgDomainEntity result = domainService.copy(domainCode);

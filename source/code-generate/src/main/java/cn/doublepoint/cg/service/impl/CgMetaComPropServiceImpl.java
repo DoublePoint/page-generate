@@ -1,13 +1,14 @@
 package cn.doublepoint.cg.service.impl;
 
+import cn.doublepoint.cg.domain.vo.CgDomainVO;
 import cn.doublepoint.cg.domain.vo.CgMetaComPropGroupVO;
 import cn.doublepoint.cg.domain.vo.CgMetaComPropVO;
-import cn.doublepoint.cg.service.CgMetaComPropGroupService;
-import cn.doublepoint.cg.service.CgMetaComPropService;
-import cn.doublepoint.cg.service.CgMetaComService;
+import cn.doublepoint.cg.domain.vo.CgObjectPropVO;
+import cn.doublepoint.cg.service.*;
 import cn.doublepoint.cg.util.CgConstant;
 import cn.doublepoint.dto.domain.model.vo.query.QueryParamList;
 import cn.doublepoint.jpa.JPAUtil;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -21,6 +22,10 @@ public class CgMetaComPropServiceImpl implements CgMetaComPropService {
     CgMetaComPropGroupService groupService;
     @Autowired
     CgMetaComService comService;
+    @Autowired
+    CgObjectPropService propService;
+    @Autowired
+    CgDomainService domainService;
 
     @Override
     public Map<String,List<CgMetaComPropVO>> getPropsMap(String comCode){
@@ -35,6 +40,10 @@ public class CgMetaComPropServiceImpl implements CgMetaComPropService {
         paramList.addParam("comCode", comCode);
         List<CgMetaComPropVO> result = JPAUtil.executeQueryModel(sb.toString(), paramList, CgMetaComPropVO.class);
         result.stream().forEach(item->{
+
+            //构建关联的Domain
+            this.getRelDomain(item);
+
             CgMetaComPropGroupVO group = groupService.getPropGroup(item.getPropCode());
             if(group!=null) {
                 item.setRelGroup(group);
@@ -59,8 +68,12 @@ public class CgMetaComPropServiceImpl implements CgMetaComPropService {
     }
 
     @Override
-    public List<CgMetaComPropVO> getProps(String comCode) {
-        return null;
+    public void getRelDomain(CgMetaComPropVO item) {
+        String domainCode = item.getDomainCode();
+        if(!StringUtils.isEmpty(domainCode)){
+            CgDomainVO domainTree = domainService.getDomainTreeByCode(domainCode);
+            item.setRelDomain(domainTree);
+        }
     }
 
 }
