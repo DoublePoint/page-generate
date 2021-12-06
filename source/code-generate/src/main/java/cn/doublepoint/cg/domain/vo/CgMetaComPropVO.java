@@ -4,6 +4,7 @@ import cn.doublepoint.cg.domain.model.CgMetaComPropGroupEntity;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Map;
 import java.util.Objects;
 
 public class CgMetaComPropVO {
@@ -13,6 +14,7 @@ public class CgMetaComPropVO {
     private String propValueType;
     private String propTypeDomain;
     private String defaultValue;
+    private String domainCode;
     private String enable;
     private String domType;
     private Integer sort;
@@ -23,6 +25,26 @@ public class CgMetaComPropVO {
     private String updateUserId;
     private CgMetaComPropGroupVO relGroup;
     private CgMetaComVO relCom;
+    private CgDomainVO relDomain;
+
+    public CgDomainVO getRelDomain() {
+        return relDomain;
+    }
+
+    public void setRelDomain(CgDomainVO relDomain) {
+        this.relDomain = relDomain;
+    }
+
+    public String getDomainCode() {
+        return domainCode;
+    }
+
+    public void setDomainCode(String domainCode) {
+        this.domainCode = domainCode;
+    }
+
+    public CgMetaComPropVO() {
+    }
 
     public CgMetaComVO getRelCom() {
         return relCom;

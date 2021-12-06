@@ -33,30 +33,6 @@ public class GenerateController  extends BaseController{
 	CgDomainService domainService;
 
 
-	@GetMapping("/meta/com/prop")
-	public AjaxResponse queryMetaById(@RequestParam(required = false) String id,@RequestParam(required = false) String code){
-		AjaxResponse response = new AjaxResponse();
-		try{
-			CgMetaComVO metaCom = null;
-			if(!StringUtil.isEmpty(id)){
-				metaCom = metaComService.getMetaComById(id);
-			}
-			else if(!StringUtil.isEmpty(code)){
-				metaCom = metaComService.getMetaComByCode(code);
-			}
-			else{
-				response.setErrorMessage("Parameter id and code cannot be all null.");
-				return response;
-			}
-			response.setAjaxParameter("metaCom",metaCom);
-		}
-		catch (Exception e){
-			e.printStackTrace();
-			Log4jUtil.error(e);
-		}
-		return response;
-	}
-
 
 	@RequestMapping("/analize")
 	public AjaxResponse analize(@RequestParam String sql){

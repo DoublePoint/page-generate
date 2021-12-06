@@ -22,10 +22,10 @@ public class CgDomainDao implements ICgDomainDao{
 
     @Override
     public void create(CgDomainEntity ety){
-        if(ety.getCreateTime()!=null){
+        if(ety.getCreateTime()==null){
             ety.setCreateTime(CommonUtil.getDateTime());
         }
-        if(ety.getCreateUserId()!=null){
+        if(ety.getCreateUserId()==null){
         }
         JPAUtil.create(ety);
     }
@@ -38,10 +38,10 @@ public class CgDomainDao implements ICgDomainDao{
             return;
         }
         etyList.stream().forEach(ety->{
-            if(ety.getCreateTime()!=null){
+            if(ety.getCreateTime()==null){
                 ety.setCreateTime(CommonUtil.getDateTime());
             }
-            if(ety.getCreateUserId()!=null){
+            if(ety.getCreateUserId()==null){
             }
         });
 

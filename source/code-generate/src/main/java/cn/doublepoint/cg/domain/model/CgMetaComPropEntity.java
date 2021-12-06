@@ -23,6 +23,15 @@ public class CgMetaComPropEntity extends BaseEntity {
     private Timestamp updateTime;
     private String createUserId;
     private String updateUserId;
+    private String domainCode;
+
+    public String getDomainCode() {
+        return domainCode;
+    }
+
+    public void setDomainCode(String domainCode) {
+        this.domainCode = domainCode;
+    }
 
     @Id
     @Column(name = "ID")

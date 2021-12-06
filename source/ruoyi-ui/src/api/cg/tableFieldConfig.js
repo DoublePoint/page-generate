@@ -30,3 +30,26 @@ export function deleteData(data){
         data
     })
 }
+
+export function clearFieldDomainCode(fieldId){
+    return request({
+        url: `/config/table/field/${fieldId}/domaincode`,
+        method: 'delete'
+    })
+}
+
+
+export function changeFieldDomainCode(domainCode,fieldId){
+    return request({
+        url: `cg/domain/${domainCode}/to/field/${fieldId}`,
+        method: 'post',
+    })
+}
+
+export function saveFieldExtendProp(data){
+    return request({
+        url: `config/table/field/prop`,
+        method: 'post',
+        data
+    })
+}

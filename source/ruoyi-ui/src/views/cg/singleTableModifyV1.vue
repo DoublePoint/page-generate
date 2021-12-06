@@ -239,7 +239,7 @@
         <el-col :span="8">
           <el-form :model="selectedField" ref="form" :inline="false" label-width="150px">
               <el-form-item  label="域" prop="domainCode">
-                  <el-select  v-model="selectedField.domainCode" placeholder="请选择" @change="handleDefaultDomainChange">
+                  <el-select  v-model="selectedField.domainCode" placeholder="请选择"  clearable="">
                       <el-option
                       v-for="item in domainList"
                       :key="item.id"
@@ -261,7 +261,7 @@
                   </el-select>
               </el-form-item>
           </el-form>
-          <cg-prop v-model="fieldProp" />
+          <cg-prop v-model="curFieldProp" />
           <el-button type="primary" size="mini" @click="handleSave"
             >保 存</el-button
           >
@@ -384,7 +384,8 @@ import { getToken } from "@/utils/auth";
 import { treeselect } from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import { getDomain,saveDomainObject,createNewDomain } from "@/api/cg/domain.js";
+import { getDomain,saveDomainObject,} from "@/api/cg/domain.js";
+import { changeFieldDomainCode, clearFieldDomainCode,saveFieldExtendProp} from "@/api/cg/tableFieldConfig.js";
 import { getTableDataAll } from "@/api/database/databaseApi.js"
 import CgProp from "./cgProp.vue";
 
@@ -423,7 +424,7 @@ export default {
       },
       currentTableId: null,
       tabFiledDisabled: true,
-      fieldProp: {
+      curFieldProp: {
       },
       fieldDomain:{
         propMap: {},
@@ -457,11 +458,58 @@ export default {
     })
   },
   methods: {
-    handleDefaultDomainChange(newVal){
-      console.log('handleDefaultDomainChange.domaincode change:'+newVal);
-      getDomain(newVal).then(response=>{
-        this.fieldDomain = response.parameterMap.data;
-      })
+    // handleDefaultDomainChange(newVal){
+    //   console.log('handleDefaultDomainChange.domaincode change:'+newVal);
+    //   getDomain(newVal).then(response=>{
+    //     this.fieldDomain = response.parameterMap.data;
+    //   })
+    // },
+    getPropList(){
+      return this.extendProp.relPropList;
+    },
+    getDropName(prop){
+      return this.pGetFieldObjPro(prop,'dropname');
+    },
+    getFieldLabel(prop){
+      return this.pGetFieldObjPro(prop,'label');
+    },
+    getDomType(prop){
+      return this.pGetFieldObjPro(prop,'domtype');
+    },
+    pGetFieldObjPro(prop,propName){
+      var relObjectProp = prop.relObjectProp;
+      if(relObjectProp == null){
+        console.log(`使用 Prop ID:${field.id} relDomain的relObjectProp.`);
+        relObjectProp = field.relDomain.relObjectProp;
+      }
+      else{
+        console.log(`使用 Prop ID:${field.id} 的relObjectProp.`);
+      }
+      
+      if(relObjectProp==null){
+        console.log(`relObjectProp为空`);
+        return ''
+      }
+      if(relObjectProp[propName]==null){
+        console.log(`relObjectProp.${propName}为空`);
+        return ''
+      }
+      return relObjectProp[propName].propValue;
+
+
+      // if(prop.relDomain==null){
+      //   console.log(`ID:${prop.id}的prop.relDomain为空.`);
+      //   return ''
+      // }
+      // if(prop.relDomain.relObjectProp==null){
+      //   console.log(`ID:${prop.id}的prop.relDomain.relObjectProp为空`);
+      //   return ''
+      // }
+      // if(prop.relDomain.relObjectProp[propName]==null){
+      //   console.log(`ID:${prop.id}的prop.relDomain.relObjectProp.${propName}为空`);
+      //   return ''
+      // }
+      // return prop.relDomain.relObjectProp[propName].propValue;
     },
     handleNewDomainChange(newVal){
       console.log('newDoamin.domaincode change:'+newVal);
@@ -570,17 +618,19 @@ export default {
     
     handleFieldDetail(row) {
       // this.comCode = row.comCode;
-      console.log(row);
+      // console.log(row);
       this.selectedField = row;
       let domain = row.relDomain;
       this.fieldDomain = domain;
-      let fieldProp = {
+      let curFieldProp = {
         
       };
-      Object.keys(row.relProp).forEach(key => {
-        fieldProp[key] = row.relProp[key].propValue;
-      });
-      this.fieldProp = fieldProp;
+      if(row.relObjectProp!=null){
+        Object.keys(row.relObjectProp).forEach(key => {
+          curFieldProp[key] = row.relObjectProp[key].propValue;
+        });
+      }
+      this.curFieldProp = curFieldProp;
     },
     getTable() {
       getTable().then((response) => {
@@ -597,41 +647,89 @@ export default {
       });
     },
     handleSave() {
-      //create new domain
-      let arr = [];
-      if(this.newDoamin.domainCode!=undefined){
-        var createDomain = {
-          domainCode:this.newDoamin.domainCode,
-          fieldId:this.selectedField.id
+      let obj = {
+          fieldId:this.selectedField.id,
+          domainCode:this.selectedField.domainCode,
+          prop:[]
+      };
+      Object.keys(this.curFieldProp).forEach(key => {
+        const propValue = this.curFieldProp[key];
+        let prop = [];
+        var createData = {
+          propCode: key,
+          propValue
         }
-        createNewDomain(this.newDoamin.domainCode,this.selectedField.id).then(response=>{
-          let newDomain = response.parameterMap.data;
-          this.selectedField.domainCode = newDomain.domainCode;
-        })
-      }
+        obj.prop.push(createData);
+      });
+      saveFieldExtendProp(obj).then(response=>{
+        this.msgSuccess("保存成功.");
+        return this.getTableField();
+      })
+
+      // var data = null;
+      // if(this.selectedField.domainCode==null||this.selectedField.domainCode==""){
+      //   //属性值为field-prop
+      //   data = this.mapToFieldObjectProp();
+      //   clearFieldDomainCode(this.selectedField.id).then(response=>{
+      //     return saveDomainObject(data)
+      //   }).then((response) => {
+      //     this.getTableField();
+      //     this.msgSuccess("保存成功.");
+      //   });
+      // }
+      // else{
+      //   //属性值为domain-prop
+      //   data = this.mapToDomainObjectProp();
+      //   changeFieldDomainCode(this.selectedField.domainCode,this.selectedField.id).then(response=>{
+      //     return saveDomainObject(data)
+      //   }).then((response) => {
+      //     this.getTableField();
+      //     this.msgSuccess("保存成功.");
+      //   });
+      // }
+      // // create new domain
+      // let arr = [];
+     
 
       //save object
-      var data = this.mapToObjectProp();
-      console.log(data);
-      saveDomainObject(data).then((response) => {
-        this.getTableField();
-        this.msgSuccess("保存成功.");
-      });
+      // console.log(data);
+      
     },
-    mapToObjectProp() {
+    mapToFieldObjectProp() {
       let arr = [];
-      Object.keys(this.fieldProp).forEach(key => {
-        var obj = this.selectedField.relProp[key];
-        if(obj==null){
+      Object.keys(this.curFieldProp).forEach(key => {
+        var obj = {};
+        if(this.selectedField.relObjectProp==null||this.selectedField.relObjectProp[key]==null){
           obj = {
             objectType:'02',
             objectCode:this.selectedField.id,
             propCode: key,
-            propValue: this.fieldProp[key],
+            propValue: this.curFieldProp[key],
           }
         } 
         else{
-          obj.propValue = this.fieldProp[key];
+          obj.propValue = this.curFieldProp[key];
+        }
+        arr.push(obj);
+      });
+      return arr;
+    },
+    mapToDomainObjectProp() {
+      let arr = [];
+      Object.keys(this.curFieldProp).forEach(key => {
+        var obj = {};
+        if(this.selectedField.relDomain==null||
+          this.selectedField.relDomain.relObjectProp==null||
+          this.selectedField.relDomain.relObjectProp[key]==null){
+          obj = {
+            objectType:'01',
+            objectCode:this.selectedField.domainCode,
+            propCode: key,
+            propValue: this.curFieldProp[key],
+          }
+        } 
+        else{
+          obj.propValue = this.curFieldProp[key];
          }
         arr.push(obj);
       });

@@ -14,7 +14,7 @@
       <!--用户数据-->
       <el-col :span="20" :xs="24">
         <el-form :model="queryParams" ref="queryForm" :inline="true"  label-width="100px">
-          <el-form-item v-for="item in fieldMetaList" :key="item.id" :label="item.propName" :prop="item.propCode">
+          <el-form-item v-for="item in fieldMetaData" :key="item.id" :label="item.propName" :prop="item.propCode">
               <el-input v-model="queryParams[item.fieldCode]" :placeholder="item.label"/>
           </el-form-item>
         </el-form>
@@ -29,9 +29,33 @@
       <el-col>
         <el-table :data="tableDataList" >
           <el-table-column type="selection" width="50" align="center" />
-          <template v-for="field in fieldMetaList" >
+          <template v-for="item in fieldMetaData" >
+              <!-- <template v-if="item.relDomain!=null&&item.relDomain.relMetaCom!=null" >
+                <template  v-if="item.relDomain.relMetaCom.domType=='03'" style="display:none;" >
+                  {{getSelectData(item.relDomain.relDomainMapByComType['SELECT'].relObjectProp.dropname.propValue)}} 
+                </template>
+                <el-table-column :label="item.propName" :key="item.id"  align="center" :prop="item.propCode" width="160">
+                  <template slot-scope="scope" >
+                      <el-select  v-if="item.relDomain.relMetaCom.domType=='03'"  placeholder="请选择" >
+                          <el-option
+                          v-for="item in dropdownMap[item.relDomain.relDomainMapByComType['SELECT'].relObjectProp.dropname.propValue]"
+                          :key="item.dictValue"
+                          :label="item.dictLabel"
+                          :value="item.dictValue">
+                          </el-option>
+                      </el-select>
+                    <span v-else>  
+                      {{scope.row[item.propCode]}}
+                    </span>
+                  </template>
+                </el-table-column>
+              </template>
+              <template v-else >
+                <el-table-column :label="item.propName" :key="item.id"  align="center" :prop="item.propCode" width="160">
+                </el-table-column>
+              </template> -->
               <template >
-                <el-table-column :label="field.propName" :key="field.id"  align="center" :width="getWidth(field)" :prop="field.propCode" >
+                <el-table-column :label="item.propName" :key="item.id"  align="center" :width="getWidth(item)" :prop="item.propCode" >
                 </el-table-column>
               </template>
           </template>
@@ -57,13 +81,13 @@
 
     <el-drawer title="标签属性配置" :visible.sync="showAddDrawer" direction="rtl">
         <el-row>
-          <!-- <cg-prop v-model="this.addForm"  :domain-prop="this.fieldMetaList.relDomain"/> -->
+          <!-- <cg-prop v-model="this.addForm"  :domain-prop="this.fieldMetaData.relDomain"/> -->
           <el-form :model="addForm" ref="form" :inline="false" label-width="150px">
-                <template v-if="fieldMetaList!=null">
-                  <el-form-item v-for="field in fieldMetaList" :key="field.id" :label="getFieldLabel(field)" :prop="field.propCode">
-                    <el-select  v-if="getFieldType(field)=='03'"  v-model="addForm[field.propCode]" placeholder="请选择">
+                <template v-if="fieldMetaData!=null">
+                  <el-form-item v-for="fieldVo in fieldMetaData" :key="fieldVo.id" :label="getFieldLabel(fieldVo)" :prop="fieldVo.propCode">
+                    <el-select  v-if="getFieldType(fieldVo)=='03'"  v-model="addForm[fieldVo.propCode]" placeholder="请选择">
                         <el-option
-                        v-for="item in dropdownMap[getDropName(field)]"
+                        v-for="item in dropdownMap[getDropName(fieldVo)]"
                         :key="item.dictValue"
                         :label="item.dictLabel"
                         :value="item.dictValue">
@@ -74,10 +98,10 @@
                         :value="1">
                         </el-option>
                         <template>
-                          <!-- {{field.relObjectProp.dropname.propValue}}{{getSelectData(field.relObjectProp.dropname.propValue)}}  -->
+                          <!-- {{fieldVo.relObjectProp.dropname.propValue}}{{getSelectData(fieldVo.relObjectProp.dropname.propValue)}}  -->
                         </template>
                     </el-select>
-                    <el-input v-else v-model="addForm[field.propCode]" />
+                    <el-input v-else v-model="addForm[fieldVo.propCode]" />
                     
                   </el-form-item>
                 </template>
@@ -87,7 +111,7 @@
                 </el-form-item>
             </el-form>
             <!-- <el-form :model="addForm" ref="addForm" :inline="false" label-width="100px">
-              <el-form-item v-for="item in fieldMetaList" :key="item.id" :label="item.propName" :prop="item.propCode">
+              <el-form-item v-for="item in fieldMetaData" :key="item.id" :label="item.propName" :prop="item.propCode">
                   <el-input v-model="addForm[item.propCode]" :placeholder="item.label"/>
               </el-form-item>
               <el-form-item>
@@ -175,7 +199,7 @@ export default {
       ],
       
       tableMetaData:{},
-      fieldMetaList:[],
+      fieldMetaData:[],
       tableId:null,
       showAddDrawer:false,
       addForm:{},
@@ -202,7 +226,7 @@ export default {
       getFieldsMeta(tableId).then(response=>{
           console.log(response);
           const data = response.parameterMap.data;
-          this.fieldMetaList = data;
+          this.fieldMetaData = data;
       })
     }
   },
@@ -212,37 +236,28 @@ export default {
     })
   },
   methods: {
-    getDropName(field){
-      return this.pGetFieldObjPro(field,'dropname');
+    getDropName(fieldVO){
+      return this.pGetFieldObjPro(fieldVO,'BASE_DROPNAME');
     },
-    getWidth(field){
-      return this.pGetFieldObjPro(field,'width');
+    getWidth(fieldVO){
+      return this.pGetFieldObjPro(fieldVO,'BASE_WIDTH');
     },
-    getFieldLabel(field){
-      return this.pGetFieldObjPro(field,'label');
+    getFieldLabel(fieldVO){
+      return this.pGetFieldObjPro(fieldVO,'BASE_LABEL');
     },
-    getFieldType(field){
-      return this.pGetFieldObjPro(field,'fieldtype');
+    getFieldType(fieldVO){
+      return this.pGetFieldObjPro(fieldVO,'FIELD_TYPE');
     },
-    pGetFieldObjPro(field,propName){
-      var relObjectProp = field.relObjectProp;
-      if(relObjectProp == null){
-        console.log(`使用 Field ID:${field.id} relDomain的relObjectProp.`);
-        relObjectProp = field.relDomain.relObjectProp;
-      }
-      else{
-        console.log(`使用 Field ID:${field.id} 的relObjectProp.`);
-      }
-      
-      if(relObjectProp==null){
-        console.log(`relObjectProp为空`);
+    pGetFieldObjPro(fieldVO,propName){
+      if(fieldVO.relProp==null){
+        console.log(`ID:${fieldVO.id}的fieldVO.relProp为空.`);
         return '空'
       }
-      if(relObjectProp[propName]==null){
-        console.log(`relObjectProp.${propName}为空`);
+      if(fieldVO.relProp[propName]==null){
+        console.log(`ID:${fieldVO.id}的fieldVO.relProp.${propName}为空`);
         return '空'
       }
-      return relObjectProp[propName].propValue;
+      return fieldVO.relProp[propName].propValue;
     },
     // 取消按钮
     cancel() {

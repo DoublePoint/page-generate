@@ -63,7 +63,7 @@ public class CgDomainServiceImpl implements CgDomainService {
         else{
             Log4jUtil.error(new Exception("Cannot find the rel comCode,the domainId is "+id));
         }
-        getSubDomain(vo);
+//        getSubDomain(vo);
         return vo;
     }
 

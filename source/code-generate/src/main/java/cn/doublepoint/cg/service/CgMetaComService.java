@@ -7,5 +7,5 @@ public interface CgMetaComService {
     CgMetaComVO getMetaComById(String id);
     CgMetaComVO getMetaComByCode(String code);
 
-    CgMetaComVO getMetaComPropCom(String code);
+//    CgMetaComVO getMetaComPropCom(String code);
 }

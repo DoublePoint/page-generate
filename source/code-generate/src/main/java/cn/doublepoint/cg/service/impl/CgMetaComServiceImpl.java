@@ -50,23 +50,23 @@ public class CgMetaComServiceImpl implements CgMetaComService {
         }
     }
 
-    @Override
-    public CgMetaComVO getMetaComPropCom(String code){
-        CgMetaComEntity t = comDao.getByCode(code);
-        if(t!=null){
-            String id = t.getId();
-            String comCode = t.getComCode();
-
-            CgMetaComVO vo = new CgMetaComVO();
-            CommonBeanUtil.copyProperties(t,vo);
-
-            List<CgMetaComPropVO> props = relService.getProps(comCode);
-            vo.setRelPropList(props);
-            return vo;
-        }
-        else{
-            return null;
-        }
-    }
+//    @Override
+//    public CgMetaComVO getMetaComPropCom(String code){
+//        CgMetaComEntity t = comDao.getByCode(code);
+//        if(t!=null){
+//            String id = t.getId();
+//            String comCode = t.getComCode();
+//
+//            CgMetaComVO vo = new CgMetaComVO();
+//            CommonBeanUtil.copyProperties(t,vo);
+//
+//            List<CgMetaComPropVO> props = relService.getProps(comCode);
+//            vo.setRelPropList(props);
+//            return vo;
+//        }
+//        else{
+//            return null;
+//        }
+//    }
 
 }

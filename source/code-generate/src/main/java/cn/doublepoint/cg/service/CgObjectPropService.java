@@ -2,6 +2,7 @@ package cn.doublepoint.cg.service;
 
 import cn.doublepoint.cg.domain.model.CgObjectPropEntity;
 import cn.doublepoint.cg.domain.vo.CgObjectPropVO;
+import cn.doublepoint.cg.domain.vo.SaveExtPropCmdVO;
 
 import java.util.List;
 import java.util.Map;
@@ -17,4 +18,8 @@ public interface CgObjectPropService {
     Map<String,CgObjectPropVO> getProps(String code);
 
     Map<String,CgObjectPropVO> getTableConfigProps(String code);
+
+    void saveFieldProp(SaveExtPropCmdVO cmd);
+
+    void deleteByFieldId(String reuFieldId);
 }

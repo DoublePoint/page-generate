@@ -1,9 +1,8 @@
 package cn.doublepoint.cg.domain.vo;
 
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CgMetaComVO {
     private String id;
@@ -36,6 +35,14 @@ public class CgMetaComVO {
 
     public void setRelPropMap(Map<String, List<CgMetaComPropVO>> relPropMap) {
         this.relPropMap = relPropMap;
+        if(relPropMap!=null){
+            this.relPropList = new ArrayList<>();
+            Set<Map.Entry<String, List<CgMetaComPropVO>>> entries = relPropMap.entrySet();
+            entries.stream().forEach(item->{
+                this.relPropList.addAll(item.getValue());
+            });
+            this.relPropList = this.relPropList.stream().distinct().collect(Collectors.toList());
+        }
     }
 
     public List<CgMetaComPropGroupVO> getRelPropGroup() {
