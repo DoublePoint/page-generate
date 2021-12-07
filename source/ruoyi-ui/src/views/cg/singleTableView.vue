@@ -13,10 +13,32 @@
     <el-row :gutter="20">
       <!--用户数据-->
       <el-col :span="20" :xs="24">
-        <el-form :model="queryParams" ref="queryForm" :inline="true"  label-width="100px">
-          <el-form-item v-for="item in fieldMetaList" :key="item.id" :label="item.propName" :prop="item.propCode">
-              <el-input v-model="queryParams[item.fieldCode]" :placeholder="item.label"/>
-          </el-form-item>
+        <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="150px">
+            <template v-if="fieldMetaList!=null">
+              <el-form-item v-for="field in fieldMetaList" :key="field.id" :label="getFieldLabel(field)" :prop="field.propCode">
+                <el-select  v-if="isSelect(field)&&isDrop(field)"  v-model="queryParams[field.propCode]" placeholder="请选择">
+                    <el-option
+                    v-for="item in dropdownMap['dr_'+getDropName(field)]"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                    </el-option>
+                </el-select>
+                <el-select  v-else-if="isSelect(field)&&isDict(field)"  v-model="queryParams[field.propCode]" placeholder="请选择">
+                    <el-option
+                    v-for="item in dropdownMap['di_'+getDictName(field)]"
+                    :key="item.dictValue"
+                    :label="item.dictLabel"
+                    :value="item.dictValue">
+                    </el-option>
+                </el-select>
+                <el-input v-else v-model="queryParams[field.propCode]" />
+              </el-form-item>
+            </template>
+            <el-form-item>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="submitForm">确 定</el-button>
+                <el-button icon="el-icon-refresh" size="mini" @click="cancel">取 消</el-button>
+            </el-form-item>
         </el-form>
       </el-col>
     </el-row>
@@ -27,11 +49,13 @@
     </el-row>
     <el-row>
       <el-col>
-        <el-table :data="tableDataList" >
-          <el-table-column type="selection" width="50" align="center" />
+        <el-table :data="tableDataList" stripe border>
+          <el-table-column type="selection" width="50" align="center"  />
           <template v-for="field in fieldMetaList" >
               <template >
-                <el-table-column :label="field.propName" :key="field.id"  align="center" :width="getWidth(field)" :prop="field.propCode" >
+                <el-table-column :label="getFieldLabel(field)" :key="field.id"  align="center" :width="getWidth(field)" :prop="field.propCode" 
+                  :formatter="formatterDrop(field,1)"
+                  show-overflow-tooltip>
                 </el-table-column>
               </template>
           </template>
@@ -57,23 +81,27 @@
 
     <el-drawer title="标签属性配置" :visible.sync="showAddDrawer" direction="rtl">
         <el-row>
-          <!-- <cg-prop v-model="this.addForm"  :domain-prop="this.fieldMetaList.relDomain"/> -->
-          <el-form :model="addForm" ref="form" :inline="false" label-width="150px">
+          <!-- <cg-prop v-model="this.formData"  :domain-prop="this.fieldMetaList.relDomain"/> -->
+          <el-form :model="formData" ref="form" :inline="false" label-width="150px">
                 <template v-if="fieldMetaList!=null">
                   <el-form-item v-for="field in fieldMetaList" :key="field.id" :label="getFieldLabel(field)" :prop="field.propCode">
-                    <el-select  v-if="getFieldType(field)=='03'"  v-model="addForm[field.propCode]" placeholder="请选择">
+                    <el-select  v-if="isSelect(field)&&isDrop(field)"  v-model="formData[field.propCode]" placeholder="请选择">
                         <el-option
-                        v-for="item in dropdownMap[getDropName(field)]"
+                        v-for="item in dropdownMap['dr_'+getDropName(field)]"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <el-select  v-else-if="isSelect(field)&&isDict(field)"  v-model="formData[field.propCode]" placeholder="请选择">
+                        <el-option
+                        v-for="item in dropdownMap['di_'+getDictName(field)]"
                         :key="item.dictValue"
                         :label="item.dictLabel"
                         :value="item.dictValue">
                         </el-option>
-                        <template>
-                          <!-- {{field.relObjectProp.dropname.propValue}}{{getSelectData(field.relObjectProp.dropname.propValue)}}  -->
-                        </template>
                     </el-select>
-                    <el-input v-else v-model="addForm[field.propCode]" />
-                    
+                    <el-input v-else v-model="formData[field.propCode]" />
                   </el-form-item>
                 </template>
                 <el-form-item>
@@ -81,15 +109,6 @@
                     <el-button icon="el-icon-refresh" size="mini" @click="cancel">取 消</el-button>
                 </el-form-item>
             </el-form>
-            <!-- <el-form :model="addForm" ref="addForm" :inline="false" label-width="100px">
-              <el-form-item v-for="item in fieldMetaList" :key="item.id" :label="item.propName" :prop="item.propCode">
-                  <el-input v-model="addForm[item.propCode]" :placeholder="item.label"/>
-              </el-form-item>
-              <el-form-item>
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="submitForm">确 定</el-button>
-                    <el-button icon="el-icon-refresh" size="mini" @click="cancel">取 消</el-button>
-                </el-form-item>
-            </el-form> -->
         </el-row>
     </el-drawer>
   </div>
@@ -173,7 +192,7 @@ export default {
       fieldMetaList:[],
       tableId:null,
       showAddDrawer:false,
-      addForm:{},
+      formData:{},
       tableSelectList:[
         // {label:"sys_notice",value:"915558641136828416"},
         // {label:"cg_meta_com",value:"915924412115451904"},
@@ -198,7 +217,7 @@ export default {
           console.log(response);
           const data = response.parameterMap.data;
           this.fieldMetaList = data;
-          this.getAllDrop();
+          this.getAllDict();
       })
     }
   },
@@ -208,19 +227,41 @@ export default {
     })
   },
   methods: {
-    getAllDrop(){
+    formatterDrop(row, column) {
+      console.log("format");
+      console.log(row);
+      console.log(column);
+    },
+    getAllDict(){
       this.fieldMetaList.forEach(item=>{
         const dropName = this.getDropName(item);
         console.log(dropName);
         if(dropName!=""){
-          this.getDicts(dropName).then(response=>{
-            this.dropdownMap[dropName] = response.data;
-          })
+          if(this.dropdownMap['dr_'+dropName]==null){
+              this.getDrop(dropName).then(response=>{
+                this.$set(this.dropdownMap,'dr_'+dropName,response.parameterMap.data)
+            })
+          }
+        }        
+        else{
+          const dictName = this.getDictName(item);
+          if(dictName!=""){
+            if(this.dropdownMap['di_'+dropName]==null){
+                this.getDicts(dictName).then(response=>{
+                  this.$set(this.dropdownMap,'di_'+dropName,response.data)
+                })
+            }
+          }
         }
+        var map = this.dropdownMap;
+        this.dropdownMap = map;
       })
     },
     getDropName(field){
       return this.pGetFieldObjPro(field,'dropname');
+    },
+    getDictName(prop){
+      return this.pGetFieldObjPro(prop,'dictname');
     },
     getWidth(field){
       return this.pGetFieldObjPro(field,'width');
@@ -228,8 +269,8 @@ export default {
     getFieldLabel(field){
       return this.pGetFieldObjPro(field,'label');
     },
-    getFieldType(field){
-      return this.pGetFieldObjPro(field,'domtype');
+    getDomType(prop){
+      return this.pGetFieldObjPro(prop,'domtype');
     },
     pGetFieldObjPro(field,propName){
       var relObjectProp = field.relObjectProp;
@@ -243,13 +284,22 @@ export default {
       
       if(relObjectProp==null){
         console.log(`relObjectProp为空`);
-        return '空'
+        return ''
       }
       if(relObjectProp[propName]==null){
         console.log(`relObjectProp.${propName}为空`);
-        return '空'
+        return ''
       }
       return relObjectProp[propName].propValue;
+    },
+    isSelect(prop){
+      return this.getDomType(prop,"domtype")=="03";
+    },
+    isDict(prop){
+      return this.getDictName(prop,"dictname")!="";
+    },
+    isDrop(prop){
+      return this.getDropName(prop,"dropname")!="";
     },
     // 取消按钮
     cancel() {
@@ -277,14 +327,14 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.showAddDrawer = true;
-      this.addForm = {}
+      this.formData = {}
     },
     submitForm(){
       let data = {
         tableCode : this.tableMetaData.tableCode,
-        fieldMap : this.addForm
+        fieldMap : this.formData
       }
-      // console.log(this.addForm);
+      // console.log(this.formData);
       saveData(data).then(response=>{
         console.log(response);
         this.getTableDataAll();
@@ -298,7 +348,7 @@ export default {
     },
     handleUpdate(row){
       this.showAddDrawer = true;
-      this.addForm = row;
+      this.formData = row;
       console.log(row);
     },
     handleDelete(row){

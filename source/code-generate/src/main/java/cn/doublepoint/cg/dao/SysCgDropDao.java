@@ -1,7 +1,10 @@
 package cn.doublepoint.cg.dao;
 
 import cn.doublepoint.cg.domain.model.CgDomainEntity;
+import cn.doublepoint.cg.domain.model.SysCgDropEntity;
 import cn.doublepoint.cg.domain.vo.SysCgDropVO;
+import cn.doublepoint.commonutil.CommonUtil;
+import cn.doublepoint.commonutil.domain.model.CommonBeanUtil;
 import cn.doublepoint.commonutil.log.Log4jUtil;
 import cn.doublepoint.dto.domain.model.vo.query.QueryParamList;
 import cn.doublepoint.jpa.JPAUtil;
@@ -17,12 +20,13 @@ public class SysCgDropDao implements ISysCgDropDao{
     public SysCgDropVO getByCode(String code) {
         QueryParamList qy = new QueryParamList();
         qy.addParam("dropCode",code);
-        List<SysCgDropVO> list = JPAUtil.load(SysCgDropVO.class, qy);
-        SysCgDropVO t = null;
+        List<SysCgDropEntity> list = JPAUtil.load(SysCgDropEntity.class, qy);
+        SysCgDropEntity t = null;
         if(!CollectionUtils.isEmpty(list)) {
             t = list.get(0);
         }
-        Log4jUtil.debug("Cannot find the SysCgDropVO by code of "+code);
-        return t;
+        SysCgDropVO vo = new SysCgDropVO();
+        CommonBeanUtil.copyProperties(t,vo);
+        return vo;
     }
 }

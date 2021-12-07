@@ -1,12 +1,14 @@
 package cn.doublepoint.cg.domain.model;
 
+import cn.doublepoint.dto.domain.model.entity.BaseEntity;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
 @Table(name = "sys_cg_drop", schema = "base", catalog = "")
-public class SysCgDropEntity {
+public class SysCgDropEntity extends BaseEntity {
     private String id;
     private String dropCode;
     private String dropName;

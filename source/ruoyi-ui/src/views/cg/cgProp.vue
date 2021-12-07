@@ -6,9 +6,17 @@
                 <el-row :gutter="10">
                   <el-form :model="formData" ref="form" :inline="false" label-width="150px">
                       <el-form-item v-for="prop in getPropList()" :key="prop.id" :label="prop.propName" :prop="prop.propName">
-                        <el-select  v-if="isSelect(prop)"  v-model="formData[prop.propName]" placeholder="请选择">
+                        <el-select  v-if="isSelect(prop)&&isDrop(prop)"  v-model="formData[prop.propName]" placeholder="请选择">
                             <el-option
-                            v-for="item in dropdownMap[getDropName(prop)]"
+                            v-for="item in dropdownMap['dr_'+getDropName(prop)]"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                            </el-option>
+                        </el-select>
+                        <el-select  v-else-if="isSelect(prop)&&isDict(prop)"  v-model="formData[prop.propName]" placeholder="请选择">
+                            <el-option
+                            v-for="item in dropdownMap['di_'+getDictName(prop)]"
                             :key="item.dictValue"
                             :label="item.dictLabel"
                             :value="item.dictValue">
@@ -70,7 +78,7 @@ export default {
     getAllExtendProp("4").then(response=>{
       console.log(response);
       this.extendProp = response.parameterMap.data;
-      this.getAllDrop();
+      this.getAllDict();
     })
     // getDomain("BASE").then(response=>{
     //   this.extendProp = response.parameterMap.data;
@@ -81,14 +89,25 @@ export default {
     
   },
   methods: {
-    getAllDrop(){
+    getAllDict(){
       this.extendProp.relPropList.forEach(item=>{
         const dropName = this.getDropName(item);
-        console.log(dropName);
         if(dropName!=""){
-          this.getDicts(dropName).then(response=>{
-            this.dropdownMap[dropName] = response.data;
-          })
+          if(this.dropdownMap['dr_'+dropName]==null){
+            this.getDrop(dropName).then(response=>{
+              this.dropdownMap['dr_'+dropName] = response.parameterMap.data;
+            })
+          }
+        }
+        else{
+          const dictName = this.getDictName(item);
+          if(dictName!=""){
+            if(this.dropdownMap['di_'+dropName]==null){
+                this.getDicts(dictName).then(response=>{
+                  this.dropdownMap['di_'+dictName] = response.data;
+                })
+            }
+          }
         }
       })
     },
@@ -97,6 +116,9 @@ export default {
     },
     getDropName(prop){
       return this.pGetFieldObjPro(prop,'dropname');
+    },
+    getDictName(prop){
+      return this.pGetFieldObjPro(prop,'dictname');
     },
     getFieldLabel(prop){
       return this.pGetFieldObjPro(prop,'label');
@@ -121,6 +143,12 @@ export default {
     },
     isSelect(prop){
       return this.getDomType(prop,"domtype")=="03";
+    },
+    isDict(prop){
+      return this.getDictName(prop,"dictname")!="";
+    },
+    isDrop(prop){
+      return this.getDropName(prop,"dropname")!="";
     },
    handleClick(){
 

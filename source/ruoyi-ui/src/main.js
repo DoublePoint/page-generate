@@ -44,6 +44,7 @@ Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 Vue.prototype.getDrop = getDrop
 
+
 Vue.prototype.msgSuccess = function (msg) {
   this.$message({ showClose: true, message: msg, type: "success" });
 }
@@ -77,7 +78,7 @@ Vue.use(VueMeta)
  */
 
 Vue.use(Element, {
-  size: Cookies.get('size') || 'medium' // set element-ui default size
+  size: Cookies.get('size') || 'small' // set element-ui default size
 })
 
 Vue.config.productionTip = false

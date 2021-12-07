@@ -18,6 +18,7 @@ public class Log4jUtil {
 	}
 
 	public static void error(Exception obj) {
+		obj.printStackTrace();
 		getLogger().error("", obj);
 	}
 
