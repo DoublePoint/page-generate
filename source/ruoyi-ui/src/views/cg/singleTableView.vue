@@ -52,9 +52,27 @@
         <el-table :data="tableDataList" stripe border>
           <el-table-column type="selection" width="50" align="center"  />
           <template v-for="field in fieldMetaList" >
-              <template >
+              <template  v-if="isSelect(field)&&isDrop(field)" >
+                <el-table-column :label="getFieldLabel(field)" :key="field.id"  align="center" :width="getWidth(field)" :prop="field.propCode"
+                  sortable
+                  show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    {{formatterDrop(scope.row,field.propCode,getDropName(field))}}
+                  </template>
+                </el-table-column>
+              </template>
+              <template  v-else-if="isSelect(field)&&isDict(field)" >
                 <el-table-column :label="getFieldLabel(field)" :key="field.id"  align="center" :width="getWidth(field)" :prop="field.propCode" 
-                  :formatter="formatterDrop(field,1)"
+                  sortable
+                  show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    {{formatterDict(scope.row,field.propCode,getDictName(field))}}
+                  </template>
+                </el-table-column>
+              </template>
+              <template v-else>
+                <el-table-column :label="getFieldLabel(field)" :key="field.id"  align="center" :width="getWidth(field)" :prop="field.propCode" 
+                  sortable
                   show-overflow-tooltip>
                 </el-table-column>
               </template>
@@ -227,10 +245,34 @@ export default {
     })
   },
   methods: {
-    formatterDrop(row, column) {
-      console.log("format");
+    formatterDrop(row, columnName,dropName) {
       console.log(row);
-      console.log(column);
+      console.log(columnName);
+      var dropList = this.dropdownMap['dr_'+dropName];
+      if(dropList!=null){
+        var item = dropList.find(item=>{
+          return item.value == row[columnName];
+        })
+        if(item!=null){
+          return item.label;
+        }
+      }
+      return row[columnName];
+      
+    },
+    formatterDict(row, columnName,dictName) {
+      console.log(row);
+      console.log(columnName);
+      var dropList = this.dropdownMap['di_'+dropName];
+      if(dropList!=null){
+        var item = dropList.find(item=>{
+          return item.dictValue == row[columnName];
+        })
+        if(item!=null){
+          return item.dictLabel;
+        }
+      }
+      return row[columnName];
     },
     getAllDict(){
       this.fieldMetaList.forEach(item=>{
