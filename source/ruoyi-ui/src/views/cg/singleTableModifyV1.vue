@@ -476,16 +476,19 @@ export default {
     getDomType(prop){
       return this.pGetFieldObjPro(prop,'domtype');
     },
-    pGetFieldObjPro(prop,propName){
+    getRelProp(prop){
       var relObjectProp = prop.relObjectProp;
       if(relObjectProp == null){
-        console.log(`使用 Prop ID:${field.id} relDomain的relObjectProp.`);
-        relObjectProp = field.relDomain.relObjectProp;
+        console.log(`使用 Prop ID:${prop.id} relDomain的relObjectProp.`);
+        relObjectProp = prop.relDomain.relObjectProp;
       }
       else{
-        console.log(`使用 Prop ID:${field.id} 的relObjectProp.`);
+        console.log(`使用 Prop ID:${prop.id} 的relObjectProp.`);
       }
-      
+      return relObjectProp;
+    },
+    pGetFieldObjPro(prop,propName){
+      var relObjectProp = this.getRelProp(prop);
       if(relObjectProp==null){
         console.log(`relObjectProp为空`);
         return ''
@@ -622,12 +625,12 @@ export default {
       this.selectedField = row;
       let domain = row.relDomain;
       this.fieldDomain = domain;
-      let curFieldProp = {
-        
-      };
-      if(row.relObjectProp!=null){
-        Object.keys(row.relObjectProp).forEach(key => {
-          curFieldProp[key] = row.relObjectProp[key].propValue;
+      var relObjectProp = this.getRelProp(row);
+
+      var curFieldProp={}
+      if(relObjectProp!=null){
+        Object.keys(relObjectProp).forEach(key => {
+          curFieldProp[key] = relObjectProp[key].propValue;
         });
       }
       this.curFieldProp = curFieldProp;
@@ -665,75 +668,7 @@ export default {
         this.msgSuccess("保存成功.");
         return this.getTableField();
       })
-
-      // var data = null;
-      // if(this.selectedField.domainCode==null||this.selectedField.domainCode==""){
-      //   //属性值为field-prop
-      //   data = this.mapToFieldObjectProp();
-      //   clearFieldDomainCode(this.selectedField.id).then(response=>{
-      //     return saveDomainObject(data)
-      //   }).then((response) => {
-      //     this.getTableField();
-      //     this.msgSuccess("保存成功.");
-      //   });
-      // }
-      // else{
-      //   //属性值为domain-prop
-      //   data = this.mapToDomainObjectProp();
-      //   changeFieldDomainCode(this.selectedField.domainCode,this.selectedField.id).then(response=>{
-      //     return saveDomainObject(data)
-      //   }).then((response) => {
-      //     this.getTableField();
-      //     this.msgSuccess("保存成功.");
-      //   });
-      // }
-      // // create new domain
-      // let arr = [];
-     
-
-      //save object
-      // console.log(data);
       
-    },
-    mapToFieldObjectProp() {
-      let arr = [];
-      Object.keys(this.curFieldProp).forEach(key => {
-        var obj = {};
-        if(this.selectedField.relObjectProp==null||this.selectedField.relObjectProp[key]==null){
-          obj = {
-            objectType:'02',
-            objectCode:this.selectedField.id,
-            propCode: key,
-            propValue: this.curFieldProp[key],
-          }
-        } 
-        else{
-          obj.propValue = this.curFieldProp[key];
-        }
-        arr.push(obj);
-      });
-      return arr;
-    },
-    mapToDomainObjectProp() {
-      let arr = [];
-      Object.keys(this.curFieldProp).forEach(key => {
-        var obj = {};
-        if(this.selectedField.relDomain==null||
-          this.selectedField.relDomain.relObjectProp==null||
-          this.selectedField.relDomain.relObjectProp[key]==null){
-          obj = {
-            objectType:'01',
-            objectCode:this.selectedField.domainCode,
-            propCode: key,
-            propValue: this.curFieldProp[key],
-          }
-        } 
-        else{
-          obj.propValue = this.curFieldProp[key];
-         }
-        arr.push(obj);
-      });
-      return arr;
     },
   },
   watch: {

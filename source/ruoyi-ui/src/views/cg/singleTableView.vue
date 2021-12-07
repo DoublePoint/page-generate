@@ -68,11 +68,6 @@
                         :label="item.dictLabel"
                         :value="item.dictValue">
                         </el-option>
-                        <el-option
-                        :key="1"
-                        :label="1"
-                        :value="1">
-                        </el-option>
                         <template>
                           <!-- {{field.relObjectProp.dropname.propValue}}{{getSelectData(field.relObjectProp.dropname.propValue)}}  -->
                         </template>
@@ -203,6 +198,7 @@ export default {
           console.log(response);
           const data = response.parameterMap.data;
           this.fieldMetaList = data;
+          this.getAllDrop();
       })
     }
   },
@@ -212,6 +208,17 @@ export default {
     })
   },
   methods: {
+    getAllDrop(){
+      this.fieldMetaList.forEach(item=>{
+        const dropName = this.getDropName(item);
+        console.log(dropName);
+        if(dropName!=""){
+          this.getDicts(dropName).then(response=>{
+            this.dropdownMap[dropName] = response.data;
+          })
+        }
+      })
+    },
     getDropName(field){
       return this.pGetFieldObjPro(field,'dropname');
     },
@@ -222,7 +229,7 @@ export default {
       return this.pGetFieldObjPro(field,'label');
     },
     getFieldType(field){
-      return this.pGetFieldObjPro(field,'fieldtype');
+      return this.pGetFieldObjPro(field,'domtype');
     },
     pGetFieldObjPro(field,propName){
       var relObjectProp = field.relObjectProp;
