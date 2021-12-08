@@ -249,7 +249,7 @@
                   </el-select>
               </el-form-item>
           </el-form>
-          <el-form :model="newDoamin" ref="form" :inline="false" label-width="150px">
+          <!-- <el-form :model="newDoamin" ref="form" :inline="false" label-width="150px">
               <el-form-item label="类型" prop="domainCode">
                   <el-select  v-model="newDoamin.domainCode" placeholder="请选择"  @change="handleNewDomainChange">
                       <el-option
@@ -260,11 +260,9 @@
                       </el-option>
                   </el-select>
               </el-form-item>
-          </el-form>
+          </el-form> -->
           <cg-prop v-model="curFieldProp" />
-          <el-button type="primary" size="mini" @click="handleSave"
-            >保 存</el-button
-          >
+          <el-button type="primary" size="mini" @click="handleSave">保 存</el-button>
         </el-col>
       </el-tab-pane>
     </el-tabs>
@@ -380,9 +378,6 @@ import {
   deleteTableField,
   updateTableField,
 } from "@/api/cg/v1";
-import { getToken } from "@/utils/auth";
-import { treeselect } from "@/api/system/dept";
-import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import { getDomain,saveDomainObject,} from "@/api/cg/domain.js";
 import { changeFieldDomainCode, clearFieldDomainCode,saveFieldExtendProp} from "@/api/cg/tableFieldConfig.js";
@@ -435,21 +430,10 @@ export default {
       domainList:[],
       newDoamin:{}
 
-      // comCode: "",
     };
   },
   watch: {
-    // 根据名称筛选部门树
-    // 'selectedField.domainCode'(val) {
-    //   console.log('selected.domaincode change');
-    //   this.newDoamin = {};
-    //   getDomain(val).then(response=>{
-    //     this.fieldDomain = response.parameterMap.data;
-    //   })
-    // },
-    // 'newDoamin.domainCode'(val){
-      
-    // }
+   
   },
   created() {
     this.getTable();
@@ -458,61 +442,9 @@ export default {
     })
   },
   methods: {
-    // handleDefaultDomainChange(newVal){
-    //   console.log('handleDefaultDomainChange.domaincode change:'+newVal);
-    //   getDomain(newVal).then(response=>{
-    //     this.fieldDomain = response.parameterMap.data;
-    //   })
-    // },
+    
     getPropList(){
       return this.extendProp.relPropList;
-    },
-    getDropName(prop){
-      return this.pGetFieldObjPro(prop,'dropname');
-    },
-    getFieldLabel(prop){
-      return this.pGetFieldObjPro(prop,'label');
-    },
-    getDomType(prop){
-      return this.pGetFieldObjPro(prop,'domtype');
-    },
-    getRelProp(prop){
-      var relObjectProp = prop.relObjectProp;
-      if(relObjectProp == null){
-        console.log(`使用 Prop ID:${prop.id} relDomain的relObjectProp.`);
-        relObjectProp = prop.relDomain.relObjectProp;
-      }
-      else{
-        console.log(`使用 Prop ID:${prop.id} 的relObjectProp.`);
-      }
-      return relObjectProp;
-    },
-    pGetFieldObjPro(prop,propName){
-      var relObjectProp = this.getRelProp(prop);
-      if(relObjectProp==null){
-        console.log(`relObjectProp为空`);
-        return ''
-      }
-      if(relObjectProp[propName]==null){
-        console.log(`relObjectProp.${propName}为空`);
-        return ''
-      }
-      return relObjectProp[propName].propValue;
-
-
-      // if(prop.relDomain==null){
-      //   console.log(`ID:${prop.id}的prop.relDomain为空.`);
-      //   return ''
-      // }
-      // if(prop.relDomain.relObjectProp==null){
-      //   console.log(`ID:${prop.id}的prop.relDomain.relObjectProp为空`);
-      //   return ''
-      // }
-      // if(prop.relDomain.relObjectProp[propName]==null){
-      //   console.log(`ID:${prop.id}的prop.relDomain.relObjectProp.${propName}为空`);
-      //   return ''
-      // }
-      // return prop.relDomain.relObjectProp[propName].propValue;
     },
     handleNewDomainChange(newVal){
       console.log('newDoamin.domaincode change:'+newVal);
@@ -620,12 +552,10 @@ export default {
     },
     
     handleFieldDetail(row) {
-      // this.comCode = row.comCode;
-      // console.log(row);
       this.selectedField = row;
       let domain = row.relDomain;
       this.fieldDomain = domain;
-      var relObjectProp = this.getRelProp(row);
+      var relObjectProp = this.domainUtil.getRelProp(row);
 
       var curFieldProp={}
       if(relObjectProp!=null){

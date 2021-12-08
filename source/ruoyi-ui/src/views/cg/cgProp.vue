@@ -6,23 +6,25 @@
                 <el-row :gutter="10">
                   <el-form :model="formData" ref="form" :inline="false" label-width="150px">
                       <el-form-item v-for="prop in getPropList()" :key="prop.id" :label="prop.propName" :prop="prop.propName">
-                        <el-select  v-if="isSelect(prop)&&isDrop(prop)"  v-model="formData[prop.propName]" placeholder="请选择">
-                            <el-option
-                            v-for="item in dropdownMap['dr_'+getDropName(prop)]"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                            </el-option>
-                        </el-select>
-                        <el-select  v-else-if="isSelect(prop)&&isDict(prop)"  v-model="formData[prop.propName]" placeholder="请选择">
-                            <el-option
-                            v-for="item in dropdownMap['di_'+getDictName(prop)]"
-                            :key="item.dictValue"
-                            :label="item.dictLabel"
-                            :value="item.dictValue">
-                            </el-option>
-                        </el-select>
-                        <el-input v-else v-model="formData[prop.propName]" />
+                          <span slot="label">
+                            <el-tooltip :content="prop.remark" placement="top">
+                              <i class="el-icon-question"></i>
+                            </el-tooltip>
+                            {{prop.propName}}
+                          </span>
+                          <el-select  v-if="domainUtil.isSelect(prop)"  v-model="formData[prop.propName]" placeholder="请选择"
+                              clearable>
+                              <el-option
+                              v-for="item in dropdownMap[domainUtil.getDropName(prop)]"
+                              :key="item.value"
+                              :label="item.label"
+                              :value="item.value">
+                              </el-option>
+                          </el-select>
+                          <el-select v-else-if="domainUtil.isTextarea(prop)" v-model="formData[prop.propName]">
+                            <el-input type="textarea" v-model="formData[prop.propName]"></el-input>
+                          </el-select>
+                          <el-input v-else v-model="formData[prop.propName]" />
                       </el-form-item>
                   </el-form>
                 </el-row>
@@ -38,7 +40,6 @@
 <script>
 
 import {getAllExtendProp,getComMetaByComCode} from "@/api/cg/com"
-// import { getDomain,saveDomainObject,createNewDomain } from "@/api/cg/domain.js";
 
 export default {
   name: "cgprop",
@@ -46,19 +47,11 @@ export default {
   data() {
     return {
         activeName:"first",
-        
-        formMetaData:{
-            
-        },
-        domType:"",
         tabMetaData:[],
-        options:[],
         extendProp:{
-
         },
         dropdownMap:{
-
-        }
+        },
     };
   },
   watch: {
@@ -80,33 +73,16 @@ export default {
       this.extendProp = response.parameterMap.data;
       this.getAllDict();
     })
-    // getDomain("BASE").then(response=>{
-    //   this.extendProp = response.parameterMap.data;
-    // })
-    // this.getDicts("sys_yes_no").then(response => {
-    //   this.options = response.data;
-    // });
-    
   },
   methods: {
     getAllDict(){
       this.extendProp.relPropList.forEach(item=>{
-        const dropName = this.getDropName(item);
+        const dropName = this.domainUtil.getDropName(item);
         if(dropName!=""){
-          if(this.dropdownMap['dr_'+dropName]==null){
+          if(this.dropdownMap[dropName]==null){
             this.getDrop(dropName).then(response=>{
-              this.dropdownMap['dr_'+dropName] = response.parameterMap.data;
+              this.dropdownMap[dropName] = response.parameterMap.data;
             })
-          }
-        }
-        else{
-          const dictName = this.getDictName(item);
-          if(dictName!=""){
-            if(this.dropdownMap['di_'+dropName]==null){
-                this.getDicts(dictName).then(response=>{
-                  this.dropdownMap['di_'+dictName] = response.data;
-                })
-            }
           }
         }
       })
@@ -114,66 +90,10 @@ export default {
     getPropList(){
       return this.extendProp.relPropList;
     },
-    getDropName(prop){
-      return this.pGetFieldObjPro(prop,'dropname');
-    },
-    getDictName(prop){
-      return this.pGetFieldObjPro(prop,'dictname');
-    },
-    getFieldLabel(prop){
-      return this.pGetFieldObjPro(prop,'label');
-    },
-    getDomType(prop){
-      return this.pGetFieldObjPro(prop,'domtype');
-    },
-    pGetFieldObjPro(prop,propName){
-      if(prop.relDomain==null){
-        console.log(`ID:${prop.id}的prop.relDomain为空.`);
-        return ''
-      }
-      if(prop.relDomain.relObjectProp==null){
-        console.log(`ID:${prop.id}的prop.relDomain.relObjectProp为空`);
-        return ''
-      }
-      if(prop.relDomain.relObjectProp[propName]==null){
-        console.log(`ID:${prop.id}的prop.relDomain.relObjectProp.${propName}为空`);
-        return ''
-      }
-      return prop.relDomain.relObjectProp[propName].propValue;
-    },
-    isSelect(prop){
-      return this.getDomType(prop,"domtype")=="03";
-    },
-    isDict(prop){
-      return this.getDictName(prop,"dictname")!="";
-    },
-    isDrop(prop){
-      return this.getDropName(prop,"dropname")!="";
-    },
-   handleClick(){
+    
+    handleClick(){
 
-   },
-   clearMeta(){
-     this.formMetaData = null;
-     this.tabMetaData = null;
-   },
-  //  initAllCom(){
-  //    if(this.comCode==null){
-  //      return;
-  //    }
-  //    getComMetaByComCode(this.comCode).then(res=>{
-  //       // console.log(res);
-  //       const data = res.parameterMap.data;
-  //       this.formMetaData = data.relProp;
-  //       this.tabMetaData = data.relPropGroup;
-  //     })
-  //  },
-   getSelectData(dictname){
-     this.getDicts(dictname).then(response => {
-      this.$set(this.dropdownMap, dictname, response.data)
-      console.log(this.dropdownMap)
-    });
-   }
+    },
   }
 };
 </script>

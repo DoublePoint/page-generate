@@ -15,3 +15,5 @@ export function getDomain(domainCode){
         method: 'get',
     })
 }
+
+
