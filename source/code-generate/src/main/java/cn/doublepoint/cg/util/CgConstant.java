@@ -7,4 +7,7 @@ public class CgConstant {
     public static final String OBJECT_PROP_REL_TYPE_CONFIG_TABLE_FIELD = "02"; //配置表关联
 
     public static final String COM_PROP_GROUP_KEY_DEFAULT = "base";//属性默认分组
+
+    public static final String DOMAIN_SOURCE_DEFAULT = "01";//系统默认
+    public static final String DOMAIN_SOURCE_GENERATE = "00";//自动创建
 }

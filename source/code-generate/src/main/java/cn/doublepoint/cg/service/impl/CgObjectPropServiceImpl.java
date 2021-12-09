@@ -1,6 +1,9 @@
 package cn.doublepoint.cg.service.impl;
 
+import cn.doublepoint.cg.dao.ICgDomainDao;
 import cn.doublepoint.cg.dao.ICgObjectPropDao;
+import cn.doublepoint.cg.domain.model.CgConfigTableFieldEntity;
+import cn.doublepoint.cg.domain.model.CgDomainEntity;
 import cn.doublepoint.cg.domain.model.CgMetaComPropEntity;
 import cn.doublepoint.cg.domain.model.CgObjectPropEntity;
 import cn.doublepoint.cg.domain.vo.CgMetaComPropVO;
@@ -26,8 +29,13 @@ import java.util.*;
  */
 @Service
 public class CgObjectPropServiceImpl implements CgObjectPropService {
+
+
     @Autowired
     ICgObjectPropDao objectPropDao;
+
+    @Autowired
+    ICgDomainDao domainDao;
 
     @Override
     public void save(List<CgObjectPropEntity> list) {
@@ -99,8 +107,25 @@ public class CgObjectPropServiceImpl implements CgObjectPropService {
      */
     @Override
     public void saveFieldProp(SaveExtPropCmdVO cmd) {
+        saveProp(cmd,CgConstant.OBJECT_PROP_REL_TYPE_CONFIG_TABLE_FIELD);
+    }
+
+    /**
+     * 保存字段属性，没有的创建，有的更新
+     * @param cmd
+     */
+    @Override
+    public void saveDomainProp(SaveExtPropCmdVO cmd) {
+        saveProp(cmd,CgConstant.OBJECT_PROP_REL_TYPE_VUECOMPONENT);
+    }
+
+    /**
+     * 保存字段属性，没有的创建，有的更新
+     * @param cmd
+     */
+    private void saveProp(SaveExtPropCmdVO cmd,String type) {
         if(cmd==null){
-            Log4jUtil.error(new Exception("Save Field Extend Prop Command is empty."));
+            Log4jUtil.error(new Exception("Save Extend Prop Command is empty."));
             return ;
         }
         List<SaveExtPropCmdSubVO> propList = cmd.getProp();
@@ -108,19 +133,30 @@ public class CgObjectPropServiceImpl implements CgObjectPropService {
             Log4jUtil.warn("Prop is empty");
             return;
         }
-        final String fieldId = cmd.getFieldId();
         List<CgObjectPropEntity> createList = new ArrayList<>();
         List<CgObjectPropEntity> updateList = new ArrayList<>();
         propList.stream().forEach(item->{
             final String propCode = item.getPropCode();
             final String propValue = item.getPropValue();
-            CgObjectPropEntity prop = objectPropDao.getObjectObjectcodePropcode(fieldId, item.getPropCode());
+            CgObjectPropEntity prop ;
+            if(CgConstant.OBJECT_PROP_REL_TYPE_VUECOMPONENT.equals(type)) {
+                prop = objectPropDao.getObjectObjectcodePropcode(cmd.getDomainCode(), item.getPropCode());
+            }
+            else {
+                prop = objectPropDao.getObjectObjectcodePropcode(cmd.getFieldId(), item.getPropCode());
+            }
             if(prop == null){
                 CgObjectPropEntity ety = new CgObjectPropEntity();
                 ety.setPropCode(propCode);
                 ety.setPropValue(propValue);
-                ety.setObjectCode(fieldId);
-                ety.setObjectType(CgConstant.OBJECT_PROP_REL_TYPE_CONFIG_TABLE_FIELD);
+                if(CgConstant.OBJECT_PROP_REL_TYPE_VUECOMPONENT.equals(type)) {
+                    ety.setObjectCode(cmd.getDomainCode());
+                }
+                else {
+                    ety.setObjectCode(cmd.getFieldId());
+                }
+
+                ety.setObjectType(type);
                 createList.add(ety);
             }
             else{
@@ -133,11 +169,16 @@ public class CgObjectPropServiceImpl implements CgObjectPropService {
         objectPropDao.update(updateList);
     }
 
+    /**
+     * 删除自动生成的域信息，如果不存在则不删除
+     * @param domainCode
+     */
     @Override
-    public void deleteByFieldId(String fieldId) {
+    public void deleteByDomainCode(String domainCode) {
         QueryParamList paramList = new QueryParamList();
-        paramList.addParam("fieldId",fieldId);
+        paramList.addParam("domainCode",domainCode);
         paramList.addParam("objectType",CgConstant.OBJECT_PROP_REL_TYPE_CONFIG_TABLE);
-        JPAUtil.executeUpdate("DELETE FROM CgObjectPropEntity WHERE objectCode = :fieldId and objectType=:objectType",paramList);
+        JPAUtil.executeUpdate("DELETE FROM CgObjectPropEntity WHERE objectCode = :domainCode and objectType=:objectType",paramList);
     }
+
 }

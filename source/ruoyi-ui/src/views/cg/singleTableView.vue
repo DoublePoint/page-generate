@@ -94,6 +94,7 @@
                         :value="item.value">
                         </el-option>
                     </el-select>
+                    <el-input type="textarea" v-else-if="domainUtil.isTextarea(field)" v-model="formData[field.propName]" />
                     <el-input v-else v-model="formData[field.propCode]" />
                   </el-form-item>
                 </template>

@@ -14,6 +14,7 @@ public class CgDomainEntity extends BaseEntity {
     private String domainName;
     private String domainType;
     private String comCode;
+    private String source;
     private String parentDomainCode;
     private String domainRelaType;
     private String define;
@@ -23,6 +24,16 @@ public class CgDomainEntity extends BaseEntity {
     private Timestamp updateTime;
     private String createUserId;
     private String updateUserId;
+
+    @Basic
+    @Column(name = "SOURCE")
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     @Id
     @Column(name = "ID")

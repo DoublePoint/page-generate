@@ -139,10 +139,13 @@ public class ConfigTableController {
         //如果前后Domain都是空，则修改field的prop
         if(dbDomEmpty&&reuDomEmpty){
             objectPropService.saveFieldProp(cmd);
+            response.setErrorMessage("The domain code annot be null.");
+            return response;
         }
-        //如果重置成了绑定Domain,则删除field的 prop
+        //如果重置成了绑定Domain,处理删除原来的
         else if(dbDomEmpty&&!reuDomEmpty){
             fieldService.changeDomainCode(reuFieldId,reuDomainCode);
+
             objectPropService.deleteByFieldId(reuFieldId);
         }
         //如果解绑了Domain，重置domainCode

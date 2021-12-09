@@ -14,4 +14,10 @@ public interface CgDomainService {
     CgDomainVO getDomainTreeById(String id);
 
     CgDomainEntity copy(String domainCode);
+
+    CgDomainEntity createNewDomain(String domainCode);
+
+    void deleteDomainAndProp(String domainCode);
+
+    CgDomainEntity createNewDomainByFieldId(String fieldId);
 }

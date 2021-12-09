@@ -14,6 +14,7 @@ public class CgDomainVO{
     private String domainName;
     private String domainType;
     private String comCode;
+    private String source;
     private String parentDomainCode;
     private String domainRelaType;
     private String define;
@@ -30,6 +31,14 @@ public class CgDomainVO{
     private List<CgDomainVO> relDomainList;
     private Map<String,CgObjectPropVO> relObjectProp;
     private CgMetaComVO relMetaCom;
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     public CgMetaComVO getRelMetaCom() {
         return relMetaCom;

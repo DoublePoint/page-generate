@@ -60,4 +60,17 @@ public class CgDomainDao implements ICgDomainDao{
         Log4jUtil.debug("Cannot find the CgMetaCom by code of "+code);
         return t;
     }
+
+    @Override
+    public void deleteDomainAndProp(String domainCode){
+        StringBuffer sb = new StringBuffer();
+        sb.append("DELETE FROM CgDomainEntity E WHERE E.domainCode = :domainCode");
+        QueryParamList paramList = new QueryParamList();
+        paramList.addParam("domainCode", domainCode);
+        JPAUtil.executeUpdate(sb.toString(),paramList);
+
+        sb = new StringBuffer();
+        sb.append(("DELETE FROM CgObjectPropEntity P WHERE P.domainCode = :domainCode"));
+        JPAUtil.executeUpdate(sb.toString(),paramList);
+    }
 }

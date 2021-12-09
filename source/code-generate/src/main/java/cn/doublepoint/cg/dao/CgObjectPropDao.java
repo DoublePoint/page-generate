@@ -3,6 +3,7 @@ package cn.doublepoint.cg.dao;
 import cn.doublepoint.cg.domain.model.CgDomainEntity;
 import cn.doublepoint.cg.domain.model.CgObjectPropEntity;
 import cn.doublepoint.cg.domain.vo.CgObjectPropVO;
+import cn.doublepoint.cg.util.CgConstant;
 import cn.doublepoint.commonutil.CommonUtil;
 import cn.doublepoint.commonutil.domain.model.CommonBeanUtil;
 import cn.doublepoint.commonutil.log.Log4jUtil;
@@ -110,5 +111,21 @@ public class CgObjectPropDao implements ICgObjectPropDao{
         });
 
         JPAUtil.update(updateList);
+    }
+
+    /**
+     * 删除系统内部自动生成DomainC，默认Domain不允许业务系统进行删除
+     * @param domainCode
+     */
+    @Override
+    public void removeGenerateDomainCode(String domainCode){
+        StringBuffer sb = new StringBuffer();
+        sb.append("DELETE FROM CgObjectPropEntity o WHERE o.domainCode = :domainCode and domainSource=:domainSource");
+
+        QueryParamList params = new QueryParamList();
+        params.addParam("domainCode", domainCode);
+        params.addParam("domainSource", CgConstant.DOMAIN_SOURCE_GENERATE);
+        int i = JPAUtil.executeUpdate(sb.toString(), params);
+        Log4jUtil.debug("Delete success ,row count "+ i + ".");
     }
 }

@@ -49,6 +49,10 @@ export function isSelect(obj) {
 //   return getDictName(obj) != "";
 // };
 
-export function isDrop(obj) {
-  return getDropName(obj) != "";
-};
+// export function isDrop(obj) {
+//   return getDropName(obj) != "";
+// };
+
+export function isTextarea(obj){
+  return pGetFieldObjPro(obj, 'domtype')=="05";
+}

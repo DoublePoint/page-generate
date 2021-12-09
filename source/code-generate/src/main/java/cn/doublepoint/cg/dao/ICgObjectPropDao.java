@@ -15,4 +15,6 @@ public interface ICgObjectPropDao {
     CgObjectPropEntity getObjectObjectcodePropcode(String objectCode, String propCode);
 
     void update(List<CgObjectPropEntity> updateList);
+
+    void removeGenerateDomainCode(String domainCode);
 }

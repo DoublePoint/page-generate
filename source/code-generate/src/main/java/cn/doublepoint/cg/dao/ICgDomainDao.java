@@ -15,4 +15,6 @@ public interface ICgDomainDao {
     void create(List<CgDomainEntity> etyList);
 
     CgDomainEntity getByCode(String code);
+
+    void deleteDomainAndProp(String domainCode);
 }

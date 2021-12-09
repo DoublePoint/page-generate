@@ -21,9 +21,7 @@
                               :value="item.value">
                               </el-option>
                           </el-select>
-                          <el-select v-else-if="domainUtil.isTextarea(prop)" v-model="formData[prop.propName]">
-                            <el-input type="textarea" v-model="formData[prop.propName]"></el-input>
-                          </el-select>
+                          <el-input type="textarea" v-else-if="domainUtil.isTextarea(prop)" v-model="formData[prop.propName]" />
                           <el-input v-else v-model="formData[prop.propName]" />
                       </el-form-item>
                   </el-form>

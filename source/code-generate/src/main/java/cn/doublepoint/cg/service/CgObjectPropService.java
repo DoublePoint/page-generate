@@ -21,5 +21,8 @@ public interface CgObjectPropService {
 
     void saveFieldProp(SaveExtPropCmdVO cmd);
 
-    void deleteByFieldId(String reuFieldId);
+    void saveDomainProp(SaveExtPropCmdVO cmd);
+
+    void deleteByDomainCode(String domainCode);
+
 }

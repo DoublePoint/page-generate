@@ -1,8 +1,8 @@
 package cn.doublepoint.cg.service.impl;
 
-import cn.doublepoint.cg.dao.CgDomainDao;
 import cn.doublepoint.cg.dao.CgObjectPropDao;
 import cn.doublepoint.cg.dao.ICgDomainDao;
+import cn.doublepoint.cg.domain.model.CgConfigTableFieldEntity;
 import cn.doublepoint.cg.domain.model.CgDomainEntity;
 import cn.doublepoint.cg.domain.model.CgObjectPropEntity;
 import cn.doublepoint.cg.domain.vo.CgDomainVO;
@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Created on 2021/12/1.
@@ -153,5 +154,44 @@ public class CgDomainServiceImpl implements CgDomainService {
             cgDomainVOS.add(dom);
         }
         domain.setRelDomainMap(relDomain);
+    }
+
+    /**
+     * 根据域编码创建域
+     * @param domainCode
+     * @return
+     */
+    @Override
+    public CgDomainEntity createNewDomain(String domainCode) {
+        CgDomainEntity entity = new CgDomainEntity();
+        if(StringUtils.isEmpty(domainCode)){
+            Log4jUtil.error(new Exception("Domain code cannot be null."));
+            return null;
+        }
+        entity.setDomainCode(domainCode);
+        domainDao.create(entity);
+        return entity;
+    }
+
+    @Override
+    public void deleteDomainAndProp(String domainCode){
+        domainDao.deleteDomainAndProp(domainCode);
+    }
+
+    @Override
+    public CgDomainEntity createNewDomainByFieldId(String fieldId) {
+        CgConfigTableFieldEntity fieldEntity = JPAUtil.loadById(CgConfigTableFieldEntity.class, fieldId);
+        if(fieldEntity==null){
+            Log4jUtil.error(new Exception("Cannot find the CgConfigTableFiled id of "+fieldId));
+            return null;
+        }
+
+        CgDomainEntity domainEntity = new CgDomainEntity();
+        domainEntity.setId(idWorker.nextId());
+        domainEntity.setDomainCode(fieldEntity.getPropCode()+"_"+domainEntity.getId());
+        domainEntity.setDomainName(fieldEntity.getPropName());
+        domainEntity.setSource(CgConstant.DOMAIN_SOURCE_GENERATE);
+        domainDao.create(domainEntity);
+        return domainEntity;
     }
 }
