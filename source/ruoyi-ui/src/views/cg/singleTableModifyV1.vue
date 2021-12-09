@@ -239,7 +239,7 @@
         <el-col :span="8">
           <el-form :model="selectedField" ref="form" :inline="false" label-width="150px">
               <el-form-item  label="域" prop="domainCode">
-                  <el-select  v-model="selectedField.domainCode" placeholder="请选择"  clearable="">
+                  <el-select  v-model="selectedField.domainCode" placeholder="请选择"  clearable="" @change="handleDomainChange">
                       <el-option
                       v-for="item in domainList"
                       :key="item.id"
@@ -249,19 +249,7 @@
                   </el-select>
               </el-form-item>
           </el-form>
-          <!-- <el-form :model="newDoamin" ref="form" :inline="false" label-width="150px">
-              <el-form-item label="类型" prop="domainCode">
-                  <el-select  v-model="newDoamin.domainCode" placeholder="请选择"  @change="handleNewDomainChange">
-                      <el-option
-                      v-for="item in domainList"
-                      :key="item.id"
-                      :label="item.domainName"
-                      :value="item.domainCode">
-                      </el-option>
-                  </el-select>
-              </el-form-item>
-          </el-form> -->
-          <cg-prop v-model="curFieldProp" />
+          <cg-prop v-model="curFieldProp" :disabled="cgpropDisabled"/>
           <el-button type="primary" size="mini" @click="handleSave">保 存</el-button>
         </el-col>
       </el-tab-pane>
@@ -421,15 +409,15 @@ export default {
       tabFiledDisabled: true,
       curFieldProp: {
       },
-      fieldDomain:{
-        propMap: {},
-      },
+      // fieldDomain:{
+      //   propMap: {},
+      // },
       selectedField:{
         domainCode:""
       },
       domainList:[],
-      newDoamin:{}
-
+      newDoamin:{},
+      cgpropDisabled:true
     };
   },
   watch: {
@@ -446,11 +434,19 @@ export default {
     getPropList(){
       return this.extendProp.relPropList;
     },
-    handleNewDomainChange(newVal){
-      console.log('newDoamin.domaincode change:'+newVal);
-      getDomain(newVal).then(response=>{
-        this.fieldDomain = response.parameterMap.data;
+    handleDomainChange(domainCode){
+      console.log('newDoamin.domaincode change:'+domainCode);
+      if(domainCode==null||domainCode==""){
+        this.cgpropDisabled = false;
+        return;
+      }
+      getDomain(domainCode).then(response=>{
+        const fieldDomain = response.parameterMap.data;
+        var relObjectProp = fieldDomain.relObjectProp;
+        this.getMetaData(relObjectProp);
+        this.cgpropDisabled = true;
       })
+      
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
@@ -553,10 +549,12 @@ export default {
     
     handleFieldDetail(row) {
       this.selectedField = row;
-      let domain = row.relDomain;
-      this.fieldDomain = domain;
+      // let domain = row.relDomain;
+      // this.fieldDomain = domain;
       var relObjectProp = this.domainUtil.getRelProp(row);
-
+      this.getMetaData(relObjectProp);
+    },
+    getMetaData(relObjectProp){
       var curFieldProp={}
       if(relObjectProp!=null){
         Object.keys(relObjectProp).forEach(key => {

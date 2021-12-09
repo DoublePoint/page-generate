@@ -189,7 +189,7 @@ public class CgDomainServiceImpl implements CgDomainService {
         CgDomainEntity domainEntity = new CgDomainEntity();
         domainEntity.setId(idWorker.nextId());
         domainEntity.setDomainCode(fieldEntity.getPropCode()+"_"+domainEntity.getId());
-        domainEntity.setDomainName(fieldEntity.getPropName());
+        domainEntity.setDomainName(fieldEntity.getPropCode()+"_"+domainEntity.getId());
         domainEntity.setSource(CgConstant.DOMAIN_SOURCE_GENERATE);
         domainDao.create(domainEntity);
         return domainEntity;

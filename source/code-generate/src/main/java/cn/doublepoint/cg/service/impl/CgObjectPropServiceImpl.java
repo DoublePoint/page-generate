@@ -71,7 +71,8 @@ public class CgObjectPropServiceImpl implements CgObjectPropService {
             CommonBeanUtil.copyProperties(metaPropEntity, metaProp);
             vo.setMetaProp(metaProp);
 
-            map.put(metaProp.getPropName(),vo);
+//            map.put(metaProp.getPropName(),vo);
+            map.put(metaProp.getPropCode(),vo);
         });
         return map;
     }
@@ -177,7 +178,7 @@ public class CgObjectPropServiceImpl implements CgObjectPropService {
     public void deleteByDomainCode(String domainCode) {
         QueryParamList paramList = new QueryParamList();
         paramList.addParam("domainCode",domainCode);
-        paramList.addParam("objectType",CgConstant.OBJECT_PROP_REL_TYPE_CONFIG_TABLE);
+        paramList.addParam("objectType",CgConstant.OBJECT_PROP_REL_TYPE_VUECOMPONENT);
         JPAUtil.executeUpdate("DELETE FROM CgObjectPropEntity WHERE objectCode = :domainCode and objectType=:objectType",paramList);
     }
 

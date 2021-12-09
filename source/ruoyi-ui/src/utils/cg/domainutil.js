@@ -1,17 +1,18 @@
 export function getDropName(obj) {
-  return pGetFieldObjPro(obj, 'dropname');
+  //return pGetFieldObjPro(obj, 'dropname');
+  return pGetFieldObjPro(obj, 'SELECT_DROP_NAME');
 };
 
 export function getFieldLabel(obj) {
-  return pGetFieldObjPro(obj, 'label');
+  return pGetFieldObjPro(obj, 'LABEL');
 };
 
 export function getDomType(obj) {
-  return pGetFieldObjPro(obj, 'domtype');
+  return pGetFieldObjPro(obj, 'DOM_TYPE');
 };
 
 export function getWidth(obj){
-  return this.pGetFieldObjPro(obj,'width');
+  return this.pGetFieldObjPro(obj,'WIDTH');
 }
 export function getRelProp(obj){
   var relObjectProp = obj.relObjectProp;
@@ -54,5 +55,5 @@ export function isSelect(obj) {
 // };
 
 export function isTextarea(obj){
-  return pGetFieldObjPro(obj, 'domtype')=="05";
+  return pGetFieldObjPro(obj, 'DOM_TYPE')=="05";
 }

@@ -124,12 +124,11 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
         JPAUtil.update(fieldEty);
     }
 
-    @PostMapping("/field/prop")
+    @Override
     public AjaxResponse saveFieldExtendProp(@RequestBody SaveExtPropCmdVO cmd){
         AjaxResponse response = new AjaxResponse();
 
         CgConfigTableFieldEntity dbField = JPAUtil.loadById(CgConfigTableFieldEntity.class, cmd.getFieldId());
-
         String dbDomainCode = dbField.getDomainCode();
         String reuDomainCode = cmd.getDomainCode();
         String reuFieldId = cmd.getFieldId();
@@ -138,6 +137,11 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
 
         //如果前后Domain都是空，则修改field的prop
         if(dbDomEmpty&&reuDomEmpty){
+            CgDomainEntity newDomain = domainService.createNewDomainByFieldId(cmd.getFieldId());
+            cmd.setDomainCode(newDomain.getDomainCode());
+            Log4jUtil.debug("Cmd has been changed,please use carefully.");
+            propService.saveDomainProp(cmd);
+            changeDomainCode(reuFieldId,newDomain.getDomainCode());
             response.setErrorMessage("The domain code annot be null.");
             return response;
         }

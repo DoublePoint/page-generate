@@ -5,14 +5,14 @@
             <el-tab-pane label="字段属性" name="first">
                 <el-row :gutter="10">
                   <el-form :model="formData" ref="form" :inline="false" label-width="150px">
-                      <el-form-item v-for="prop in getPropList()" :key="prop.id" :label="prop.propName" :prop="prop.propName">
+                      <el-form-item v-for="prop in getPropList()" :key="prop.id" :label="prop.propName" :prop="prop.propCode" :disabled="disabled">
                           <span slot="label">
                             <el-tooltip :content="prop.remark" placement="top">
                               <i class="el-icon-question"></i>
                             </el-tooltip>
                             {{prop.propName}}
                           </span>
-                          <el-select  v-if="domainUtil.isSelect(prop)"  v-model="formData[prop.propName]" placeholder="请选择"
+                          <el-select  v-if="domainUtil.isSelect(prop)"  v-model="formData[prop.propCode]" placeholder="请选择" :disabled="disabled"
                               clearable>
                               <el-option
                               v-for="item in dropdownMap[domainUtil.getDropName(prop)]"
@@ -21,8 +21,8 @@
                               :value="item.value">
                               </el-option>
                           </el-select>
-                          <el-input type="textarea" v-else-if="domainUtil.isTextarea(prop)" v-model="formData[prop.propName]" />
-                          <el-input v-else v-model="formData[prop.propName]" />
+                          <el-input type="textarea" v-else-if="domainUtil.isTextarea(prop)" v-model="formData[prop.propCode]" :readonly="disabled"/>
+                          <el-input v-else v-model="formData[prop.propCode]" :readonly="disabled"/>
                       </el-form-item>
                   </el-form>
                 </el-row>
@@ -41,7 +41,10 @@ import {getAllExtendProp,getComMetaByComCode} from "@/api/cg/com"
 
 export default {
   name: "cgprop",
-  props: ['value'],
+  props: {
+    value:Object,
+    disabled:Boolean,
+  },
   data() {
     return {
         activeName:"first",
