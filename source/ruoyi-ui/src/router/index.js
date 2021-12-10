@@ -168,10 +168,52 @@ export const constantRoutes = [
         meta: { title: '单表配置1.0', activeMenu: '/cg/singleTableModifyV1'}
       },
       {
-        path: 'singleTableView?tableId=tableId',
+        path: 'singleTableViewDomain',
         component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
-        name: 'Single Table View',
-        meta: { title: '单表查看1.0', activeMenu: '/cg/singleTableView'}
+        name: 'singleTableViewDomain',
+        meta: { title: '域管理', activeMenu: '/cg/singleTableViewDomain'}
+      },
+      {
+        path: 'singleTableViewCom',
+        component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
+        name: 'singleTableViewCom',
+        meta: { title: '组件管理', activeMenu: '/cg/singleTableViewCom'}
+      },
+      {
+        path: 'singleTableViewComProp',
+        component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
+        name: 'singleTableViewComProp',
+        meta: { title: '组件属性管理', activeMenu: '/cg/singleTableViewComProp'}
+      },
+      {
+        path: 'singleTableViewObjectProp',
+        component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
+        name: 'singleTableViewObjectProp',
+        meta: { title: '域值管理', activeMenu: '/cg/singleTableViewObjectProp'}
+      },
+      {
+        path: 'singleTableViewComRel',
+        component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
+        name: 'singleTableViewComRel',
+        meta: { title: '组件关系管理', activeMenu: '/cg/singleTableViewComRel'}
+      },
+      {
+        path: 'singleTableViewDrop',
+        component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
+        name: 'singleTableViewDrop',
+        meta: { title: '下拉管理', activeMenu: '/cg/singleTableViewDrop'}
+      },
+      {
+        path: 'singleTableViewPropGroup',
+        component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
+        name: 'singleTableViewPropGroup',
+        meta: { title: '属性分组管理', activeMenu: '/cg/singleTableViewDrop'}
+      },
+      {
+        path: 'singleTableViewPropGroupRel',
+        component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
+        name: 'singleTableViewPropGroupRel',
+        meta: { title: '属性分组关联管理', activeMenu: '/cg/singleTableViewDrop'}
       }
     ]
   }
