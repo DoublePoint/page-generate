@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="20">
+    <!-- <el-row :gutter="20">
       <el-select v-model="tableId" placeholder="请选择">
         <el-option
           v-for="item in tableSelectList"
@@ -9,7 +9,7 @@
           :value="item.id">
         </el-option>
       </el-select>
-    </el-row>
+    </el-row> -->
     <el-row :gutter="20">
       <!--用户数据-->
       <el-col :span="20" :xs="24">
@@ -146,21 +146,20 @@ export default {
       tableId:null,
       showAddDrawer:false,
       formData:{},
-      tableSelectList:[],
+      // tableSelectList:[],
       dropdownMap:{},
     };
   },
   watch: {
     tableId(val){
-      const tableId = this.tableId;
-      getTableMeta(tableId).then(response=>{
+      getTableMeta(val).then(response=>{
           console.log(response);
           const data = response.parameterMap.data;
           this.tableMetaData = data;
           this.getTableDataAll();
       })
 
-      getFieldsMeta(tableId).then(response=>{
+      getFieldsMeta(val).then(response=>{
           console.log(response);
           const data = response.parameterMap.data;
           this.fieldMetaList = data;
@@ -169,9 +168,12 @@ export default {
     }
   },
   created() {
-    getTableDataAll("cg_config_table").then(response=>{
-       this.tableSelectList = response.parameterMap.data;
-    })
+    //console.log("获取this.$route.params");
+    const tableId = this.$route.query.tableId;
+    this.tableId = tableId;
+    // getTableDataAll("cg_config_table").then(response=>{
+    //    this.tableSelectList = response.parameterMap.data;
+    // })
   },
   methods: {
     formatterDrop(row, columnName,dropName) {

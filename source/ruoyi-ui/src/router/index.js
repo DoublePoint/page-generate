@@ -165,13 +165,13 @@ export const constantRoutes = [
         path: 'singleTableModifyV1',
         component: (resolve) => require(['@/views/cg/singleTableModifyV1'], resolve),
         name: 'Single Table V1.0',
-        meta: { title: '元数据配置', activeMenu: '/cg/singleTableModifyV1'}
+        meta: { title: '单表配置1.0', activeMenu: '/cg/singleTableModifyV1'}
       },
       {
-        path: 'singleTableView/:tableId',
+        path: 'singleTableView?tableId=tableId',
         component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
         name: 'Single Table View',
-        meta: { title: '元数据配置', activeMenu: '/cg/singleTableModifyV1'}
+        meta: { title: '单表查看1.0', activeMenu: '/cg/singleTableView'}
       }
     ]
   }
