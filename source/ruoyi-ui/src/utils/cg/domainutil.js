@@ -11,23 +11,32 @@ export function getDomType(obj) {
   return pGetFieldObjPro(obj, 'DOM_TYPE');
 };
 
+export function getFieldBindProp(obj){
+  return obj.propCode;
+}
+
+export function getFieldDefaultValue(obj){
+  return pGetFieldObjPro(obj, 'DEFAULT_VALUE')
+}
+
+
 export function getWidth(obj){
   return this.pGetFieldObjPro(obj,'WIDTH');
 }
 export function getRelProp(obj){
   var relObjectProp = obj.relObjectProp;
   if(relObjectProp == null){
-    console.log(`${JSON.stringify(obj)}: obj.relObjectProp为空.`);
+    console.log(`obj.relObjectProp为空.`);
   }
   else{
     return relObjectProp;
   }
   if (obj.relDomain == null) {
-    console.log(`${JSON.stringify(obj)}:obj.relDomain为空.`);
+    console.log(`obj.relDomain为空.`);
     return ''
   }
   if (obj.relDomain.relObjectProp == null) {
-    console.log(`${JSON.stringify(obj)}:obj.relDomain.relObjectProp为空`);
+    console.log(`obj.relDomain.relObjectProp为空`);
     return ''
   }
   return obj.relDomain.relObjectProp;
@@ -36,7 +45,7 @@ export function getRelProp(obj){
 export function pGetFieldObjPro(obj, propName) {
   var relObjectProp = getRelProp(obj);
   if (relObjectProp[propName] == null) {
-    console.log(`${JSON.stringify(obj)}:relObjectProp.${propName}为空`);
+    console.log(`relObjectProp.${propName}为空`);
     return ''
   }
   return relObjectProp[propName].propValue;

@@ -186,6 +186,12 @@ export const constantRoutes = [
         meta: { title: '组件属性管理', activeMenu: '/cg/singleTableViewComProp'}
       },
       {
+        path: 'singleTableViewComPropRel',
+        component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
+        name: 'singleTableViewComPropRel',
+        meta: { title: '组件属性关系管理', activeMenu: '/cg/singleTableViewComPropRel'}
+      },
+      {
         path: 'singleTableViewObjectProp',
         component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
         name: 'singleTableViewObjectProp',

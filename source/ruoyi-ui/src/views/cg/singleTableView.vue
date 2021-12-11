@@ -85,8 +85,8 @@
           <!-- <cg-prop v-model="this.formData"  :domain-prop="this.fieldMetaList.relDomain"/> -->
           <el-form :model="formData" ref="form" :inline="false" label-width="150px">
                 <template v-if="fieldMetaList!=null">
-                  <el-form-item v-for="field in fieldMetaList" :key="field.id" :label="domainUtil.getFieldLabel(field)" :prop="field.propCode">
-                    <el-select  v-if="domainUtil.isSelect(field)"  v-model="formData[field.propCode]" placeholder="请选择">
+                  <el-form-item v-for="field in fieldMetaList" :key="field.id" :label="domainUtil.getFieldLabel(field)" :prop="domainUtil.getFieldBindProp(field)">
+                    <el-select  v-if="domainUtil.isSelect(field)"  v-model="formData[domainUtil.getFieldBindProp(field)]" placeholder="请选择">
                         <el-option
                         v-for="item in dropdownMap[domainUtil.getDropName(field)]"
                         :key="item.value"
@@ -94,8 +94,8 @@
                         :value="item.value">
                         </el-option>
                     </el-select>
-                    <el-input type="textarea" v-else-if="domainUtil.isTextarea(field)" v-model="formData[field.propName]" />
-                    <el-input v-else v-model="formData[field.propCode]" />
+                    <el-input type="textarea" v-else-if="domainUtil.isTextarea(field)" v-model="formData[domainUtil.getFieldBindProp(field)]" />
+                    <el-input v-else v-model="formData[domainUtil.getFieldBindProp(field)]" />
                   </el-form-item>
                 </template>
                 <el-form-item>
@@ -153,14 +153,14 @@ export default {
   watch: {
     tableId(val){
       getTableMeta(val).then(response=>{
-          console.log(response);
+          //console.log(response);
           const data = response.parameterMap.data;
           this.tableMetaData = data;
           this.getTableDataAll();
       })
 
       getFieldsMeta(val).then(response=>{
-          console.log(response);
+          //console.log(response);
           const data = response.parameterMap.data;
           this.fieldMetaList = data;
           this.getAllDict();
@@ -177,8 +177,8 @@ export default {
   },
   methods: {
     formatterDrop(row, columnName,dropName) {
-      console.log(row);
-      console.log(columnName);
+      //console.log(row);
+      //console.log(columnName);
       var dropList = this.dropdownMap[dropName];
       if(dropList!=null){
         var item = dropList.find(item=>{
@@ -194,7 +194,7 @@ export default {
     getAllDict(){
       this.fieldMetaList.forEach(item=>{
         const dropName = this.domainUtil.getDropName(item);
-        console.log(dropName);
+        //console.log(dropName);
         if(dropName!=""){
           if(this.dropdownMap[dropName]==null){
               this.getDrop(dropName).then(response=>{
@@ -230,7 +230,8 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.showAddDrawer = true;
-      this.formData = {}
+      //this.formData = {}
+      this.initFormByDefaultValue();
     },
     submitForm(){
       let data = {
@@ -238,8 +239,17 @@ export default {
         fieldMap : this.formData
       }
       saveData(data).then(response=>{
-        console.log(response);
+        //console.log(response);
         this.getTableDataAll();
+      })
+    },
+    initFormByDefaultValue(){
+      this.fieldMetaList.forEach(field=>{
+        // console.log(`this.formData[${this.domainUtil.getFieldBindProp(field)}] = ${this.domainUtil.getFieldDefaultValue(field)};`);
+        //this.formData[this.domainUtil.getFieldBindProp(field)] = this.domainUtil.getFieldDefaultValue(field);
+        const defVal = this.domainUtil.getFieldDefaultValue(field);
+        const bindProp = this.domainUtil.getFieldBindProp(field)
+        this.$set(this.formData,bindProp,defVal);
       })
     },
     getTableDataAll(){
@@ -251,7 +261,7 @@ export default {
     handleUpdate(row){
       this.showAddDrawer = true;
       this.formData = row;
-      console.log(row);
+      //console.log(row);
     },
     handleDelete(row){
       let data = {
@@ -265,7 +275,7 @@ export default {
     getSelectData(dictname){
       this.getDicts(dictname).then(response => {
       this.$set(this.dropdownMap, dictname, response.data)
-      console.log(this.dropdownMap)
+      //console.log(this.dropdownMap)
     });
    }
   }

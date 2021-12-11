@@ -2,9 +2,10 @@
   <el-container>
     <el-main>
       <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick" >
-            <el-tab-pane v-for="(group,index) in getGroupList()" :key="group.groupCode" :label="group.groupName" :name="index">
+            <el-tab-pane v-for="(group,index) in getGroupList()" :key="group.groupCode" :label="group.groupName" :name="index+''">
                 <el-row :gutter="10">
                   <el-form :model="formData" :disabled="disabled" ref="form" :inline="false" label-width="150px">
+                    <template>
                       <el-form-item v-for="prop in getPropListByGroupCode(group.groupCode)" :key="prop.id" :label="prop.propName" :prop="prop.propCode">
                           <span slot="label">
                             <el-tooltip :content="prop.remark" placement="top">
@@ -12,18 +13,35 @@
                             </el-tooltip>
                             {{prop.propName}}
                           </span>
-                          <el-select  v-if="domainUtil.isSelect(prop)"  v-model="formData[prop.propCode]" placeholder="请选择" 
-                              clearable>
-                              <el-option
-                              v-for="item in dropdownMap[domainUtil.getDropName(prop)]"
-                              :key="item.value"
-                              :label="item.label"
-                              :value="item.value">
-                              </el-option>
-                          </el-select>
-                          <el-input type="textarea" v-else-if="domainUtil.isTextarea(prop)" v-model="formData[prop.propCode]" />
-                          <el-input v-else v-model="formData[prop.propCode]" />
+                          <template v-if="!domainUtil.isDefaultValueProp(prop)">
+                              <el-select  v-if="domainUtil.isSelect(prop)"  v-model="formData[prop.propCode]" placeholder="请选择" 
+                                  @change="handleSelectChange"
+                                  clearable>
+                                  <el-option
+                                  v-for="item in dropdownMap[domainUtil.getDropName(prop)]"
+                                  :key="item.value"
+                                  :label="item.label"
+                                  :value="item.value">
+                                  </el-option>
+                              </el-select>
+                              <el-input type="textarea" v-else-if="domainUtil.isTextarea(prop)" v-model="formData[prop.propCode]" />
+                              <el-input v-else v-model="formData[prop.propCode]" />
+                          </template>
+                          <template>
+                              <!-- <el-select  v-if="domainUtil.isSelect(prop)"  v-model="formData[prop.propCode]" placeholder="请选择" 
+                                  @change="handleSelectChange"
+                                  clearable>
+                                  <el-option
+                                  v-for="item in dropdownMap[domainUtil.getDropName(prop)]"
+                                  :key="item.value"
+                                  :label="item.label"
+                                  :value="item.value">
+                                  </el-option>
+                              </el-select>
+                              <el-input v-else v-model="formData[prop.propCode]" /> -->
+                          </template>
                       </el-form-item>
+                    </template>
                   </el-form>
                 </el-row>
             </el-tab-pane>
@@ -98,7 +116,9 @@ export default {
     getGroupList(){
       return this.extendProp.relPropGroup;
     },
-    
+    handleSelectChange(newVal){
+
+    },
     handleClick(){
 
     },

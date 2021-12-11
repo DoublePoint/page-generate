@@ -62,7 +62,7 @@ public class CgDomainServiceImpl implements CgDomainService {
             vo.setRelMetaCom(metaCom);
         }
         else{
-            Log4jUtil.error(new Exception("Cannot find the rel comCode,the domainId is "+id));
+            Log4jUtil.warn("Cannot find the rel comCode,the domainId is "+id);
         }
 //        getSubDomain(vo);
         return vo;
