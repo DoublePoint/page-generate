@@ -19,6 +19,14 @@ export function getFieldDefaultValue(obj){
   return pGetFieldObjPro(obj, 'DEFAULT_VALUE')
 }
 
+export function isDefaultValueProp(obj){
+  return getFieldBindProp(obj)=='DEFAULT_VALUE';
+}
+
+export function getFieldAlign(obj){
+  return pGetFieldObjPro(obj,'ALIGN');
+}
+
 
 export function getWidth(obj){
   return this.pGetFieldObjPro(obj,'WIDTH');

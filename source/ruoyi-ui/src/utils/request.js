@@ -79,8 +79,8 @@ service.interceptors.response.use(res => {
       })
       return Promise.reject('error')
     } else {
-      if(res.parameterMap!=null){
-        const errMsg = res.errorMessage;
+      if(res.data.parameterMap!=null){
+        const errMsg = res.data.errorMessage;
         if(errMsg!=null){
           Message.error(errMsg);
           return Promise.reject('error')

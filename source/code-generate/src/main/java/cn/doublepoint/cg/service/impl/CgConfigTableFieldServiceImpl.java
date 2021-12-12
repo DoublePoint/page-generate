@@ -142,7 +142,7 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
             Log4jUtil.debug("Cmd has been changed,please use carefully.");
             propService.saveDomainProp(cmd);
             changeDomainCode(reuFieldId,newDomain.getDomainCode());
-            response.setErrorMessage("The domain code annot be null.");
+            //response.setErrorMessage("The domain code annot be null.");
             return response;
         }
         //如果重置成了绑定Domain,处理删除原来的

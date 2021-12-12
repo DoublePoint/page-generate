@@ -1,6 +1,8 @@
 package cn.doublepoint.cg.controller;
 
 import cn.doublepoint.cg.domain.vo.SingleTableDataVO;
+import cn.doublepoint.cg.domain.vo.SingleTableQueryDataVO;
+import cn.doublepoint.commonutil.StringUtil;
 import cn.doublepoint.commonutil.ajaxmodel.AjaxResponse;
 import cn.doublepoint.commonutil.log.Log4jUtil;
 import cn.doublepoint.commonutil.persitence.jpa.JPAUtil;
@@ -20,14 +22,9 @@ public class SingleTableModifyController {
     public AjaxResponse addData(@RequestBody SingleTableDataVO tableData){
         AjaxResponse response = new AjaxResponse();
         try {
-            if(tableData== null){
-                Log4jUtil.error(new Exception("Table data cannot be null."));
+            BaseEntity baseEntity = validateRequestData(response,tableData);
+            if(StringUtil.isEmpty(response.getErrorMessage())){
                 return response;
-            }
-            BaseEntity baseEntity = tableData.mapToEntity();
-            if(baseEntity == null){
-                response.setErrorMessage("Save error");
-                return  response;
             }
             JPAUtil.saveOrUpdate(baseEntity);
         }
@@ -44,14 +41,9 @@ public class SingleTableModifyController {
     public AjaxResponse allTableData(@RequestBody SingleTableDataVO tableData){
         AjaxResponse response = new AjaxResponse();
         try {
-            if(tableData== null){
-                Log4jUtil.error(new Exception("Table data cannot be null."));
+            BaseEntity baseEntity = validateRequestData(response,tableData);
+            if(StringUtil.isEmpty(response.getErrorMessage())){
                 return response;
-            }
-            BaseEntity baseEntity = tableData.mapToEntity();
-            if(baseEntity == null){
-                response.setErrorMessage("Save error");
-                return  response;
             }
             JPAUtil.remove(baseEntity);
         }
@@ -60,5 +52,53 @@ public class SingleTableModifyController {
             Log4jUtil.error(e);
         }
         return response;
+    }
+
+
+
+    @DeleteMapping("/query/data")
+    public AjaxResponse queryData(@RequestBody SingleTableQueryDataVO tableData){
+        AjaxResponse response = new AjaxResponse();
+        try {
+            if(tableData== null){
+                String errMsg = "Table data cannot be null.";
+                Log4jUtil.error(new Exception(errMsg));
+                response.setErrorMessage(errMsg);
+            }
+            if(StringUtil.isEmpty(response.getErrorMessage())){
+                return response;
+            }
+            Map.Entry<String, EntityPersister> entityClass = JPAUtil.getDaoService().getEntityClass(tableData.getTableCode());
+            if(entityClass==null){
+                Log4jUtil.error(new Exception("Cannot find the entity of table "+tableData.getTableCode()));
+                return null;
+            }
+            JPAUtil.load(entityClass.getValue().getMappedClass(),tableData.getQueryParamList());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            Log4jUtil.error(e);
+        }
+        return response;
+    }
+
+    /**
+     * 验证输入参数的有效性
+     * @param response
+     * @param tableData
+     * @return
+     */
+    private BaseEntity validateRequestData(AjaxResponse response,SingleTableDataVO tableData){
+        if(tableData== null){
+            String errMsg = "Table data cannot be null.";
+            Log4jUtil.error(new Exception(errMsg));
+            response.setErrorMessage(errMsg);
+        }
+        BaseEntity baseEntity = tableData.mapToEntity();
+        if(baseEntity == null){
+            response.setErrorMessage("Save error");
+        }
+
+        return baseEntity;
     }
 }

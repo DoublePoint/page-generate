@@ -1,22 +1,12 @@
 <template>
   <div class="app-container">
-    <!-- <el-row :gutter="20">
-      <el-select v-model="tableId" placeholder="请选择">
-        <el-option
-          v-for="item in tableSelectList"
-          :key="item.id"
-          :label="item.tableCode"
-          :value="item.id">
-        </el-option>
-      </el-select>
-    </el-row> -->
     <el-row :gutter="20">
-      <!--用户数据-->
+      <!--查询区域-->
       <el-col :span="20" :xs="24">
-        <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="150px">
+        <el-form :model="queryFormData" ref="queryForm" :inline="true" label-width="150px">
             <template v-if="fieldMetaList!=null">
               <el-form-item v-for="field in fieldMetaList" :key="field.id" :label="domainUtil.getFieldLabel(field)" :prop="field.propCode">
-                <el-select  v-if="domainUtil.isSelect(field)"  v-model="queryParams[field.propCode]" placeholder="请选择">
+                <el-select  v-if="domainUtil.isSelect(field)"  v-model="queryFormData[field.propCode]['name']" placeholder="请选择">
                     <el-option
                     v-for="item in dropdownMap[domainUtil.getDropName(field)]"
                     :key="item.value"
@@ -24,29 +14,36 @@
                     :value="item.value">
                     </el-option>
                 </el-select>
-                <el-input v-else v-model="queryParams[field.propCode]" />
+                <el-input v-else v-model="queryFormData[field.propCode]['name']" />
+                <el-input v-model="queryFormData[field.propCode]['value']" />
               </el-form-item>
             </template>
             <el-form-item>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="submitForm">确 定</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="submitForm">查 询</el-button>
                 <el-button icon="el-icon-refresh" size="mini" @click="cancel">取 消</el-button>
             </el-form-item>
         </el-form>
       </el-col>
     </el-row>
+    <!-- 操作区域 -->
     <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
             <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd" v-hasPermi="['system:role:add']">新增</el-button>
         </el-col>
     </el-row>
+    <!-- 表格展示区域 -->
     <el-row>
       <el-col>
         <el-table :data="tableDataList" stripe border>
           <el-table-column type="selection" width="50" align="center"  />
           <template v-for="field in fieldMetaList" >
               <template  v-if="domainUtil.isSelect(field)" >
-                <el-table-column :label="domainUtil.getFieldLabel(field)" :key="field.id"  align="center" :width="domainUtil.getWidth(field)" :prop="field.propCode"
+                <el-table-column :label="domainUtil.getFieldLabel(field)"    
                   sortable
+                  :key="field.id"
+                  :prop="field.propCode"
+                  :width="domainUtil.getWidth(field)"
+                  :align="domainUtil.getFieldAlign(field)"
                   show-overflow-tooltip>
                   <template slot-scope="scope">
                     {{formatterDrop(scope.row,field.propCode,domainUtil.getDropName(field))}}
@@ -54,7 +51,11 @@
                 </el-table-column>
               </template>
               <template v-else>
-                <el-table-column :label="domainUtil.getFieldLabel(field)" :key="field.id"  align="center" :width="domainUtil.getWidth(field)" :prop="field.propCode" 
+                <el-table-column :label="domainUtil.getFieldLabel(field)" 
+                  :key="field.id"
+                  :prop="field.propCode"
+                  :width="domainUtil.getWidth(field)"
+                  :align="domainUtil.getFieldAlign(field)"
                   sortable
                   show-overflow-tooltip>
                 </el-table-column>
@@ -80,12 +81,15 @@
       </el-col>
     </el-row>
 
+    <!-- 新增表格展示区域 -->
     <el-drawer title="标签属性配置" :visible.sync="showAddDrawer" direction="rtl">
         <el-row>
           <!-- <cg-prop v-model="this.formData"  :domain-prop="this.fieldMetaList.relDomain"/> -->
           <el-form :model="formData" ref="form" :inline="false" label-width="150px">
                 <template v-if="fieldMetaList!=null">
-                  <el-form-item v-for="field in fieldMetaList" :key="field.id" :label="domainUtil.getFieldLabel(field)" :prop="domainUtil.getFieldBindProp(field)">
+                  <el-form-item v-for="field in fieldMetaList" :key="field.id" :label="domainUtil.getFieldLabel(field)" :prop="domainUtil.getFieldBindProp(field)"
+                    :align="domainUtil.getFieldAlign(field)"
+                    >
                     <el-select  v-if="domainUtil.isSelect(field)"  v-model="formData[domainUtil.getFieldBindProp(field)]" placeholder="请选择">
                         <el-option
                         v-for="item in dropdownMap[domainUtil.getDropName(field)]"
@@ -99,7 +103,7 @@
                   </el-form-item>
                 </template>
                 <el-form-item>
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="submitForm">确 定</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">确 定</el-button>
                     <el-button icon="el-icon-refresh" size="mini" @click="cancel">取 消</el-button>
                 </el-form-item>
             </el-form>
@@ -109,7 +113,7 @@
 </template>
 
 <script>
-import { getTableMeta,getFieldsMeta,saveData,deleteData } from "@/api/cg/tableFieldConfig";
+import { getTableMeta,getFieldsMeta,saveData,deleteData,queryData } from "@/api/cg/tableFieldConfig";
 import { getTableDataAll } from "@/api/database/databaseApi.js"
 import CgProp from "./cgProp.vue";
 export default {
@@ -132,7 +136,7 @@ export default {
       // 表单参数
       form: {},
       // 查询参数
-      queryParams: {
+      queryFormData: {
         pageNum: 1,
         pageSize: 10,
         userName: undefined,
@@ -260,7 +264,8 @@ export default {
     },
     handleUpdate(row){
       this.showAddDrawer = true;
-      this.formData = row;
+      let data = JSON.parse(JSON.stringify(row))
+      this.formData = data;
       //console.log(row);
     },
     handleDelete(row){
@@ -277,6 +282,23 @@ export default {
       this.$set(this.dropdownMap, dictname, response.data)
       //console.log(this.dropdownMap)
     });
+   },
+   handleQuery(){
+     let queryParamList =[];
+     this.queryFormData.forEach(item=>{
+        queryParamList.push({
+          name:item,
+          value:this.queryFormData[item].value,
+          relation:"LIKE"
+        });
+     })
+     let queryParam = {
+        tableCode : this.tableMetaData.tableCode,
+        queryParamList
+      }
+      queryData(queryParam).then(response=>{
+        this.tableDataList = response.parameterMap.data;
+      })
    }
   }
 };

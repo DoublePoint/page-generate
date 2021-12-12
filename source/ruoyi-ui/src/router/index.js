@@ -213,13 +213,25 @@ export const constantRoutes = [
         path: 'singleTableViewPropGroup',
         component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
         name: 'singleTableViewPropGroup',
-        meta: { title: '属性分组管理', activeMenu: '/cg/singleTableViewDrop'}
+        meta: { title: '属性分组管理', activeMenu: '/cg/singleTableViewPropGroup'}
       },
       {
         path: 'singleTableViewPropGroupRel',
         component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
         name: 'singleTableViewPropGroupRel',
-        meta: { title: '属性分组关联管理', activeMenu: '/cg/singleTableViewDrop'}
+        meta: { title: '属性分组关联管理', activeMenu: '/cg/singleTableViewPropGroupRel'}
+      },
+      {
+        path: 'singleTableViewTableConfig',
+        component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
+        name: 'singleTableViewTableConfig',
+        meta: { title: '属性分组关联管理', activeMenu: '/cg/singleTableViewTableConfig'}
+      },
+      {
+        path: 'singleTableViewTableFieldConfig',
+        component: (resolve) => require(['@/views/cg/singleTableView'], resolve),
+        name: 'singleTableViewTableFieldConfig',
+        meta: { title: '属性分组关联管理', activeMenu: '/cg/singleTableViewTableFieldConfig'}
       }
     ]
   }

@@ -53,3 +53,11 @@ export function saveFieldExtendProp(data){
         data
     })
 }
+
+export function queryData(data){
+    return request({
+        url:'/cg/single/table/query/data',
+        method: 'post',
+        data
+    })
+}
