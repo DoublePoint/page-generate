@@ -56,7 +56,7 @@ public class SingleTableModifyController {
 
 
 
-    @DeleteMapping("/query/data")
+    @PostMapping("/query/data")
     public AjaxResponse queryData(@RequestBody SingleTableQueryDataVO tableData){
         AjaxResponse response = new AjaxResponse();
         try {
@@ -65,7 +65,7 @@ public class SingleTableModifyController {
                 Log4jUtil.error(new Exception(errMsg));
                 response.setErrorMessage(errMsg);
             }
-            if(StringUtil.isEmpty(response.getErrorMessage())){
+            if(!StringUtil.isEmpty(response.getErrorMessage())){
                 return response;
             }
             Map.Entry<String, EntityPersister> entityClass = JPAUtil.getDaoService().getEntityClass(tableData.getTableCode());
@@ -73,7 +73,9 @@ public class SingleTableModifyController {
                 Log4jUtil.error(new Exception("Cannot find the entity of table "+tableData.getTableCode()));
                 return null;
             }
-            JPAUtil.load(entityClass.getValue().getMappedClass(),tableData.getQueryParamList());
+            tableData.getQueryParamList().removeEmptyValue();
+            List ret = JPAUtil.load(entityClass.getValue().getMappedClass(), tableData.getQueryParamList());
+            response.setAjaxParameter("data",ret);
         }
         catch (Exception e){
             e.printStackTrace();

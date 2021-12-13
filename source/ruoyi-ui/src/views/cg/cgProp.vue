@@ -137,7 +137,7 @@ export default {
     },
     getGroupList(){
       let arr = this.extendProp.relPropGroup;
-      if(arr=null||arr.length==0){
+      if(arr==null||arr.length==0){
         return [{
           groupCode:"-1",
           groupName:"属性"

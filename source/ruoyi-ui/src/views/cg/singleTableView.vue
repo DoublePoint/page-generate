@@ -5,8 +5,8 @@
       <el-col :span="20" :xs="24">
         <el-form :model="queryFormData" ref="queryForm" :inline="true" label-width="150px">
             <template v-if="fieldMetaList!=null">
-              <el-form-item v-for="field in fieldMetaList" :key="field.id" :label="domainUtil.getFieldLabel(field)" :prop="field.propCode">
-                <el-select  v-if="domainUtil.isSelect(field)"  v-model="queryFormData[field.propCode]['name']" placeholder="请选择">
+              <el-form-item v-for="field in fieldMetaList" :key="field.id" :label="domainUtil.getFieldLabel(field)" >
+                <el-select  v-if="domainUtil.isSelect(field)"  v-model="queryFormData[field.propCode]" :placeholder="queryFormData[field.propCode]">
                     <el-option
                     v-for="item in dropdownMap[domainUtil.getDropName(field)]"
                     :key="item.value"
@@ -14,12 +14,12 @@
                     :value="item.value">
                     </el-option>
                 </el-select>
-                <el-input v-else v-model="queryFormData[field.propCode]['name']" />
-                <el-input v-model="queryFormData[field.propCode]['value']" />
+                <el-input v-else v-model="queryFormData[field.propCode]" /> 
+                <!-- <el-input v-model="queryFormData[field.propCode]" /> -->
               </el-form-item>
             </template>
             <el-form-item>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="submitForm">查 询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">查 询</el-button>
                 <el-button icon="el-icon-refresh" size="mini" @click="cancel">取 消</el-button>
             </el-form-item>
         </el-form>
@@ -103,7 +103,7 @@
                   </el-form-item>
                 </template>
                 <el-form-item>
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">确 定</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="submitForm">确 定</el-button>
                     <el-button icon="el-icon-refresh" size="mini" @click="cancel">取 消</el-button>
                 </el-form-item>
             </el-form>
@@ -137,12 +137,12 @@ export default {
       form: {},
       // 查询参数
       queryFormData: {
-        pageNum: 1,
-        pageSize: 10,
-        userName: undefined,
-        phonenumber: undefined,
-        status: undefined,
-        deptId: undefined
+        // pageNum: 1,
+        // pageSize: 10,
+        // userName: undefined,
+        // phonenumber: undefined,
+        // status: undefined,
+        // deptId: undefined
       },
       
       tableMetaData:{},
@@ -167,6 +167,12 @@ export default {
           //console.log(response);
           const data = response.parameterMap.data;
           this.fieldMetaList = data;
+          this.fieldMetaList.forEach(item=>{
+            // this.queryFormData[item.propCode]={
+            //     name:"",
+            //     value:""
+            // }
+          })
           this.getAllDict();
       })
     }
@@ -284,11 +290,13 @@ export default {
     });
    },
    handleQuery(){
-     let queryParamList =[];
-     this.queryFormData.forEach(item=>{
-        queryParamList.push({
+     let queryParamList ={
+       params:[]
+     };
+     Object.keys(this.queryFormData).forEach(item=>{
+        queryParamList.params.push({
           name:item,
-          value:this.queryFormData[item].value,
+          value:this.queryFormData[item],
           relation:"LIKE"
         });
      })

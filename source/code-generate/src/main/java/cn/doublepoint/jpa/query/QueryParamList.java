@@ -12,6 +12,7 @@ package cn.doublepoint.dto.domain.model.vo.query;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import cn.doublepoint.dto.util.StringUtil;
 
@@ -77,6 +78,12 @@ public class QueryParamList {
 			}
 		}
 		return null;
+	}
+
+	public void  removeEmptyValue(){
+		this.params = this.params.stream().filter(item->{
+			return !StringUtil.isEmpty(item.getValue());
+		}).collect(Collectors.toList());
 	}
 
 	public boolean remove(String name) {
