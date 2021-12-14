@@ -373,7 +373,7 @@ import { getTableDataAll } from "@/api/database/databaseApi.js"
 import CgProp from "./cgProp.vue";
 
 export default {
-  name: "SingleTableModify",
+  name: "SingleTableModifyV1",
   components: { CgProp },
   data() {
     return {
