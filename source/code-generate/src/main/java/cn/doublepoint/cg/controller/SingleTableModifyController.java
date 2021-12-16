@@ -23,7 +23,7 @@ public class SingleTableModifyController {
         AjaxResponse response = new AjaxResponse();
         try {
             BaseEntity baseEntity = validateRequestData(response,tableData);
-            if(StringUtil.isEmpty(response.getErrorMessage())){
+            if(!StringUtil.isEmpty(response.getErrorMessage())){
                 return response;
             }
             JPAUtil.saveOrUpdate(baseEntity);

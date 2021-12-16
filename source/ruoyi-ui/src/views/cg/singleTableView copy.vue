@@ -30,30 +30,6 @@
         <el-table :data="tableDataList" >
           <el-table-column type="selection" width="50" align="center" />
           <template v-for="item in fieldMetaData" >
-              <!-- <template v-if="item.relDomain!=null&&item.relDomain.relMetaCom!=null" >
-                <template  v-if="item.relDomain.relMetaCom.domType=='03'" style="display:none;" >
-                  {{getSelectData(item.relDomain.relDomainMapByComType['SELECT'].relObjectProp.dropname.propValue)}} 
-                </template>
-                <el-table-column :label="item.propName" :key="item.id"  align="center" :prop="item.propCode" width="160">
-                  <template slot-scope="scope" >
-                      <el-select  v-if="item.relDomain.relMetaCom.domType=='03'"  placeholder="请选择" >
-                          <el-option
-                          v-for="item in dropdownMap[item.relDomain.relDomainMapByComType['SELECT'].relObjectProp.dropname.propValue]"
-                          :key="item.dictValue"
-                          :label="item.dictLabel"
-                          :value="item.dictValue">
-                          </el-option>
-                      </el-select>
-                    <span v-else>  
-                      {{scope.row[item.propCode]}}
-                    </span>
-                  </template>
-                </el-table-column>
-              </template>
-              <template v-else >
-                <el-table-column :label="item.propName" :key="item.id"  align="center" :prop="item.propCode" width="160">
-                </el-table-column>
-              </template> -->
               <template >
                 <el-table-column :label="item.propName" :key="item.id"  align="center" :width="getWidth(item)" :prop="item.propCode" >
                 </el-table-column>
@@ -81,7 +57,6 @@
 
     <el-drawer title="标签属性配置" :visible.sync="showAddDrawer" direction="rtl">
         <el-row>
-          <!-- <cg-prop v-model="this.addForm"  :domain-prop="this.fieldMetaData.relDomain"/> -->
           <el-form :model="addForm" ref="form" :inline="false" label-width="150px">
                 <template v-if="fieldMetaData!=null">
                   <el-form-item v-for="fieldVo in fieldMetaData" :key="fieldVo.id" :label="getFieldLabel(fieldVo)" :prop="fieldVo.propCode">

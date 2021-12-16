@@ -1,13 +1,12 @@
 package cn.doublepoint.cg.service.impl;
 
-import cn.doublepoint.cg.dao.CgTableFieldDao;
+import cn.doublepoint.cg.dao.ICgConfigTableFieldExtDomainDao;
 import cn.doublepoint.cg.dao.ICgDomainDao;
 import cn.doublepoint.cg.domain.model.CgConfigTableFieldEntity;
+import cn.doublepoint.cg.domain.model.CgConfigTableFieldExtDomainEntity;
 import cn.doublepoint.cg.domain.model.CgDomainEntity;
-import cn.doublepoint.cg.domain.vo.CgConfigTableFieldVO;
-import cn.doublepoint.cg.domain.vo.CgDomainVO;
-import cn.doublepoint.cg.domain.vo.CgObjectPropVO;
-import cn.doublepoint.cg.domain.vo.SaveExtPropCmdVO;
+import cn.doublepoint.cg.domain.vo.*;
+import cn.doublepoint.cg.service.CgConfigTableFieldExtService;
 import cn.doublepoint.cg.service.CgConfigTableFieldService;
 import cn.doublepoint.cg.service.CgDomainService;
 import cn.doublepoint.cg.service.CgObjectPropService;
@@ -23,12 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService {
@@ -44,6 +41,12 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
 
     @Autowired
     ICgDomainDao domainDao;
+
+    @Autowired
+    CgConfigTableFieldExtService extService;
+
+    @Autowired
+    ICgConfigTableFieldExtDomainDao extDomainDao;
 
 
     @Override
@@ -61,13 +64,18 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
             CgConfigTableFieldVO vo = new CgConfigTableFieldVO();
             CgConfigTableFieldEntity entity = fieldEntityList.get(i);
             CommonBeanUtil.copyProperties(entity,vo);
-            if(StringUtils.isEmpty(entity.getDomainCode())){
-                Map<String, CgObjectPropVO> props = propService.getTableConfigProps(entity.getId());
-                vo.setRelObjectProp(props);
-            }
-            else{
+
+            //获取默认域名
+            if(!StringUtils.isEmpty(entity.getDomainCode())){
                 CgDomainVO domainTree = domainService.getDomainTreeByCode(entity.getDomainCode());
-                vo.setRelDomain(domainTree);
+                vo.setRelDefaultDomain(domainTree);
+            }
+
+            //获取扩展域名
+            CgConfigTableFieldExtDomainVO tableField = extService.getByTableFieldId(entity.getId());
+            if(tableField!=null) {
+                CgDomainVO domainTree = domainService.getDomainTreeByCode(tableField.getDomainCode());
+                vo.setRelExtDomain(domainTree);
             }
             fieldList.add(vo);
         }
@@ -89,13 +97,17 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
             CgConfigTableFieldVO vo = new CgConfigTableFieldVO();
             CgConfigTableFieldEntity entity = fieldEntityList.get(i);
             CommonBeanUtil.copyProperties(entity,vo);
+            //获取默认域名
             if(!StringUtils.isEmpty(entity.getDomainCode())){
                 CgDomainVO domainTree = domainService.getDomainTreeByCode(entity.getDomainCode());
-                vo.setRelDomain(domainTree);
+                vo.setRelDefaultDomain(domainTree);
             }
-            else{
-                Map<String, CgObjectPropVO> props = propService.getTableConfigProps(entity.getId());
-                vo.setRelObjectProp(props);
+
+            //获取扩展域名
+            CgConfigTableFieldExtDomainVO tableField = extService.getByTableFieldId(entity.getId());
+            if(tableField!=null) {
+                CgDomainVO domainTree = domainService.getDomainTreeByCode(tableField.getDomainCode());
+                vo.setRelExtDomain(domainTree);
             }
 
             fieldList.add(vo);
@@ -112,7 +124,7 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
     }
 
     @Override
-    public void changeDomainCode(String fieldId,String domainCode){
+    public void changeDefaultDomain(String fieldId, String domainCode){
         if(StringUtils.isEmpty(fieldId)){
             Log4jUtil.warn("Field id cannot be null");
             return;
@@ -124,34 +136,48 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
         JPAUtil.update(fieldEty);
     }
 
-    @Override
+
+    /*@Override
+    public void saveExtDomainCode(String fieldId, String domainCode){
+
+    }*/
+
+
+
+    /*@Override
     public AjaxResponse saveFieldExtendProp(@RequestBody SaveExtPropCmdVO cmd){
         AjaxResponse response = new AjaxResponse();
 
         CgConfigTableFieldEntity dbField = JPAUtil.loadById(CgConfigTableFieldEntity.class, cmd.getFieldId());
-        String dbDomainCode = dbField.getDomainCode();
+        String dbDefaultDomainCode = dbField.getDomainCode();
         String reuDomainCode = cmd.getDomainCode();
         String reuFieldId = cmd.getFieldId();
-        boolean dbDomEmpty = org.apache.commons.lang.StringUtils.isEmpty(dbDomainCode);
+        boolean dbDomEmpty = org.apache.commons.lang.StringUtils.isEmpty(dbDefaultDomainCode);
         boolean reuDomEmpty = org.apache.commons.lang.StringUtils.isEmpty(reuDomainCode);
 
-        //如果前后Domain都是空，则修改field的prop
+        CgConfigTableFieldExtDomainVO extDomain = extService.getByTableFieldId(cmd.getFieldId());
+
+        //如果DB是空，界面也是空，则创建新的Domain并绑定到扩展属性上，默认domain置空
         if(dbDomEmpty&&reuDomEmpty){
             CgDomainEntity newDomain = domainService.createNewDomainByFieldId(cmd.getFieldId());
             cmd.setDomainCode(newDomain.getDomainCode());
             Log4jUtil.debug("Cmd has been changed,please use carefully.");
             propService.saveDomainProp(cmd);
-            changeDomainCode(reuFieldId,newDomain.getDomainCode());
-            //response.setErrorMessage("The domain code annot be null.");
+            //保存扩展域名
+            saveExtDomainCode(reuFieldId,newDomain.getDomainCode());
+            //清空默认域
+            //clearDefaultDomainCode(cmd);
             return response;
         }
         //如果重置成了绑定Domain,处理删除原来的
         if(dbDomEmpty&&!reuDomEmpty){
-            changeDomainCode(reuFieldId,reuDomainCode);
+            changeDefaultDomain(reuFieldId,reuDomainCode);
+            //
+            saveExtDomainProp(cmd);
         }
         //如果数据库Domain不空，目的域是空的则，创建新域、绑定新域、创建属性如果DB域是自动生成的则删除
         else if(!dbDomEmpty&&reuDomEmpty){
-            CgDomainEntity dbDomain = domainDao.getByCode(dbDomainCode);
+            CgDomainEntity dbDomain = domainDao.getByCode(dbDefaultDomainCode);
             //如果数据库中是默认域
             boolean isDefault = CgConstant.DOMAIN_SOURCE_DEFAULT.equals(dbDomain.getSource());
             if(isDefault){
@@ -159,30 +185,30 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
                 cmd.setDomainCode(newDomain.getDomainCode());
                 Log4jUtil.debug("Cmd has been changed,please use carefully.");
                 propService.saveDomainProp(cmd);
-                changeDomainCode(reuFieldId,newDomain.getDomainCode());
+                changeDefaultDomain(reuFieldId,newDomain.getDomainCode());
             }
             else{
                 //更新域属性
-                propService.deleteByDomainCode(dbDomainCode);
-                cmd.setDomainCode(dbDomainCode);
+                propService.deleteByDomainCode(dbDefaultDomainCode);
+                cmd.setDomainCode(dbDefaultDomainCode);
                 propService.saveDomainProp(cmd);
             }
         }
         //如果DB Domain与结果Domain都不为空
         else {
-            CgDomainEntity dbDomain = domainDao.getByCode(dbDomainCode);
+            CgDomainEntity dbDomain = domainDao.getByCode(dbDefaultDomainCode);
             CgDomainEntity reuDomain = domainDao.getByCode(reuDomainCode);
             boolean isDbDefault = CgConstant.DOMAIN_SOURCE_DEFAULT.equals(dbDomain.getSource());
             boolean isResDefault = CgConstant.DOMAIN_SOURCE_DEFAULT.equals(reuDomain.getSource());
             //如果都是默认域
             if(isDbDefault&&isResDefault) {
                 //如果前后域相等
-                if(reuDomainCode.equals(dbDomainCode)){
+                if(reuDomainCode.equals(dbDefaultDomainCode)){
                     Log4jUtil.warn("The domain code is same,will be ignore，");
                     return response;
                 }
                 else{
-                    changeDomainCode(reuFieldId,reuDomainCode);
+                    changeDefaultDomain(reuFieldId,reuDomainCode);
                 }
             }
             //如果结果不是默认域
@@ -191,27 +217,27 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
                 propService.deleteByDomainCode(reuDomainCode);
                 cmd.setDomainCode(reuDomainCode);
                 propService.saveDomainProp(cmd);
-                changeDomainCode(reuFieldId,reuDomainCode);
+                changeDefaultDomain(reuFieldId,reuDomainCode);
             }
             else if(!isDbDefault&&isResDefault){
-                deleteDomainAndProp(dbDomainCode);
-                changeDomainCode(reuFieldId,reuDomainCode);
+                deleteDomainAndProp(dbDefaultDomainCode);
+                changeDefaultDomain(reuFieldId,reuDomainCode);
             }
             //如果都不是默认域
             else {
                 //如果前后域一致，代表每发生变化，只是修改了属性值，则删除原来属性，添加新属性
-                if(reuDomainCode.equals(dbDomainCode)){
+                if(reuDomainCode.equals(dbDefaultDomainCode)){
                     propService.deleteByDomainCode(reuDomainCode);
                     cmd.setDomainCode(reuDomainCode);
                     propService.saveDomainProp(cmd);
                 }
                 //否则删除原来的属性和域，添加新的属性，添加新的域，改变关联关系
                 else{
-                    deleteDomainAndProp(dbDomainCode);
+                    deleteDomainAndProp(dbDefaultDomainCode);
                     CgDomainEntity newDomain = domainService.createNewDomainByFieldId(cmd.getFieldId());
                     cmd.setDomainCode(newDomain.getDomainCode());
                     propService.saveDomainProp(cmd);
-                    changeDomainCode(reuFieldId,newDomain.getDomainCode());
+                    changeDefaultDomain(reuFieldId,newDomain.getDomainCode());
                 }
             }
 //            if(reuDomainCode.equals(dbDomainCode)){
@@ -225,6 +251,83 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
         }
 
         return response;
+    }*/
+
+    public AjaxResponse saveFieldExtendProp2(@RequestBody SaveExtPropCmdVO cmd){
+        AjaxResponse response = new AjaxResponse();
+
+        CgConfigTableFieldEntity dbField = JPAUtil.loadById(CgConfigTableFieldEntity.class, cmd.getFieldId());
+        String dbDefaultDomainCode = dbField.getDomainCode();
+        String reuDomainCode = cmd.getDomainCode();
+        String reuFieldId = cmd.getFieldId();
+        boolean dbDomEmpty = org.apache.commons.lang.StringUtils.isEmpty(dbDefaultDomainCode);
+        boolean reuDomEmpty = org.apache.commons.lang.StringUtils.isEmpty(reuDomainCode);
+
+        CgConfigTableFieldExtDomainVO extDomain = extService.getByTableFieldId(cmd.getFieldId());
+
+        //如果目标是空的
+        if(reuDomEmpty){
+            //清空默认的
+            clearDefaultDomainCode(reuFieldId);
+            //保存扩展域名属性
+            saveExtDomainProp(cmd);
+
+            if(!dbDomEmpty){
+                CgDomainEntity dbDomain = domainDao.getByCode(dbDefaultDomainCode);
+                //如果数据库中是默认域
+                boolean isDefault = CgConstant.DOMAIN_SOURCE_DEFAULT.equals(dbDomain.getSource());
+                if(isDefault) {
+                    deleteDomainAndProp(cmd.getFieldId());
+                }
+            }
+        }
+        else{
+            changeDefaultDomain(reuFieldId,reuDomainCode);
+            saveExtDomainProp(cmd);
+        }
+
+
+
+        return response;
+    }
+
+    /**
+     * 清空当前默认域
+     * @param fieldId
+     */
+    private void clearDefaultDomainCode(String fieldId) {
+        if(StringUtils.isEmpty(fieldId)){
+            Log4jUtil.warn("Field id cannot be null");
+            return;
+        }
+
+        CgConfigTableFieldEntity fieldEty = JPAUtil.loadById(CgConfigTableFieldEntity.class, fieldId);
+
+        fieldEty.setDomainCode("");
+        JPAUtil.update(fieldEty);
+    }
+
+    /**
+     * 保存国战域属性，没有的创建，有的更新，并绑定与Field之间的关系
+     * @param cmd
+     */
+    private void saveExtDomainProp(SaveExtPropCmdVO cmd){
+        CgConfigTableFieldExtDomainVO tableField = extService.getByTableFieldId(cmd.getFieldId());
+        if(tableField==null){
+            CgDomainEntity newDomain = domainService.createNewDomainByFieldId(cmd.getFieldId());
+            cmd.setDomainCode(newDomain.getDomainCode());
+            Log4jUtil.debug("Cmd has been changed,please use carefully.");
+            propService.saveDomainProp(cmd);
+
+            CgConfigTableFieldExtDomainEntity extDomain = new CgConfigTableFieldExtDomainEntity();
+            extDomain.setConfigTableFieldId(cmd.getFieldId());
+            extDomain.setDomainCode(newDomain.getDomainCode());
+            extDomainDao.create(extDomain);
+        }
+        else{
+            cmd.setDomainCode(tableField.getDomainCode());
+            propService.saveDomainProp(cmd);
+        }
     }
 
     /**

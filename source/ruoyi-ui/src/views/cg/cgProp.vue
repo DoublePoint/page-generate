@@ -2,7 +2,7 @@
   <el-container>
     <el-main>
       <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick" >
-            <el-tab-pane v-for="(group,index) in getGroupList()" :key="group.groupCode" :label="group.groupName" :name="index+''">
+            <el-tab-pane v-for="(group,index) in getGroupList" :key="group.groupCode" :label="group.groupName" :name="index+''">
                 <el-row :gutter="10">
                   <el-form :model="formData" :disabled="disabled" ref="form" :inline="false" label-width="150px">
                     <template>
@@ -85,7 +85,7 @@ export default {
       return this.value;
     },
     isShowDefaultValueSelect(){
-      console.log("isShowDefaultValueSelect");
+      // console.log("isShowDefaultValueSelect");
       return this.formData["SELECT_DROP_NAME"]!=null&&this.formData["SELECT_DROP_NAME"]!="";
     },
     defaultDropName(){
@@ -93,7 +93,28 @@ export default {
         return "";
       }
       return this.formData["SELECT_DROP_NAME"];
-    }
+    },    
+    getGroupList(){
+      // let arr = this.extendProp.relPropGroup;
+      // if(arr==null||arr.length==0){
+      //   return [{
+      //     groupCode:"-1",
+      //     groupName:"属性"
+      //   }]
+      // }
+      if(this.extendProp==null){
+        return [];
+      }
+      if(this.extendProp.relPropGroup==null){
+        return []
+      }
+      let arr = this.extendProp.relPropGroup;
+      let arrCopy = JSON.parse(JSON.stringify(arr));
+      console.log(arrCopy);
+      return arrCopy.sort((n1,n2)=>{
+        return n1.sort-n2.sort;
+      })
+    },
   },
   watch:{
     defaultDropName(newVal,oldVal){
@@ -106,8 +127,8 @@ export default {
     }
   },
   created() {
-    getAllExtendProp("4").then(response=>{
-      console.log(response);
+    getAllExtendProp("918554647633854403").then(response=>{
+      //console.log(response);
       this.extendProp = response.parameterMap.data;
       this.getAllDict();
     })
@@ -129,22 +150,24 @@ export default {
       return this.extendProp.relPropList;
     },
     getPropListByGroupCode(groupCode){
-      if(groupCode==-1){
-        return this.extendProp.relPropList;
-      }
-      console.log(this.extendProp.relPropMap[groupCode]);
-      return this.extendProp.relPropMap[groupCode];
+      // if(groupCode==-1){
+      //   if(this.extendProp.relPropList!=null){
+      //     return this.extendProp.relPropList.sort((n1,n2)=>{
+      //       console.log("---------------------------------");
+      //       console.log(n1);
+      //       //console.log(n1.sort,n2.sort);
+      //       return n1.sort-n2.sort;
+      //     });
+      //   }
+      // }
+      let arr  = this.extendProp.relPropMap[groupCode];
+      let arrCopy = JSON.parse(JSON.stringify(arr));
+      console.log(arrCopy);
+      return arrCopy.sort((n1,n2)=>{
+        return n1.sort-n2.sort;
+      })
     },
-    getGroupList(){
-      let arr = this.extendProp.relPropGroup;
-      if(arr==null||arr.length==0){
-        return [{
-          groupCode:"-1",
-          groupName:"属性"
-        }]
-      }
-      return this.extendProp.relPropGroup;
-    },
+
     handleSelectChange(newVal){
       if(newVal==null){
         this.isShowDefaultValueSelect = false;

@@ -1,6 +1,5 @@
 package cn.doublepoint.cg.controller;
 
-import cn.doublepoint.cg.domain.model.CgDomainEntity;
 import cn.doublepoint.cg.domain.model.CgObjectPropEntity;
 import cn.doublepoint.cg.domain.vo.CgDomainVO;
 import cn.doublepoint.cg.service.CgConfigTableFieldService;
@@ -8,8 +7,6 @@ import cn.doublepoint.cg.service.CgDomainService;
 import cn.doublepoint.cg.service.CgObjectPropService;
 import cn.doublepoint.commonutil.ajaxmodel.AjaxResponse;
 import cn.doublepoint.commonutil.log.Log4jUtil;
-import org.aspectj.apache.bcel.classfile.Module;
-import org.aspectj.weaver.loadtime.Aj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,7 +58,7 @@ public class DomainController {
         AjaxResponse response = new AjaxResponse();
         try {
 //            CgDomainEntity result = domainService.copy(domainCode);
-            fieldService.changeDomainCode(fieldId, domainCode);
+            fieldService.changeDefaultDomain(fieldId, domainCode);
 //            response.setAjaxParameter("data", result);
         }
         catch (Exception e){

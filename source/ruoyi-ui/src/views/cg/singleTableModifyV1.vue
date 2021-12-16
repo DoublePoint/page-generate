@@ -549,7 +549,6 @@ export default {
     
     handleFieldDetail(row) {
       this.selectedField = row;
-      // let domain = row.relDomain;
       // this.fieldDomain = domain;
       var relObjectProp = this.domainUtil.getRelProp(row);
       this.getMetaData(relObjectProp);
@@ -572,9 +571,9 @@ export default {
       getTableField({
         tableId: this.currentTableId,
       }).then((response) => {
-        console.log("getTableField");
+        // console.log("getTableField");
         this.fieldList = response.parameterMap.data;
-        console.log(this.fieldList);
+        // console.log(this.fieldList);
       });
     },
     handleSave() {

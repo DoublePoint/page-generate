@@ -36,7 +36,7 @@
       <el-col>
         <el-table :data="tableDataList" stripe border>
           <el-table-column type="selection" width="50" align="center"  />
-          <template v-for="field in fieldMetaList" >
+          <template v-for="field in getTableFieldMetaDataList()" >
               <template  v-if="domainUtil.isSelect(field)" >
                 <el-table-column :label="domainUtil.getFieldLabel(field)"    
                   sortable
@@ -84,7 +84,6 @@
     <!-- 新增表格展示区域 -->
     <el-drawer title="标签属性配置" :visible.sync="showAddDrawer" direction="rtl">
         <el-row>
-          <!-- <cg-prop v-model="this.formData"  :domain-prop="this.fieldMetaList.relDomain"/> -->
           <el-form :model="formData" ref="form" :inline="false" label-width="150px">
                 <template v-if="fieldMetaList!=null">
                   <el-form-item v-for="field in fieldMetaList" :key="field.id" :label="domainUtil.getFieldLabel(field)" :prop="domainUtil.getFieldBindProp(field)"
@@ -166,6 +165,7 @@ export default {
       getFieldsMeta(val).then(response=>{
           //console.log(response);
           const data = response.parameterMap.data;
+
           this.fieldMetaList = data;
           this.fieldMetaList.forEach(item=>{
             // this.queryFormData[item.propCode]={
@@ -186,6 +186,15 @@ export default {
     // })
   },
   methods: {
+    getTableFieldMetaDataList(){
+      console.log("getTableFieldMetaDataList");
+      let arr = this.fieldMetaList;
+      let arrCopy = JSON.parse(JSON.stringify(arr));
+      console.log(arrCopy);
+      return arrCopy.sort((n1,n2)=>{
+        this.domainUtil.getTableSort(n1)-this.domainUtil.getTableSort(n2);
+      })
+    },
     formatterDrop(row, columnName,dropName) {
       //console.log(row);
       //console.log(columnName);
@@ -250,7 +259,8 @@ export default {
       }
       saveData(data).then(response=>{
         //console.log(response);
-        this.getTableDataAll();
+        this.handleQuery();
+        this.showAddDrawer = false;
       })
     },
     initFormByDefaultValue(){

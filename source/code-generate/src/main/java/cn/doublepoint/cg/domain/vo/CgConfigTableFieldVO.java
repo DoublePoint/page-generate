@@ -19,14 +19,23 @@ public class CgConfigTableFieldVO {
     private String updateUserId;
 
     private Map<String,CgObjectPropVO> relObjectProp;
-    private CgDomainVO relDomain;
+    private CgDomainVO relDefaultDomain;//关联的默认域名
+    private CgDomainVO relExtDomain;//关联的扩展域名
 
-    public CgDomainVO getRelDomain() {
-        return relDomain;
+    public CgDomainVO getRelDefaultDomain() {
+        return relDefaultDomain;
     }
 
-    public void setRelDomain(CgDomainVO relDomain) {
-        this.relDomain = relDomain;
+    public void setRelDefaultDomain(CgDomainVO relDefaultDomain) {
+        this.relDefaultDomain = relDefaultDomain;
+    }
+
+    public CgDomainVO getRelExtDomain() {
+        return relExtDomain;
+    }
+
+    public void setRelExtDomain(CgDomainVO relExtDomain) {
+        this.relExtDomain = relExtDomain;
     }
 
     public String getDomainCode() {

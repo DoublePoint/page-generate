@@ -26,6 +26,23 @@ export function isDefaultValueProp(obj){
 export function getFieldAlign(obj){
   return pGetFieldObjPro(obj,'ALIGN');
 }
+export function getTableSort(obj){
+  return pGetFieldObjPro(obj,'TABLE_SORT');
+}
+export function getFormSort(obj){
+  return pGetFieldObjPro(obj,'FORM_SORT');
+}
+export function getQueryItemSort(obj){
+  return pGetFieldObjPro(obj,'QUERY_ITEM_SORT');
+}
+
+export function getIsQueryItem(obj){
+  return pGetFieldObjPro(obj,'IS_QUERY_ITEM');
+}
+
+export function getQueryItemDefaultValue(obj){
+  return pGetFieldObjPro(obj,'QUERY_ITEM_DEFAULT_VALUE');
+}
 
 
 export function getWidth(obj){
@@ -34,17 +51,17 @@ export function getWidth(obj){
 export function getRelProp(obj){
   var relObjectProp = obj.relObjectProp;
   if(relObjectProp == null){
-    console.log(`obj.relObjectProp为空.`);
+    // console.log(`obj.relObjectProp为空.`);
   }
   else{
     return relObjectProp;
   }
   if (obj.relDomain == null) {
-    console.log(`obj.relDomain为空.`);
+    // console.log(`obj.relDomain为空.`);
     return ''
   }
   if (obj.relDomain.relObjectProp == null) {
-    console.log(`obj.relDomain.relObjectProp为空`);
+    // console.log(`obj.relDomain.relObjectProp为空`);
     return ''
   }
   return obj.relDomain.relObjectProp;
@@ -53,7 +70,7 @@ export function getRelProp(obj){
 export function pGetFieldObjPro(obj, propName) {
   var relObjectProp = getRelProp(obj);
   if (relObjectProp[propName] == null) {
-    console.log(`relObjectProp.${propName}为空`);
+    // console.log(`relObjectProp.${propName}为空`);
     return ''
   }
   return relObjectProp[propName].propValue;

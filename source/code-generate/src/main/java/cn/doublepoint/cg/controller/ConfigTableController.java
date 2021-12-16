@@ -3,14 +3,11 @@ package cn.doublepoint.cg.controller;
 
 import cn.doublepoint.cg.domain.model.CgConfigTableEntity;
 import cn.doublepoint.cg.domain.model.CgConfigTableFieldEntity;
-import cn.doublepoint.cg.domain.vo.CgConfigTableFieldVO;
 import cn.doublepoint.cg.domain.vo.SaveExtPropCmdVO;
 import cn.doublepoint.cg.service.CgConfigTableFieldService;
 import cn.doublepoint.cg.service.CgConfigTableService;
 import cn.doublepoint.cg.service.CgObjectPropService;
 import cn.doublepoint.commonutil.ajaxmodel.AjaxResponse;
-import cn.doublepoint.commonutil.log.Log4jUtil;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -107,7 +104,7 @@ public class ConfigTableController {
     @DeleteMapping("/field/{fieldId}/domaincode")
     public AjaxResponse deleteField(@PathVariable String fieldId){
         AjaxResponse response = new AjaxResponse();
-        fieldService.changeDomainCode(fieldId,"");
+        fieldService.changeDefaultDomain(fieldId,"");
         return response;
     }
 

@@ -15,9 +15,11 @@ public interface CgConfigTableFieldService {
 
     void add(CgConfigTableFieldEntity tableEntity);
 
-    void changeDomainCode(String fieldId, String domainCode);
+    void changeDefaultDomain(String fieldId, String domainCode);
 
-    AjaxResponse saveFieldExtendProp(@RequestBody SaveExtPropCmdVO cmd);
+    /*void saveExtDomainCode(String fieldId, String domainCode);*/
+
+    /*AjaxResponse saveFieldExtendProp(@RequestBody SaveExtPropCmdVO cmd);*/
 
     void delete(CgConfigTableFieldEntity tableEntity);
 
