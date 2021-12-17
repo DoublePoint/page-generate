@@ -21,6 +21,8 @@ public interface CgConfigTableFieldService {
 
     AjaxResponse saveFieldExtendProp(@RequestBody SaveExtPropCmdVO cmd);
 
+    AjaxResponse saveFieldExtendProp2(@RequestBody SaveExtPropCmdVO cmd);
+
     void delete(CgConfigTableFieldEntity tableEntity);
 
     void delete(List<String> ids);

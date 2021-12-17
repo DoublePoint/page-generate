@@ -137,14 +137,13 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
     }
 
 
-    /*@Override
-    public void saveExtDomainCode(String fieldId, String domainCode){
+    private void saveExtDomainCode(String fieldId, String domainCode){
 
-    }*/
-
+    }
 
 
-    /*@Override
+
+    @Override
     public AjaxResponse saveFieldExtendProp(@RequestBody SaveExtPropCmdVO cmd){
         AjaxResponse response = new AjaxResponse();
 
@@ -251,8 +250,9 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
         }
 
         return response;
-    }*/
+    }
 
+    @Override
     public AjaxResponse saveFieldExtendProp2(@RequestBody SaveExtPropCmdVO cmd){
         AjaxResponse response = new AjaxResponse();
 
@@ -274,9 +274,9 @@ public class CgConfigTableFieldServiceImpl implements CgConfigTableFieldService 
 
             if(!dbDomEmpty){
                 CgDomainEntity dbDomain = domainDao.getByCode(dbDefaultDomainCode);
-                //如果数据库中是默认域
+                //如果数据库中不是默认域,删除自动创建的域
                 boolean isDefault = CgConstant.DOMAIN_SOURCE_DEFAULT.equals(dbDomain.getSource());
-                if(isDefault) {
+                if(!isDefault) {
                     deleteDomainAndProp(cmd.getFieldId());
                 }
             }

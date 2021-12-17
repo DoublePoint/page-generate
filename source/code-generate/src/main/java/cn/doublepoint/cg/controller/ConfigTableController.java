@@ -123,7 +123,7 @@ public class ConfigTableController {
      */
     @PostMapping("/field/prop")
     public AjaxResponse saveFieldExtendProp(@RequestBody SaveExtPropCmdVO cmd){
-        AjaxResponse response = fieldService.saveFieldExtendProp(cmd);
+        AjaxResponse response = fieldService.saveFieldExtendProp2(cmd);
         return response;
     }
 
