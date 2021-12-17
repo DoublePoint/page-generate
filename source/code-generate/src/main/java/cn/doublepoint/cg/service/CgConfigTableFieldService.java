@@ -19,7 +19,7 @@ public interface CgConfigTableFieldService {
 
     /*void saveExtDomainCode(String fieldId, String domainCode);*/
 
-    /*AjaxResponse saveFieldExtendProp(@RequestBody SaveExtPropCmdVO cmd);*/
+    AjaxResponse saveFieldExtendProp(@RequestBody SaveExtPropCmdVO cmd);
 
     void delete(CgConfigTableFieldEntity tableEntity);
 
