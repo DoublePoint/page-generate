@@ -4,18 +4,23 @@
       <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick" >
             <el-tab-pane v-for="(group,index) in getGroupList" :key="group.groupCode" :label="group.groupName" :name="index+''">
                 <el-row :gutter="10">
-                  <el-form :model="formData" :disabled="disabled" ref="form" :inline="false" label-width="150px">
+                  <el-form :model="formData"   ref="form" :inline="false" label-width="150px">
                     <template>
                       <el-form-item v-for="prop in getPropListByGroupCode(group.groupCode)" :key="prop.id" :label="prop.propName" :prop="prop.propCode">
                           <span slot="label">
                             <el-tooltip :content="prop.remark" placement="top">
-                              <i class="el-icon-question"></i>
+                              <span>
+                                <i class="el-icon-lock"  v-show="isLockShow(prop.propCode)"></i>
+                                <i class="el-icon-warning" style="color:orange;" v-show="isWarningShow(prop.propCode)"></i>
+                                <i class="el-icon-question" v-show="isInfoShow(prop.propCode)"></i>
+                              </span>
                             </el-tooltip>
                             {{prop.propName}}
                           </span>
                           <template v-if="!domainUtil.isDefaultValueProp(prop)">
                               <el-select  v-if="domainUtil.isSelect(prop)"  v-model="formData[prop.propCode]" placeholder="请选择" 
                                   @change="handleSelectChange"
+                                  :disabled="propDisabled(prop.propCode)"
                                   clearable>
                                   <el-option
                                   v-for="item in dropdownMap[domainUtil.getDropName(prop)]"
@@ -24,12 +29,21 @@
                                   :value="item.value">
                                   </el-option>
                               </el-select>
-                              <el-input type="textarea" v-else-if="domainUtil.isTextarea(prop)" v-model="formData[prop.propCode]" />
-                              <el-input v-else v-model="formData[prop.propCode]" />
+                              <el-input type="textarea" v-else-if="domainUtil.isTextarea(prop)" v-model="formData[prop.propCode]" 
+                              :disabled="propDisabled(prop.propCode)"
+                              />
+                              <el-input v-else v-model="formData[prop.propCode]" 
+                              :disabled="propDisabled(prop.propCode)"
+                              />
+                              <el-button icon="el-icon-edit" circle @click="handleIconClick(prop.propCode)" v-show="isEditShow(prop.propCode)" :disabled="false"></el-button>
+                              <el-button icon="el-icon-brush" type="warning" circle @click="handleResetClick(prop.propCode)"  v-show="isResetShow(prop.propCode)" :disabled="false"></el-button>
+                              <el-button icon="el-icon-circle-check" type="success" circle @click="handleIconSaveClick(prop.propCode)"  v-show="isSaveShow(prop.propCode)" :disabled="false"></el-button>
+                              <!-- {{prop.propCode}}-{{propReadOnly[prop.propCode]}}-{{propReadOnly}} -->
                           </template>
                           <template v-else>
                               <el-select  v-if="isShowDefaultValueSelect"  v-model="formData[prop.propCode]" placeholder="请选择" 
                                   @change="handleSelectChange"
+                                  :disabled="propDisabled(prop.propCode)"
                                   clearable>
                                   <el-option
                                   v-for="item in defaultDropList"
@@ -38,7 +52,9 @@
                                   :value="item.value">
                                   </el-option>
                               </el-select>
-                              <el-input v-else v-model="formData[prop.propCode]" />
+                              <el-input v-else v-model="formData[prop.propCode]" 
+                              :disabled="propDisabled(prop.propCode)"
+                              />
                           </template>
                       </el-form-item>
                     </template>
@@ -73,6 +89,9 @@ export default {
         },
         // defaultDropName:"",//默认值下拉名称
         defaultDropList:[],//默认值下拉列表
+        propReadOnly:{},
+        privatePropSet:new Set(),
+        privateEditShowSet:new Set(),
     };
   },
   watch: {
@@ -81,6 +100,54 @@ export default {
     }
   },
   computed:{
+    isWarningShow(){
+      return function (propCode){
+        return !this.propDisabled(propCode);
+      }
+    },
+    isLockShow(){
+      return function (propCode){
+        if(!this.disabled){
+          return false;
+        }
+        return !this.privatePropSet.has(propCode);
+      } 
+    },
+    isInfoShow(){
+      return function (propCode){
+        return true;
+      } 
+    },
+    isEditShow(){
+       return function (propCode){
+        // console.log("EditShow:"+propCode);
+        if(!this.disabled){
+          return false;
+        }
+        return !this.privatePropSet.has(propCode);
+      } 
+    },
+    isResetShow(){
+      return function (propCode){
+        if(!this.disabled){
+          return false;
+        }
+        return this.privatePropSet.has(propCode);
+      } 
+    },
+    isSaveShow(){
+       return function (propCode){
+        if(!this.disabled){
+          return false;
+        }
+        return this.privatePropSet.has(propCode);
+      } 
+    },
+    propDisabled(){
+      return function(propCode){
+        return this.propReadOnly[propCode]==undefined||this.propReadOnly[propCode]==null?true:this.propReadOnly[propCode]
+      }
+    },
     formData(){
       return this.value;
     },
@@ -110,7 +177,7 @@ export default {
       }
       let arr = this.extendProp.relPropGroup;
       let arrCopy = JSON.parse(JSON.stringify(arr));
-      console.log(arrCopy);
+      // console.log(arrCopy);
       return arrCopy.sort((n1,n2)=>{
         return n1.sort-n2.sort;
       })
@@ -124,7 +191,11 @@ export default {
       this.getDrop(this.defaultDropName).then(response=>{
         this.defaultDropList = response.parameterMap.data;
       })
+    },
+    privatePropSet(newVal,oldVal){
+
     }
+
   },
   created() {
     getAllExtendProp("918554647633854403").then(response=>{
@@ -134,6 +205,22 @@ export default {
     })
   },
   methods: {
+    handleResetClick(propCode){
+      this.privatePropSet.delete(propCode);
+
+      let data = {
+
+      }
+      deleteFieldPrivateProp()
+    },
+    handleIconSaveClick(propCode){
+
+    },
+    handleIconClick(propCode){
+      // console.log(propCode);
+      this.privatePropSet.add(propCode);
+      this.$set(this.propReadOnly,propCode,false);
+    },
     getAllDict(){
       this.extendProp.relPropList.forEach(item=>{
         const dropName = this.domainUtil.getDropName(item);
@@ -162,7 +249,7 @@ export default {
       // }
       let arr  = this.extendProp.relPropMap[groupCode];
       let arrCopy = JSON.parse(JSON.stringify(arr));
-      console.log(arrCopy);
+      // console.log(arrCopy);
       return arrCopy.sort((n1,n2)=>{
         return n1.sort-n2.sort;
       })

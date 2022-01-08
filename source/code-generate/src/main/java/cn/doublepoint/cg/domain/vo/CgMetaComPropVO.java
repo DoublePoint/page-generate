@@ -25,14 +25,14 @@ public class CgMetaComPropVO {
     private String updateUserId;
     private CgMetaComPropGroupVO relGroup;
     private CgMetaComVO relCom;
-    private CgDomainVO relDomain;
+    private CgDomainVO relDefaultDomain;
 
-    public CgDomainVO getRelDomain() {
-        return relDomain;
+    public CgDomainVO getRelDefaultDomain() {
+        return relDefaultDomain;
     }
 
-    public void setRelDomain(CgDomainVO relDomain) {
-        this.relDomain = relDomain;
+    public void setRelDefaultDomain(CgDomainVO relDefaultDomain) {
+        this.relDefaultDomain = relDefaultDomain;
     }
 
     public String getDomainCode() {

@@ -72,7 +72,7 @@ public class CgMetaComPropServiceImpl implements CgMetaComPropService {
         String domainCode = item.getDomainCode();
         if(!StringUtils.isEmpty(domainCode)){
             CgDomainVO domainTree = domainService.getDomainTreeByCode(domainCode);
-            item.setRelDomain(domainTree);
+            item.setRelDefaultDomain(domainTree);
         }
     }
 

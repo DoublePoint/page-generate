@@ -435,7 +435,6 @@ export default {
       return this.extendProp.relPropList;
     },
     handleDomainChange(domainCode){
-      console.log('newDoamin.domaincode change:'+domainCode);
       if(domainCode==null||domainCode==""){
         this.cgpropDisabled = false;
         return;
@@ -548,13 +547,26 @@ export default {
     },
     
     handleFieldDetail(row) {
+      console.log(row);
       this.selectedField = row;
       // this.fieldDomain = domain;
       var relObjectProp = this.domainUtil.getRelProp(row);
       this.getMetaData(relObjectProp);
+
+      var privateObjectProp = this.domainUtil.getExtDomain(row);
+      this.getExtDomain(relObjectProp);
     },
     getMetaData(relObjectProp){
       var curFieldProp={}
+      if(relObjectProp!=null){
+        Object.keys(relObjectProp).forEach(key => {
+          curFieldProp[key] = relObjectProp[key].propValue;
+        });
+      }
+      this.curFieldProp = curFieldProp;
+    },
+    getExtDomain(relObjectProp){
+      var curFieldProp = this.curFieldProp;
       if(relObjectProp!=null){
         Object.keys(relObjectProp).forEach(key => {
           curFieldProp[key] = relObjectProp[key].propValue;

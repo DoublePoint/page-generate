@@ -61,3 +61,11 @@ export function queryData(data){
         data
     })
 }
+
+export function deleteFieldPrivateProp(data){
+    return request({
+        url:   `config/table/field/private/prop`,
+        method: `delete`,
+        data
+    })
+}

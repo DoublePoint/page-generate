@@ -56,15 +56,23 @@ export function getRelProp(obj){
   else{
     return relObjectProp;
   }
-  if (obj.relDomain == null) {
+  if (obj.relDefaultDomain == null) {
     // console.log(`obj.relDomain为空.`);
     return ''
   }
-  if (obj.relDomain.relObjectProp == null) {
+  if (obj.relDefaultDomain.relObjectProp == null) {
     // console.log(`obj.relDomain.relObjectProp为空`);
     return ''
   }
-  return obj.relDomain.relObjectProp;
+  return obj.relDefaultDomain.relObjectProp;
+}
+
+export function getExtDomain(obj){
+  if (obj.relExtDomain == null) {
+    // console.log(`obj.relDomain为空.`);
+    return null
+  }
+  return obj.relExtDomain.relObjectProp;
 }
 
 export function pGetFieldObjPro(obj, propName) {
