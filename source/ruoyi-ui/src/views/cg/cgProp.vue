@@ -4,7 +4,7 @@
       <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick" >
             <el-tab-pane v-for="(group,index) in getGroupList" :key="group.groupCode" :label="group.groupName" :name="index+''">
                 <el-row :gutter="10">
-                  <el-form :model="formData"   ref="form" :inline="false" label-width="150px">
+                  <el-form :model="formData"   ref="form" :inline="true" label-width="150px" class="demo-dynamic">
                     <template>
                       <el-form-item v-for="prop in getPropListByGroupCode(group.groupCode)" :key="prop.id" :label="prop.propName" :prop="prop.propCode">
                           <span slot="label">
@@ -78,6 +78,7 @@ export default {
   props: {
     value:Object,
     disabled:Boolean,
+    privatePropObject:Object
   },
   data() {
     return {
@@ -90,27 +91,31 @@ export default {
         // defaultDropName:"",//默认值下拉名称
         defaultDropList:[],//默认值下拉列表
         propReadOnly:{},
-        privatePropSet:new Set(),
-        privateEditShowSet:new Set(),
+        privateEditShowSet:new Map(),
     };
   },
   watch: {
     formData(newVal){
       this.$emit("input",newVal);
-    }
+    },
+    // privateProp(newVal){
+    //   this.privatePropObject = newVal;
+    // }
   },
   computed:{
     isWarningShow(){
       return function (propCode){
+        console.log("isWarningShow");
         return !this.propDisabled(propCode);
       }
     },
     isLockShow(){
       return function (propCode){
+        console.log("isLockShow");
         if(!this.disabled){
           return false;
         }
-        return !this.privatePropSet.has(propCode);
+        return !this.privatePropObject[propCode]=="1";
       } 
     },
     isInfoShow(){
@@ -124,7 +129,7 @@ export default {
         if(!this.disabled){
           return false;
         }
-        return !this.privatePropSet.has(propCode);
+        return !this.privatePropObject[propCode]=="1";
       } 
     },
     isResetShow(){
@@ -132,7 +137,7 @@ export default {
         if(!this.disabled){
           return false;
         }
-        return this.privatePropSet.has(propCode);
+        return this.privatePropObject[propCode]=="1";
       } 
     },
     isSaveShow(){
@@ -140,12 +145,15 @@ export default {
         if(!this.disabled){
           return false;
         }
-        return this.privatePropSet.has(propCode);
+        return this.privatePropObject[propCode]=="1";
       } 
     },
     propDisabled(){
       return function(propCode){
-        return this.propReadOnly[propCode]==undefined||this.propReadOnly[propCode]==null?true:this.propReadOnly[propCode]
+        if(!this.disabled){
+          return false;
+        }
+        return !this.privatePropObject[propCode]=="1";
       }
     },
     formData(){
@@ -192,7 +200,7 @@ export default {
         this.defaultDropList = response.parameterMap.data;
       })
     },
-    privatePropSet(newVal,oldVal){
+    privatePropObject(newVal,oldVal){
 
     }
 
@@ -206,7 +214,7 @@ export default {
   },
   methods: {
     handleResetClick(propCode){
-      this.privatePropSet.delete(propCode);
+      this.privatePropObject[propCode]=null;
 
       let data = {
 
@@ -218,8 +226,9 @@ export default {
     },
     handleIconClick(propCode){
       // console.log(propCode);
-      this.privatePropSet.add(propCode);
+      // this.privatePropObject[propCode]={};
       this.$set(this.propReadOnly,propCode,false);
+      this.$set(this.privatePropObject,propCode,"1");
     },
     getAllDict(){
       this.extendProp.relPropList.forEach(item=>{

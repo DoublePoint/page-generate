@@ -249,7 +249,7 @@
                   </el-select>
               </el-form-item>
           </el-form>
-          <cg-prop v-model="curFieldProp" :disabled="cgpropDisabled"/>
+          <cg-prop v-model="curFieldProp" :disabled="cgpropDisabled" :privatePropObject="privatePropObject"/>
           <el-button type="primary" size="mini" @click="handleSave">保 存</el-button>
         </el-col>
       </el-tab-pane>
@@ -417,7 +417,8 @@ export default {
       },
       domainList:[],
       newDoamin:{},
-      cgpropDisabled:true
+      cgpropDisabled:true,
+      privatePropObject:{}
     };
   },
   watch: {
@@ -554,10 +555,11 @@ export default {
       this.getMetaData(relObjectProp);
 
       var privateObjectProp = this.domainUtil.getExtDomain(row);
-      this.getExtDomain(relObjectProp);
+      this.getPriDomain(privateObjectProp);
     },
     getMetaData(relObjectProp){
       var curFieldProp={}
+      this.privatePropObject = {};
       if(relObjectProp!=null){
         Object.keys(relObjectProp).forEach(key => {
           curFieldProp[key] = relObjectProp[key].propValue;
@@ -565,13 +567,17 @@ export default {
       }
       this.curFieldProp = curFieldProp;
     },
-    getExtDomain(relObjectProp){
+    getPriDomain(relObjectProp){
       var curFieldProp = this.curFieldProp;
+      
       if(relObjectProp!=null){
         Object.keys(relObjectProp).forEach(key => {
+          this.privatePropObject[key]="1";
           curFieldProp[key] = relObjectProp[key].propValue;
         });
       }
+      console.log("this.privatePropObject:");
+      console.log(this.privatePropObject);
       this.curFieldProp = curFieldProp;
     },
     getTable() {
