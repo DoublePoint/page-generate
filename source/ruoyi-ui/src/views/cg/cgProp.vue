@@ -29,32 +29,40 @@
                                   :value="item.value">
                                   </el-option>
                               </el-select>
-                              <el-input type="textarea" v-else-if="domainUtil.isTextarea(prop)" v-model="formData[prop.propCode]" 
+                              <el-input type="textarea" v-else-if="domainUtil.isTextarea(prop)"  :ref="prop.propCode+'_input'"
+                              :disabled="propDisabled(prop.propCode)" :value="formData[prop.propCode]" 
+                              @input="val=>handleInput(val,prop.propCode)"
+                              />
+                              <el-input v-else :value="formData[prop.propCode]" :ref="prop.propCode+'_input'"
+                              @input="val=>handleInput(val,prop.propCode)"
                               :disabled="propDisabled(prop.propCode)"
                               />
-                              <el-input v-else v-model="formData[prop.propCode]" 
-                              :disabled="propDisabled(prop.propCode)"
-                              />
+                              123
                               <el-button icon="el-icon-edit" circle @click="handleIconClick(prop.propCode)" v-show="isEditShow(prop.propCode)" :disabled="false"></el-button>
                               <el-button icon="el-icon-brush" type="warning" circle @click="handleResetClick(prop.propCode)"  v-show="isResetShow(prop.propCode)" :disabled="false"></el-button>
                               <el-button icon="el-icon-circle-check" type="success" circle @click="handleIconSaveClick(prop.propCode)"  v-show="isSaveShow(prop.propCode)" :disabled="false"></el-button>
                               <!-- {{prop.propCode}}-{{propReadOnly[prop.propCode]}}-{{propReadOnly}} -->
                           </template>
+                          <!-- 如果是默认下拉 -->
                           <template v-else>
-                              <el-select  v-if="isShowDefaultValueSelect"  v-model="formData[prop.propCode]" placeholder="请选择" 
-                                  @change="handleSelectChange"
-                                  :disabled="propDisabled(prop.propCode)"
-                                  clearable>
-                                  <el-option
-                                  v-for="item in defaultDropList"
-                                  :key="item.value"
-                                  :label="item.label"
-                                  :value="item.value">
-                                  </el-option>
-                              </el-select>
-                              <el-input v-else v-model="formData[prop.propCode]" 
-                              :disabled="propDisabled(prop.propCode)"
-                              />
+                            <el-col :span="24">
+                                <el-select  v-if="isShowDefaultValueSelect"  v-model="formData[prop.propCode]" placeholder="请选择" 
+                                    :disabled="propDisabled(prop.propCode)"
+                                    clearable>
+                                    <el-option
+                                    v-for="item in defaultDropList"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                    </el-option>
+                                </el-select>
+                                <el-input v-else v-model="formData[prop.propCode]" 
+                                :disabled="propDisabled(prop.propCode)"
+                                />
+                                <el-button icon="el-icon-edit" circle @click="handleIconClick(prop.propCode)" v-show="isEditShow(prop.propCode)" :disabled="false"></el-button>
+                                <el-button icon="el-icon-brush" type="warning" circle @click="handleResetClick(prop.propCode)"  v-show="isResetShow(prop.propCode)" :disabled="false"></el-button>
+                                <el-button icon="el-icon-circle-check" type="success" circle @click="handleIconSaveClick(prop.propCode)"  v-show="isSaveShow(prop.propCode)" :disabled="false"></el-button>
+                            </el-col>
                           </template>
                       </el-form-item>
                     </template>
@@ -88,30 +96,33 @@ export default {
         },
         dropdownMap:{
         },
-        // defaultDropName:"",//默认值下拉名称
         defaultDropList:[],//默认值下拉列表
         propReadOnly:{},
         privateEditShowSet:new Map(),
+        isRunComputed:false,
+        defaultDropName:"",
+        // formData:{}
     };
   },
   watch: {
     formData(newVal){
       this.$emit("input",newVal);
+      //console.log("formData.change");
     },
-    // privateProp(newVal){
-    //   this.privatePropObject = newVal;
-    // }
+    value(newVal){
+      this.formData = newVal;
+    },
   },
   computed:{
     isWarningShow(){
       return function (propCode){
-        console.log("isWarningShow");
+        //this.isRunComputed ="1";
         return !this.propDisabled(propCode);
       }
     },
     isLockShow(){
       return function (propCode){
-        console.log("isLockShow");
+        //this.isRunComputed ="1";
         if(!this.disabled){
           return false;
         }
@@ -120,12 +131,14 @@ export default {
     },
     isInfoShow(){
       return function (propCode){
+        //this.isRunComputed ="1";
         return true;
       } 
     },
     isEditShow(){
        return function (propCode){
-        // console.log("EditShow:"+propCode);
+         //this.isRunComputed ="1";
+        console.log("EditShow:"+propCode);
         if(!this.disabled){
           return false;
         }
@@ -134,6 +147,8 @@ export default {
     },
     isResetShow(){
       return function (propCode){
+        //this.isRunComputed ="1";
+        console.log("isResetShow:"+propCode);
         if(!this.disabled){
           return false;
         }
@@ -142,6 +157,7 @@ export default {
     },
     isSaveShow(){
        return function (propCode){
+        //this.isRunComputed ="1";
         if(!this.disabled){
           return false;
         }
@@ -150,33 +166,24 @@ export default {
     },
     propDisabled(){
       return function(propCode){
+        //this.isRunComputed ="1";
         if(!this.disabled){
           return false;
         }
         return !this.privatePropObject[propCode]=="1";
       }
     },
-    formData(){
-      return this.value;
-    },
+
     isShowDefaultValueSelect(){
-      // console.log("isShowDefaultValueSelect");
       return this.formData["SELECT_DROP_NAME"]!=null&&this.formData["SELECT_DROP_NAME"]!="";
     },
-    defaultDropName(){
-      if(this.formData["SELECT_DROP_NAME"]==undefined||this.formData["SELECT_DROP_NAME"]==null){
-        return "";
-      }
-      return this.formData["SELECT_DROP_NAME"];
-    },    
+    // defaultDropName(){
+    //   if(this.formData["SELECT_DROP_NAME"]==undefined||this.formData["SELECT_DROP_NAME"]==null){
+    //     return "";
+    //   }
+    //   return this.formData["SELECT_DROP_NAME"];
+    // },    
     getGroupList(){
-      // let arr = this.extendProp.relPropGroup;
-      // if(arr==null||arr.length==0){
-      //   return [{
-      //     groupCode:"-1",
-      //     groupName:"属性"
-      //   }]
-      // }
       if(this.extendProp==null){
         return [];
       }
@@ -185,48 +192,47 @@ export default {
       }
       let arr = this.extendProp.relPropGroup;
       let arrCopy = JSON.parse(JSON.stringify(arr));
-      // console.log(arrCopy);
       return arrCopy.sort((n1,n2)=>{
         return n1.sort-n2.sort;
       })
     },
+    formData(){
+      return this.value;
+    }
   },
   watch:{
     defaultDropName(newVal,oldVal){
-      if(this.defaultDropName==undefined||this.defaultDropName==null||this.defaultDropName==""){
+      console.log("defaultDropName(newVal,oldVal)");
+      if(newVal==undefined||newVal==null||newVal==""){
         return;
       }
-      this.getDrop(this.defaultDropName).then(response=>{
+      this.getDrop(newVal).then(response=>{
         this.defaultDropList = response.parameterMap.data;
+        console.log("this.defaultDropList");
+        console.log(this.defaultDropList);
       })
     },
     privatePropObject(newVal,oldVal){
-
+      this.value.privatePropObject = newVal;
     }
 
   },
   created() {
     getAllExtendProp("918554647633854403").then(response=>{
-      //console.log(response);
       this.extendProp = response.parameterMap.data;
       this.getAllDict();
     })
   },
   methods: {
     handleResetClick(propCode){
-      this.privatePropObject[propCode]=null;
-
-      let data = {
-
-      }
-      deleteFieldPrivateProp()
+      this.$delete(this.privatePropObject,propCode);
+      //this.isRunComputed ="3";
+      console.log("this.delete(this.privatePropObject,propCode);");
     },
     handleIconSaveClick(propCode){
 
     },
     handleIconClick(propCode){
-      // console.log(propCode);
-      // this.privatePropObject[propCode]={};
       this.$set(this.propReadOnly,propCode,false);
       this.$set(this.privatePropObject,propCode,"1");
     },
@@ -246,35 +252,39 @@ export default {
       return this.extendProp.relPropList;
     },
     getPropListByGroupCode(groupCode){
-      // if(groupCode==-1){
-      //   if(this.extendProp.relPropList!=null){
-      //     return this.extendProp.relPropList.sort((n1,n2)=>{
-      //       console.log("---------------------------------");
-      //       console.log(n1);
-      //       //console.log(n1.sort,n2.sort);
-      //       return n1.sort-n2.sort;
-      //     });
-      //   }
-      // }
       let arr  = this.extendProp.relPropMap[groupCode];
       let arrCopy = JSON.parse(JSON.stringify(arr));
-      // console.log(arrCopy);
       return arrCopy.sort((n1,n2)=>{
         return n1.sort-n2.sort;
       })
     },
 
     handleSelectChange(newVal){
+      
       if(newVal==null){
-        this.isShowDefaultValueSelect = false;
+        //this.isShowDefaultValueSelect = false;
       }
       else{
-        this.isShowDefaultValueSelect = true;
+        //this.isShowDefaultValueSelect = true;
         this.defaultDropName = newVal;
       }
+      console.log("handleSelectChange:"+newVal);
     },
     handleClick(){
 
+    },
+    handleInput(value,prop){
+      // let val = this.value;
+      // val[prop]=value;
+      let formData = this.formData;
+      formData[prop]=value;
+      let cp = JSON.parse(JSON.stringify(formData));
+      // this.$set(this.formData,prop,value)
+      this.$emit("input",cp)
+      console.log(cp);
+      // console.log(this.$refs);
+      // console.log(this.$refs.form);
+      // console.log(this.$refs[refName]);
     },
   }
 };

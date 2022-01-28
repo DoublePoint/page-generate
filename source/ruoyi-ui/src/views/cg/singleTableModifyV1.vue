@@ -237,20 +237,37 @@
           </el-row>
         </el-col>
         <el-col :span="8">
-          <el-form :model="selectedField" ref="form" :inline="false" label-width="150px">
-              <el-form-item  label="域" prop="domainCode">
-                  <el-select  v-model="selectedField.domainCode" placeholder="请选择"  clearable="" @change="handleDomainChange">
-                      <el-option
-                      v-for="item in domainList"
-                      :key="item.id"
-                      :label="item.domainName"
-                      :value="item.domainCode">
-                      </el-option>
-                  </el-select>
-              </el-form-item>
+          <el-form
+            :model="selectedField"
+            ref="form"
+            :inline="false"
+            label-width="150px"
+          >
+            <el-form-item label="域" prop="domainCode">
+              <el-select
+                v-model="selectedField.domainCode"
+                placeholder="请选择"
+                clearable=""
+                @change="handleDomainChange"
+              >
+                <el-option
+                  v-for="item in domainList"
+                  :key="item.id"
+                  :label="item.domainName"
+                  :value="item.domainCode"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
           </el-form>
-          <cg-prop v-model="curFieldProp" :disabled="cgpropDisabled" :privatePropObject="privatePropObject"/>
-          <el-button type="primary" size="mini" @click="handleSave">保 存</el-button>
+          <cg-prop
+            v-model="curFieldProp"
+            :disabled="cgpropDisabled"
+            :privatePropObject="privatePropObject"
+          />
+          <el-button type="primary" size="mini" @click="handleSave"
+            >保 存</el-button
+          >
         </el-col>
       </el-tab-pane>
     </el-tabs>
@@ -367,9 +384,13 @@ import {
   updateTableField,
 } from "@/api/cg/v1";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import { getDomain,saveDomainObject,} from "@/api/cg/domain.js";
-import { changeFieldDomainCode, clearFieldDomainCode,saveFieldExtendProp} from "@/api/cg/tableFieldConfig.js";
-import { getTableDataAll } from "@/api/database/databaseApi.js"
+import { getDomain, saveDomainObject } from "@/api/cg/domain.js";
+import {
+  changeFieldDomainCode,
+  clearFieldDomainCode,
+  saveFieldExtendProp,
+} from "@/api/cg/tableFieldConfig.js";
+import { getTableDataAll } from "@/api/database/databaseApi.js";
 import CgProp from "./cgProp.vue";
 
 export default {
@@ -407,46 +428,41 @@ export default {
       },
       currentTableId: null,
       tabFiledDisabled: true,
-      curFieldProp: {
-      },
+      curFieldProp: {},
       // fieldDomain:{
       //   propMap: {},
       // },
-      selectedField:{
-        domainCode:""
+      selectedField: {
+        domainCode: "",
       },
-      domainList:[],
-      newDoamin:{},
-      cgpropDisabled:true,
-      privatePropObject:{}
+      domainList: [],
+      newDoamin: {},
+      cgpropDisabled: true,
+      privatePropObject: {},
     };
   },
-  watch: {
-   
-  },
+  watch: {},
   created() {
     this.getTable();
-     getTableDataAll("cg_domain").then(response=>{
-       this.domainList = response.parameterMap.data;
-    })
+    getTableDataAll("cg_domain").then((response) => {
+      this.domainList = response.parameterMap.data;
+    });
   },
   methods: {
-    
-    getPropList(){
+    getPropList() {
       return this.extendProp.relPropList;
     },
-    handleDomainChange(domainCode){
-      if(domainCode==null||domainCode==""){
+    handleDomainChange(domainCode) {
+      if (domainCode == null || domainCode == "") {
         this.cgpropDisabled = false;
         return;
       }
-      getDomain(domainCode).then(response=>{
+      getDomain(domainCode).then((response) => {
         const fieldDomain = response.parameterMap.data;
         var relObjectProp = fieldDomain.relObjectProp;
         this.getMetaData(relObjectProp);
         this.cgpropDisabled = true;
-      })
-      
+      });
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
@@ -546,7 +562,7 @@ export default {
       this.activeName = "second";
       this.getTableField();
     },
-    
+
     handleFieldDetail(row) {
       console.log(row);
       this.selectedField = row;
@@ -557,27 +573,32 @@ export default {
       var privateObjectProp = this.domainUtil.getExtDomain(row);
       this.getPriDomain(privateObjectProp);
     },
-    getMetaData(relObjectProp){
-      var curFieldProp={}
+    getMetaData(relObjectProp) {
+      var curFieldProp = {};
       this.privatePropObject = {};
-      if(relObjectProp!=null){
-        Object.keys(relObjectProp).forEach(key => {
+      if (relObjectProp != null) {
+        //console.log("this.cgpropDisabled = true;");
+        this.cgpropDisabled = true;
+        Object.keys(relObjectProp).forEach((key) => {
           curFieldProp[key] = relObjectProp[key].propValue;
         });
+      } else {
+        //console.log("this.cgpropDisabled = false;");
+        this.cgpropDisabled = false;
       }
       this.curFieldProp = curFieldProp;
     },
-    getPriDomain(relObjectProp){
+    getPriDomain(relObjectProp) {
       var curFieldProp = this.curFieldProp;
-      
-      if(relObjectProp!=null){
-        Object.keys(relObjectProp).forEach(key => {
-          this.privatePropObject[key]="1";
+
+      if (relObjectProp != null) {
+        Object.keys(relObjectProp).forEach((key) => {
+          this.privatePropObject[key] = "1";
           curFieldProp[key] = relObjectProp[key].propValue;
         });
       }
-      console.log("this.privatePropObject:");
-      console.log(this.privatePropObject);
+      //console.log("this.privatePropObject:");
+      //console.log(this.privatePropObject);
       this.curFieldProp = curFieldProp;
     },
     getTable() {
@@ -589,31 +610,49 @@ export default {
       getTableField({
         tableId: this.currentTableId,
       }).then((response) => {
-        // console.log("getTableField");
+        //console.log("getTableField");
         this.fieldList = response.parameterMap.data;
-        // console.log(this.fieldList);
+        //console.log(this.fieldList);
       });
     },
     handleSave() {
       let obj = {
-          fieldId:this.selectedField.id,
-          domainCode:this.selectedField.domainCode,
-          prop:[]
+        fieldId: this.selectedField.id,
+        domainCode: this.selectedField.domainCode,
+        prop: [],
       };
-      Object.keys(this.curFieldProp).forEach(key => {
-        const propValue = this.curFieldProp[key];
-        let prop = [];
-        var createData = {
-          propCode: key,
-          propValue
+
+      if (obj.domainCode == null||obj.domainCode == "") {
+        Object.keys(this.curFieldProp).forEach((key) => {
+          if (key != "privatePropObject") {
+            const propValue = this.curFieldProp[key];
+            var createData = {
+              propCode: key,
+              propValue,
+            };
+            obj.prop.push(createData);
+          }
+        });
+      } else {
+        if (this.curFieldProp != null) {
+          if (this.curFieldProp.privatePropObject != null) {
+            Object.keys(this.curFieldProp.privatePropObject).forEach((key) => {
+              if(this.curFieldProp.privatePropObject[key]!=null){
+                  const propValue = this.curFieldProp[key];
+                  var createData = {
+                    propCode: key,
+                    propValue,
+                  };
+                  obj.prop.push(createData);
+              }
+            });
+          }
         }
-        obj.prop.push(createData);
-      });
-      saveFieldExtendProp(obj).then(response=>{
+      }
+      saveFieldExtendProp(obj).then((response) => {
         this.msgSuccess("保存成功.");
         return this.getTableField();
-      })
-      
+      });
     },
   },
   watch: {

@@ -131,11 +131,13 @@ public class CgObjectPropServiceImpl implements CgObjectPropService {
         }
         List<SaveExtPropCmdSubVO> propList = cmd.getProp();
         if(CollectionUtils.isEmpty(propList)){
+            deleteByDomainCode(cmd.getDomainCode());
             Log4jUtil.warn("Prop is empty");
             return;
         }
         List<CgObjectPropEntity> createList = new ArrayList<>();
         List<CgObjectPropEntity> updateList = new ArrayList<>();
+
         propList.stream().forEach(item->{
             final String propCode = item.getPropCode();
             final String propValue = item.getPropValue();
@@ -165,7 +167,7 @@ public class CgObjectPropServiceImpl implements CgObjectPropService {
                 updateList.add(prop);
             }
         });
-
+        deleteByDomainCode(cmd.getDomainCode());
         objectPropDao.create(createList);
         objectPropDao.update(updateList);
     }

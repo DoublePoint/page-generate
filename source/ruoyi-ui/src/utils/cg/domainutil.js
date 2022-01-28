@@ -58,11 +58,11 @@ export function getRelProp(obj){
   }
   if (obj.relDefaultDomain == null) {
     // console.log(`obj.relDomain为空.`);
-    return ''
+    return null;
   }
   if (obj.relDefaultDomain.relObjectProp == null) {
     // console.log(`obj.relDomain.relObjectProp为空`);
-    return ''
+    return null;
   }
   return obj.relDefaultDomain.relObjectProp;
 }
@@ -77,9 +77,12 @@ export function getExtDomain(obj){
 
 export function pGetFieldObjPro(obj, propName) {
   var relObjectProp = getRelProp(obj);
+  if(relObjectProp==null){
+    return '';
+  }
   if (relObjectProp[propName] == null) {
     // console.log(`relObjectProp.${propName}为空`);
-    return ''
+    return '';
   }
   return relObjectProp[propName].propValue;
 };
